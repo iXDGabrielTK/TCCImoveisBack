@@ -25,7 +25,8 @@ public class Visitante {
 
    /* @JoinColumn(name = "LISTA_FAVORITO")
     @OneToMany
-    private List<Imovel> listaFavorito;*/
+    private List<Imovel> listaFavorito;
+   */
 
     @OneToMany
     @JoinTable(
