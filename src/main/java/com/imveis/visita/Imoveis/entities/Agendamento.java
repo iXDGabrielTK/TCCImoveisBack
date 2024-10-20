@@ -27,6 +27,6 @@ public class Agendamento {
 
     @JoinColumn(name = "IMOVEL_ID")
     @ManyToOne
-    private Imovel imovel_id;
+    private Imovel imovel;
 
 }

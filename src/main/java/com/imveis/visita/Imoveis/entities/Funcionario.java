@@ -18,7 +18,6 @@ public class Funcionario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger idFuncionario;
 
-    @Column(name = "USUARIO")
     @ManyToOne
     private Usuario usuario;
 

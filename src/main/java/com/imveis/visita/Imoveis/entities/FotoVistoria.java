@@ -18,7 +18,6 @@ public class FotoVistoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger idFotosVistoria;
 
-    @Column(name = "VISTORIA")
     @ManyToOne
     private Vistoria vistoria;
 

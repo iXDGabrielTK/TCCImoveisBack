@@ -33,6 +33,5 @@ public class Vistoria {
 
 
     @ManyToOne
-    @JoinColumn(name = "IMOVEL_ID")
     private Imovel imovel;
 }
