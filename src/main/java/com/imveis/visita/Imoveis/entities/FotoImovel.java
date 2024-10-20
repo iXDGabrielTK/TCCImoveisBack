@@ -20,7 +20,7 @@ public class FotoImovel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger idFotosImovel;
 
-    @Column(name = "IMOVEL_ID")
+
     @ManyToOne
     private Imovel imovel;
 

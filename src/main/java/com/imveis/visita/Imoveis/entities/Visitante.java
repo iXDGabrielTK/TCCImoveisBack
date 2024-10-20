@@ -19,7 +19,7 @@ public class Visitante {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger idVisitante;
 
-    @Column(name = "USUARIO")
+
     @ManyToOne
     private Usuario usuario;
 

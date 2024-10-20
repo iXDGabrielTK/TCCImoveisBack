@@ -18,14 +18,11 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger idUsuario;
 
-    @Column(name = "LOGIN")
-    private String login;
-
     @Column(name = "NOME")
     private String nome;
 
-    @Column(name = "EMAIL")
-    private String email;
+    @Column(name = "LOGIN")
+    private String login;
 
     @Column(name = "SENHA")
     private String senha;
