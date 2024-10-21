@@ -17,8 +17,9 @@ public class WebConfigs {
 
     @Bean
     public DataSource dataSource() {
+        //faz basicamente a mesma coisa do application.properties
         return DataSourceBuilder.create()
-                .url("jdbc:postgresql://localhost:5432/imoveis_db")
+                .url("jdbc:postgresql://localhost:5432/postgres")
                 .username("postgres")
                 .password("password")
                 .driverClassName("org.postgresql.Driver")
