@@ -5,7 +5,8 @@ import lombok.*;
 
 import java.math.BigInteger;
 
-@Entity(name = "Funcionario")
+@Entity
+@Table(name = "funcionario")
 @Data
 @Builder
 @AllArgsConstructor

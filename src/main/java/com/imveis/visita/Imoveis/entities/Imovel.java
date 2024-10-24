@@ -5,7 +5,8 @@ import lombok.*;
 
 import java.util.List;
 
-@Entity(name = "Imovel")
+@Entity
+@Table (name = "imovel")
 @Data
 @Builder
 @AllArgsConstructor

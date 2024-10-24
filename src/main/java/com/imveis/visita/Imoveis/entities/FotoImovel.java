@@ -7,7 +7,8 @@ import org.hibernate.annotations.ManyToAny;
 import java.math.BigInteger;
 import java.util.List;
 
-@Entity(name = "FotosImovel")
+@Entity
+@Table(name = "fotos_imovel")
 @Data
 @Builder
 @AllArgsConstructor

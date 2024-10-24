@@ -6,7 +6,8 @@ import lombok.*;
 import java.math.BigInteger;
 import java.util.List;
 
-@Entity(name = "Visitante")
+@Entity
+@Table (name = "visitante")
 @Data
 @Builder
 @AllArgsConstructor

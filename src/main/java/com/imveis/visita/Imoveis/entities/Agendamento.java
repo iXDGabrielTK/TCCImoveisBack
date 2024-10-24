@@ -6,7 +6,8 @@ import lombok.*;
 import java.math.BigInteger;
 import java.util.Date;
 
-@Entity(name = "Agendamento")
+@Entity
+@Table (name = "agendamento")
 @Data
 @Builder
 @AllArgsConstructor

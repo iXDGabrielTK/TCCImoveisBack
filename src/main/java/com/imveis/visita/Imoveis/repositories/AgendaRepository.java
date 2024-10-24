@@ -1,4 +1,4 @@
 package com.imveis.visita.Imoveis.repositories;
 
-public interface VistoriaRepositories {
+public interface AgendaRepository {
 }

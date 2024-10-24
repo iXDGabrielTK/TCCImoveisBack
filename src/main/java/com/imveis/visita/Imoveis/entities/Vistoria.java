@@ -6,7 +6,8 @@ import lombok.*;
 import java.sql.Date;
 import java.util.List;
 
-@Entity(name = "Vistoria")
+@Entity
+@Table (name = "vistoria")
 @Data
 @Builder
 @AllArgsConstructor
