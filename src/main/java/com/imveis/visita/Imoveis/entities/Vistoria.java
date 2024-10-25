@@ -3,6 +3,7 @@ package com.imveis.visita.Imoveis.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigInteger;
 import java.sql.Date;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class Vistoria {
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idVistoria;
+    private BigInteger idVistoria;
 
     @Column(name = "TIPO_VISTORIA")
     private String tipoVistoria;

@@ -3,6 +3,7 @@ package com.imveis.visita.Imoveis.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Entity
@@ -16,7 +17,7 @@ public class Imovel {
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idImovel;
+    private BigInteger idImovel;
 
     @Column(name = "TIPO_IMOVEL")
     private String tipoImovel;

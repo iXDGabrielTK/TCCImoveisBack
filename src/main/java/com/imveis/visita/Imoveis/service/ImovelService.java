@@ -1,10 +1,13 @@
 package com.imveis.visita.Imoveis.service;
 
+import com.imveis.visita.Imoveis.entities.Imovel;
 import com.imveis.visita.Imoveis.repositories.ImovelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.imveis.visita.Imoveis.entities.Imovel;
 import org.springframework.stereotype.Service;
+
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ImovelService {
@@ -20,10 +23,18 @@ public class ImovelService {
         return imovelRepository.findAll();
     }
 
+    public Optional<Imovel> findById(BigInteger id) {
+        return imovelRepository.findById(id);
+    }
+
     public Imovel save(@org.jetbrains.annotations.NotNull Imovel imovel) {
         if (imovel.getPrecoImovel() < 0) {
             throw new IllegalArgumentException("O preço não pode ser negativo");
         }
         return imovelRepository.save(imovel);
+    }
+
+    public void deleteById(BigInteger id) {
+        imovelRepository.deleteById(id);
     }
 }
