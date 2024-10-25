@@ -32,7 +32,7 @@ public class EnderecoService {
         return enderecoRepository.save(endereco);
     }
 
-    public void delete(Endereco endereco) {
-        enderecoRepository.delete(endereco);
+    public void deleteById(BigInteger id) {
+        enderecoRepository.deleteById(id);
     }
 }
