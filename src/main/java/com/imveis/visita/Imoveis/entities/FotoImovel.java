@@ -2,7 +2,6 @@ package com.imveis.visita.Imoveis.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ManyToAny;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -21,14 +20,9 @@ public class FotoImovel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger idFotosImovel;
 
-
     @ManyToOne
+    @JoinColumn(name = "imovel_id", nullable = false)
     private Imovel imovel;
-
-   /* @Column(name = "URL_FOTO_IMOVEL")
-    @ManyToAny
-    private List<String> urlFotoImovel;
-    */
 
    @ElementCollection // Se for apenas uma lista de URLs
     private List<String> urlFotoImovel;

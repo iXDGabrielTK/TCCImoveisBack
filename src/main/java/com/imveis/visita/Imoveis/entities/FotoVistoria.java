@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Entity
 @Table (name = "fotos_vistoria")
@@ -20,8 +21,9 @@ public class FotoVistoria {
     private BigInteger idFotosVistoria;
 
     @ManyToOne
+    @JoinColumn(name = "vistoria_id", nullable = false)
     private Vistoria vistoria;
 
-    @Column(name = "URL_FOTO_VISTORIA")
-    private String urlFotoVistoria;
+    @ElementCollection
+    private List<String> urlFotoVistoria;
 }

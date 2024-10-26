@@ -1,4 +1,12 @@
 package com.imveis.visita.Imoveis.repositories;
 
-public interface FotoImovelRepository {
+
+import com.imveis.visita.Imoveis.entities.FotoImovel;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.math.BigInteger;
+
+@Repository
+public interface FotoImovelRepository extends JpaRepository<FotoImovel, BigInteger>{
 }

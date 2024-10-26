@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.math.BigInteger;
 import java.sql.Date;
-import java.util.List;
+
 
 @Entity
 @Table (name = "vistoria")
@@ -26,13 +26,8 @@ public class Vistoria {
     @Column(name = "LAUDO_VISTORIA")
     private String laudoVistoria;
 
-    @ElementCollection
-    @Column(name = "FOTO_VISTORIA")
-    private List<String> fotoVistoria;
-
     @Column(name = "DATA_VISTORIA")
     private Date dataVistoria;
-
 
     @ManyToOne
     private Imovel imovel;
