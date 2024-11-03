@@ -1,8 +1,12 @@
 package com.imveis.visita.Imoveis.controllers;
 
+import com.imveis.visita.Imoveis.dtos.LoginRequest;
 import com.imveis.visita.Imoveis.entities.Usuario;
+import com.imveis.visita.Imoveis.repositories.UsuaRepository;
 import com.imveis.visita.Imoveis.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -12,6 +16,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/usuarios")
 public class UsuaController {
+
+    @Autowired
+    private UsuaRepository usuaRepository;
 
     private final UsuarioService usuarioService;
 
@@ -25,25 +32,31 @@ public class UsuaController {
         return "Dados do Backend";
     }
 
-    // Endpoint para listar todos os usuários
     @GetMapping
     public List<Usuario> getAllUsuarios() {
         return usuarioService.findAll();
     }
 
-    // Endpoint para buscar um usuário específico por ID
     @GetMapping("/{id}")
     public Optional<Usuario> getUsuarioById(@PathVariable BigInteger id) {
         return usuarioService.findById(id);
     }
 
-    // Endpoint para cadastrar um novo usuário
     @PostMapping
     public Usuario createUsuario(@RequestBody Usuario usuario) {
         return usuarioService.save(usuario);
     }
 
-    // Endpoint para deletar um usuário por ID
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+        Usuario usuario = usuaRepository.findByLoginAndSenha(loginRequest.getLogin(), loginRequest.getSenha());
+        if (usuario != null) {
+            return ResponseEntity.ok("Login bem-sucedido!"); // Em um caso real, retornaria um token aqui
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas");
+        }
+    }
+
     @DeleteMapping("/{id}")
     public void deleteUsuario(@PathVariable BigInteger id) {
         usuarioService.deleteById(id);
