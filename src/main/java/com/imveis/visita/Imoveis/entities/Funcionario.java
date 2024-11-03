@@ -1,28 +1,17 @@
+// src/main/java/com/imveis/visita/Imoveis/entities/Funcionario.java
 package com.imveis.visita.Imoveis.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.*;
-
-import java.math.BigInteger;
 
 @Entity
 @Table(name = "funcionario")
 @Data
 @Builder
-@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-@Getter
-
-public class Funcionario {
-    @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger idFuncionario;
-
-    @ManyToOne
-    private Usuario usuario;
-
-    @Column(name = "CPF")
+@AllArgsConstructor
+public class Funcionario extends UsuarioBase {
     private String cpf;
-
 }

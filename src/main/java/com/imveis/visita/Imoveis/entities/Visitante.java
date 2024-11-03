@@ -1,40 +1,17 @@
+// src/main/java/com/imveis/visita/Imoveis/entities/Visitante.java
 package com.imveis.visita.Imoveis.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.*;
 
-import java.math.BigInteger;
-import java.util.List;
-
 @Entity
-@Table (name = "visitante")
+@Table(name = "visitante")
 @Data
 @Builder
-@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-@Getter
-
-public class Visitante {
-    @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger idVisitante;
-
-
-    @ManyToOne
-    private Usuario usuario;
-
-   /* @JoinColumn(name = "LISTA_FAVORITO")
-    @OneToMany
-    private List<Imovel> listaFavorito;
-   */
-
-    @OneToMany
-    @JoinTable(
-            name = "Favoritos",
-            joinColumns = @JoinColumn(name = "visitante_id"),
-            inverseJoinColumns = @JoinColumn(name = "imovel_id")
-    )
-    private List<Imovel> listaFavorito;
-
+@AllArgsConstructor
+public class Visitante extends UsuarioBase {
+    private String documentoIdentidade;
 }

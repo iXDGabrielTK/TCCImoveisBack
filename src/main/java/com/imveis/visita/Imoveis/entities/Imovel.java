@@ -7,13 +7,14 @@ import java.math.BigInteger;
 import java.util.List;
 
 @Entity
-@Table (name = "imovel")
+@Table(name = "imovel")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 public class Imovel {
+
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,7 +46,7 @@ public class Imovel {
     private String historicoManutencao;
 
     @ManyToOne
-    @JoinColumn(name = "USUARIO_ID")
-    private Usuario usuario;
+    @JoinColumn(name = "FUNCIONARIO_ID")
+    private Funcionario funcionario;
 
 }
