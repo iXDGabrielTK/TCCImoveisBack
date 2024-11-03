@@ -31,4 +31,5 @@ public class Usuario {
     @Column(name = "TELEFONE")
     private String telefone;
 
+
 }
