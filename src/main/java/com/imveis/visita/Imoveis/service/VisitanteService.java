@@ -1,0 +1,34 @@
+// src/main/java/com/imveis/visita/Imoveis/service/VisitanteService.java
+package com.imveis.visita.Imoveis.service;
+
+import com.imveis.visita.Imoveis.entities.Visitante;
+import com.imveis.visita.Imoveis.repositories.VisitanteRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigInteger;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class VisitanteService {
+
+    @Autowired
+    private VisitanteRepository visitanteRepository;
+
+    public List<Visitante> findAll() {
+        return visitanteRepository.findAll();
+    }
+
+    public Optional<Visitante> findById(BigInteger id) {
+        return visitanteRepository.findById(id);
+    }
+
+    public Visitante save(Visitante visitante) {
+        return visitanteRepository.save(visitante);
+    }
+
+    public void deleteById(BigInteger id) {
+        visitanteRepository.deleteById(id);
+    }
+}

@@ -1,11 +1,11 @@
 package com.imveis.visita.Imoveis.service;
 
 import com.imveis.visita.Imoveis.entities.Endereco;
+import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.entities.Imovel;
-import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.repositories.EnderecoRepository;
+import com.imveis.visita.Imoveis.repositories.FuncionarioRepository;
 import com.imveis.visita.Imoveis.repositories.ImovelRepository;
-import com.imveis.visita.Imoveis.repositories.UsuaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,17 +16,18 @@ import java.util.Optional;
 @Service
 public class ImovelService {
 
-
     @Autowired
     private ImovelRepository imovelRepository;
 
     @Autowired
     private EnderecoRepository enderecoRepository;
-    @Autowired
-    private UsuaRepository usuaRepository;
 
     @Autowired
-    public ImovelService(ImovelRepository imovelRepository) {
+    private FuncionarioRepository funcionarioRepository;
+
+
+    @Autowired
+    public ImovelService(ImovelRepository imovelRepository){
         this.imovelRepository = imovelRepository;
     }
 
@@ -38,7 +39,7 @@ public class ImovelService {
         return imovelRepository.findById(id);
     }
 
-    public Imovel save(@org.jetbrains.annotations.NotNull Imovel imovel) {
+    public Imovel save(Imovel imovel) {
         // Verifica se o Endereco está presente e precisa ser salvo
         if (imovel.getEnderecoImovel() != null) {
             Endereco endereco = imovel.getEnderecoImovel();
@@ -47,14 +48,15 @@ public class ImovelService {
                 imovel.setEnderecoImovel(enderecoSalvo);
             }
         }
-        // Verifica se o Usuario está presente e precisa ser salvo
-        if (imovel.getUsuario() != null) {
-            Usuario usuario = imovel.getUsuario();
-            if (usuario.getIdUsuario() == null) {
-                Usuario usuarioSalvo = usuaRepository.save(usuario);
-                imovel.setUsuario(usuarioSalvo);
+        // Verifica se o Funcionario está presente e precisa ser salvo
+        if (imovel.getFuncionario() != null) {
+            Funcionario funcionario = imovel.getFuncionario();
+            if (funcionario.getId() == null) {
+                Funcionario funcionarioSalvo = funcionarioRepository.save(funcionario);
+                imovel.setFuncionario(funcionarioSalvo);
             }
         }
+        // Valida o preço do imóvel
         if (imovel.getPrecoImovel() < 0) {
             throw new IllegalArgumentException("O preço não pode ser negativo");
         }
