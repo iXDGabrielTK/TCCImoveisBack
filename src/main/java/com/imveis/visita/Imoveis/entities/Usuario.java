@@ -1,17 +1,22 @@
-// src/main/java/com/imveis/visita/Imoveis/entities/UsuarioBase.java
 package com.imveis.visita.Imoveis.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
 
-@MappedSuperclass
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public abstract class UsuarioBase {
+@Inheritance(strategy = InheritanceType.JOINED)
+@Entity
+@Table(name = "usuario")
+public abstract class Usuario {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
@@ -27,4 +32,5 @@ public abstract class UsuarioBase {
 
     @Column(name = "TELEFONE")
     private String telefone;
+
 }

@@ -9,5 +9,4 @@ import java.math.BigInteger;
 
 @Repository
 public interface FuncionarioRepository extends JpaRepository<Funcionario, BigInteger> {
-    Funcionario findByLogin(String login);
 }

@@ -9,5 +9,4 @@ import java.math.BigInteger;
 
 @Repository
 public interface VisitanteRepository extends JpaRepository<Visitante, BigInteger> {
-    Visitante findByLogin(String login);
 }

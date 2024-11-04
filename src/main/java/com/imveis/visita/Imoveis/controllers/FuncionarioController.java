@@ -4,6 +4,7 @@ package com.imveis.visita.Imoveis.controllers;
 import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.service.FuncionarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +25,13 @@ public class FuncionarioController {
     }
 
     @PostMapping
-    public Funcionario createFuncionario(@RequestBody Funcionario funcionario) {
-        return funcionarioService.save(funcionario);
+    public ResponseEntity<?> criarFuncionario(@RequestBody Funcionario funcionario) {
+        try {
+            Funcionario novoFuncionario = funcionarioService.save(funcionario);
+            return ResponseEntity.ok(novoFuncionario);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar funcionário: " + e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")

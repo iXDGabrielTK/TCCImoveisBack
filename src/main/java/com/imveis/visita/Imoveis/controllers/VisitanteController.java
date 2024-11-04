@@ -4,6 +4,7 @@ package com.imveis.visita.Imoveis.controllers;
 import com.imveis.visita.Imoveis.entities.Visitante;
 import com.imveis.visita.Imoveis.service.VisitanteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,10 +25,14 @@ public class VisitanteController {
     }
 
     @PostMapping
-    public Visitante createVisitante(@RequestBody Visitante visitante) {
-        return visitanteService.save(visitante);
+    public ResponseEntity<?> criarFuncionario(@RequestBody Visitante visitante) {
+        try {
+            Visitante novoVisitante = visitanteService.save(visitante);
+            return ResponseEntity.ok(novoVisitante);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar funcionário: " + e.getMessage());
+        }
     }
-
     @GetMapping("/{id}")
     public Optional<Visitante> getVisitanteById(@PathVariable BigInteger id) {
         return visitanteService.findById(id);

@@ -15,6 +15,7 @@ import java.util.List;
 @Getter
 
 public class FotoVistoria {
+    //sdpidofds
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

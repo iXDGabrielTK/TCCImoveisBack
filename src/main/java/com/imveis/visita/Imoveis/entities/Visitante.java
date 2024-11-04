@@ -1,4 +1,3 @@
-// src/main/java/com/imveis/visita/Imoveis/entities/Visitante.java
 package com.imveis.visita.Imoveis.entities;
 
 import jakarta.persistence.Entity;
@@ -8,10 +7,13 @@ import lombok.*;
 @Entity
 @Table(name = "visitante")
 @Data
+@Getter
+@Setter
 @Builder
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Visitante extends UsuarioBase {
+public class Visitante extends Usuario {
+
     private String documentoIdentidade;
+
 }

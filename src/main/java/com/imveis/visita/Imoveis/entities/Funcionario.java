@@ -1,6 +1,6 @@
-// src/main/java/com/imveis/visita/Imoveis/entities/Funcionario.java
 package com.imveis.visita.Imoveis.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
@@ -8,10 +8,14 @@ import lombok.*;
 @Entity
 @Table(name = "funcionario")
 @Data
+@Getter
+@Setter
 @Builder
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Funcionario extends UsuarioBase {
+public class Funcionario extends Usuario {
+
+    @Column(name = "cpf", nullable = false, unique = true)
     private String cpf;
+
 }
