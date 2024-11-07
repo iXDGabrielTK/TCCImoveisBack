@@ -1,6 +1,7 @@
 // src/main/java/com/imveis/visita/Imoveis/controllers/FuncionarioController.java
 package com.imveis.visita.Imoveis.controllers;
 
+
 import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.service.FuncionarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ public class FuncionarioController {
     @Autowired
     private FuncionarioService funcionarioService;
 
+    //private Usuario usuario;
+
     @GetMapping
     public List<Funcionario> getAllFuncionarios() {
         return funcionarioService.findAll();
@@ -26,6 +29,7 @@ public class FuncionarioController {
 
     @PostMapping
     public ResponseEntity<?> criarFuncionario(@RequestBody Funcionario funcionario) {
+       // System.out.println("Tipo recebido: " + usuario.g);
         try {
             Funcionario novoFuncionario = funcionarioService.save(funcionario);
             return ResponseEntity.ok(novoFuncionario);

@@ -1,10 +1,7 @@
 package com.imveis.visita.Imoveis.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigInteger;
 
@@ -12,6 +9,7 @@ import java.math.BigInteger;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @Inheritance(strategy = InheritanceType.JOINED)
 @Entity
 @Table(name = "usuario")
@@ -32,5 +30,8 @@ public abstract class Usuario {
 
     @Column(name = "TELEFONE")
     private String telefone;
+
+    @Column(name = "TIPO_USUARIO")
+    private boolean tipo;
 
 }
