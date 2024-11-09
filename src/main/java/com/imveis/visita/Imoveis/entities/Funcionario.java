@@ -16,7 +16,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Funcionario extends Usuario {
-
     @Column(name = "cpf", nullable = false, unique = true)
     private String cpf;
 

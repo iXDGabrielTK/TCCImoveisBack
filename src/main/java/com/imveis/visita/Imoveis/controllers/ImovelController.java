@@ -36,6 +36,7 @@ public class ImovelController {
             Imovel novoImovel = imovelService.save(imovel);
             return new ResponseEntity<>(novoImovel, HttpStatus.CREATED);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

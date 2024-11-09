@@ -34,7 +34,7 @@ public class Endereco {
     @Column(name = "CIDADE")
     private String cidade;
 
-    @Column(name = "ESTADO")
+    @Column(name = "ESTADO", length = 2)
     private String estado;
 
     @Column(name = "CEP")
