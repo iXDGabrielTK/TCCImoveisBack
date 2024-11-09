@@ -1,7 +1,5 @@
 // src/main/java/com/imveis/visita/Imoveis/controllers/FuncionarioController.java
 package com.imveis.visita.Imoveis.controllers;
-
-
 import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.service.FuncionarioService;
 import org.springframework.beans.factory.annotation.Autowired;

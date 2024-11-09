@@ -20,9 +20,6 @@ public class Vistoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger idVistoria;
 
-    @Column(name = "TIPO_VISTORIA")
-    private String tipoVistoria;
-
     @Column(name = "LAUDO_VISTORIA")
     private String laudoVistoria;
 

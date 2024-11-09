@@ -27,6 +27,7 @@ public class VistoriaService {
     public Optional<Vistoria> findById(BigInteger id){
         return vistoriaRepository.findById(id);
     }
+
     public Vistoria save(Vistoria vistoria) {
         return vistoriaRepository.save(vistoria);
     }

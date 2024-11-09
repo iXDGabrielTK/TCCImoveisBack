@@ -18,7 +18,7 @@ public class Agendamento {
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger idAgendamento;
+    private BigInteger id;
 
     @Column(name = "DATA_AGENDAMENTO")
     private Date dataAgendamento;

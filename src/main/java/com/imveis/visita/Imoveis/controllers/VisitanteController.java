@@ -29,7 +29,6 @@ public class VisitanteController {
 
     @PostMapping
     public ResponseEntity<?> criarVisitante(@RequestBody Visitante visitante) {
-
         try {
             Visitante novoVisitante = visitanteService.save(visitante);
             return ResponseEntity.ok(novoVisitante);

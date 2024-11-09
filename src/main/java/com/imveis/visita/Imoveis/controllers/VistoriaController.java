@@ -2,6 +2,8 @@ package com.imveis.visita.Imoveis.controllers;
 import com.imveis.visita.Imoveis.entities.Vistoria;
 import com.imveis.visita.Imoveis.service.VistoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -30,8 +32,13 @@ public class VistoriaController {
     }
 
     @PostMapping
-    public Vistoria createVistoria(@RequestBody Vistoria vistoria){
-        return vistoriaService.save(vistoria);
+    public ResponseEntity<?> createVistoria(@RequestBody Vistoria vistoria){
+        try {
+            Vistoria novaVistoria = vistoriaService.save(vistoria);
+            return ResponseEntity.ok(novaVistoria);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar vistoria: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
