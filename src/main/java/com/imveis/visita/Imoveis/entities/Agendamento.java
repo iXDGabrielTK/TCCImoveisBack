@@ -26,6 +26,9 @@ public class Agendamento {
     @Column(name = "NOME_VISITANTE")
     private String nomeVisitante;
 
+    @Column(name = "HORARIO")
+    private Boolean horarioMarcado;
+
     @JoinColumn(name = "IMOVEL_ID")
     @ManyToOne
     private Imovel imovel;

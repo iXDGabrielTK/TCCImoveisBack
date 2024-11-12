@@ -20,7 +20,7 @@ public class Vistoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger idVistoria;
 
-    @Column(name = "LAUDO_VISTORIA")
+    @Column(name = "laudo_vistoria", columnDefinition = "TEXT")
     private String laudoVistoria;
 
     @Column(name = "DATA_VISTORIA")

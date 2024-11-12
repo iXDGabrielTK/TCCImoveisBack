@@ -32,6 +32,7 @@ CREATE TABLE imovel (
                         HISTORICO_MANUTENCAO TEXT,
                         USUARIO_ID INT REFERENCES usuario(ID) ON DELETE SET NULL,
                         FUNCINARIO_ID INT REFERENCES funcionario(ID) ON DELETE SET NULL
+                        
 );
 
 -- Tabela Visitante

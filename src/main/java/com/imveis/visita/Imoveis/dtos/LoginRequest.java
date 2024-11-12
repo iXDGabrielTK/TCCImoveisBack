@@ -7,5 +7,4 @@ import lombok.Setter;
 public class LoginRequest {
     private String login;
     private String senha;
-    private Boolean tipo;
 }

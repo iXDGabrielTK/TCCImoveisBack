@@ -28,7 +28,7 @@ public class AgendaController {
         try {
             Imovel imovel = imovelRepository.findById(request.getImovelId())
                     .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado."));
-            agendamentoService.agendarVisita(request.getNomeVisitante(), imovel, request.getDataAgendamento());
+            agendamentoService.agendarVisita(request.getNomeVisitante(), imovel, request.getDataAgendamento(), request.getHorarioMarcado());
             return ResponseEntity.ok("Agendado com sucesso!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());

@@ -18,14 +18,15 @@ public class AgendamentoService {
         this.agendaRepository = agendaRepository;
     }
 
-    public void agendarVisita(String nomeVisitante, Imovel imovel, Date dataAgendamento) {
-        if (agendaRepository.existsByImovelAndDataAgendamento(imovel, dataAgendamento)) {
+    public void agendarVisita(String nomeVisitante, Imovel imovel, Date dataAgendamento, Boolean horarioMarcado) {
+        if (agendaRepository.existsByImovelAndDataAgendamentoAndHorarioMarcado(imovel, dataAgendamento, horarioMarcado)) {
             throw new IllegalArgumentException("Horário já ocupado para esse imóvel.");
         }
         Agendamento agendamento = new Agendamento();
         agendamento.setNomeVisitante(nomeVisitante);
         agendamento.setImovel(imovel);
         agendamento.setDataAgendamento(dataAgendamento);
+        agendamento.setHorarioMarcado(horarioMarcado);
 
         agendaRepository.save(agendamento);
     }

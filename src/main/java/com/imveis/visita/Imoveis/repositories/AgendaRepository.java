@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface AgendaRepository extends JpaRepository<Agendamento, BigInteger> {
 
-    boolean existsByImovelAndDataAgendamento(Imovel imovel, Date dataAgendamento);
+    boolean existsByImovelAndDataAgendamentoAndHorarioMarcado(Imovel imovel, Date dataAgendamento,Boolean horarioMarcado);
 
     @Query("SELECT a FROM Agendamento a WHERE a.imovel.idImovel = :imovelId")
     List<Agendamento> findByImovelId(@Param("imovelId") BigInteger imovelId);

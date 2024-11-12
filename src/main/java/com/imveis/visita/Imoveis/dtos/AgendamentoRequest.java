@@ -11,4 +11,5 @@ public class AgendamentoRequest {
     private String nomeVisitante;
     private BigInteger imovelId;
     private Date dataAgendamento;
+    private Boolean horarioMarcado;
 }

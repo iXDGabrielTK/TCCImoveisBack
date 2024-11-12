@@ -45,6 +45,10 @@ public class Imovel {
     @Column(name = "HISTORICO_MANUTENCAO")
     private String historicoManutencao;
 
+
+    @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL)
+    private List<FotoImovel> fotosImovel;;
+
     @ManyToOne
     @JoinColumn(name = "FUNCIONARIO_ID")
     private Funcionario funcionario;

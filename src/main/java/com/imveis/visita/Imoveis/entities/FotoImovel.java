@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigInteger;
-import java.util.List;
+
 
 @Entity
 @Table(name = "fotos_imovel")
@@ -24,7 +24,6 @@ public class FotoImovel {
     @JoinColumn(name = "imovel_id", nullable = false)
     private Imovel imovel;
 
-   @ElementCollection // Se for apenas uma lista de URLs
-    private List<String> urlFotoImovel;
-
+    @Column(name = "url_foto_imovel", nullable = false)
+    private String urlFotoImovel;
 }
