@@ -1,5 +1,6 @@
 package com.imveis.visita.Imoveis.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -46,8 +47,9 @@ public class Imovel {
     private String historicoManutencao;
 
 
-    @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL)
-    private List<FotoImovel> fotosImovel;;
+    @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<FotoImovel> fotosImovel;
 
     @ManyToOne
     @JoinColumn(name = "FUNCIONARIO_ID")

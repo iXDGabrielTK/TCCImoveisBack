@@ -1,5 +1,6 @@
 package com.imveis.visita.Imoveis.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,8 +23,9 @@ public class FotoImovel {
 
     @ManyToOne
     @JoinColumn(name = "imovel_id", nullable = false)
+    @JsonBackReference
     private Imovel imovel;
 
-    @Column(name = "url_foto_imovel", nullable = false)
+    @Column(name = "url_foto_imovel", nullable = false, length = 1000)
     private String urlFotoImovel;
 }

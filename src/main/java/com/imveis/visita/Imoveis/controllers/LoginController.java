@@ -36,21 +36,18 @@ public class LoginController {
         String login = loginRequest.getLogin();
         String senha = loginRequest.getSenha();
 
-        // Tenta autenticar como Funcionário
         Optional<Funcionario> funcionario = funcionarioRepository.findByLoginAndSenha(login, senha);
         if (funcionario.isPresent()) {
             String token = jwtUtil.gerarToken(login);
             return ResponseEntity.ok().body(Map.of("token", token, "tipo", "funcionario"));
         }
 
-        // Se não for Funcionário, tenta autenticar como Visitante
         Optional<Visitante> visitante = visitanteRepository.findByLoginAndSenha(login, senha);
         if (visitante.isPresent()) {
             String token = jwtUtil.gerarToken(login);
             return ResponseEntity.ok().body(Map.of("token", token, "tipo", "visitante"));
         }
 
-        // Se nenhuma das autenticações for bem-sucedida, retorna erro
         return ResponseEntity.status(401).body("Credenciais inválidas");
     }
 }

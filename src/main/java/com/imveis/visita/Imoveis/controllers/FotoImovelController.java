@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,14 +19,13 @@ import java.util.stream.Collectors;
 public class FotoImovelController {
 
     private final FotoImovelService fotoImovelService;
-
-    @Autowired
-    private ImovelService imovelService;
+    private final ImovelService imovelService;
 
 
     @Autowired
-    public FotoImovelController(FotoImovelService fotoImovelService) {
+    public FotoImovelController(FotoImovelService fotoImovelService, ImovelService imovelService) {
         this.fotoImovelService = fotoImovelService;
+        this.imovelService = imovelService;
     }
 
     @GetMapping
@@ -41,24 +39,23 @@ public class FotoImovelController {
     }
 
     @PostMapping
-    public ResponseEntity<List<FotoImovel>> createFotosImovel(@RequestBody String urls, @RequestParam BigInteger imovelId) {
+    public ResponseEntity<List<FotoImovel>> createFotosImovel(@RequestBody List<String> urls, @RequestParam BigInteger imovelId) {
         Imovel imovel = imovelService.findById(imovelId)
                 .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado"));
 
-        // Dividir a string de URLs em uma lista, assumindo que são separadas por vírgulas
-        List<FotoImovel> fotos = Arrays.stream(urls.split(","))
+        List<FotoImovel> fotos = urls.stream()
                 .map(url -> {
                     FotoImovel foto = new FotoImovel();
                     foto.setImovel(imovel);
                     foto.setUrlFotoImovel(url.trim());
-                    return fotoImovelService.save(foto);
+                    return foto;
                 })
                 .collect(Collectors.toList());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(fotos);
+        List<FotoImovel> savedFotos = fotoImovelService.saveAll(fotos);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedFotos);
     }
-
-
 
 
     @DeleteMapping("/{id}")
