@@ -56,6 +56,22 @@
 			<artifactId>flyway-database-postgresql</artifactId>
 		</dependency>
 
+		<!-- ITextPdf -->
+
+
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>kernel</artifactId>
+			<version>7.1.13</version>
+		</dependency>
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>layout</artifactId>
+			<version>7.1.13</version>
+		</dependency>
+
+
+
 		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
