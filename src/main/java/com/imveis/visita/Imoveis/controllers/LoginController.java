@@ -8,10 +8,7 @@ import com.imveis.visita.Imoveis.repositories.FuncionarioRepository;
 import com.imveis.visita.Imoveis.repositories.VisitanteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 import java.util.Optional;
@@ -36,18 +33,21 @@ public class LoginController {
         String login = loginRequest.getLogin();
         String senha = loginRequest.getSenha();
 
+        // Verificar credenciais do funcionário
         Optional<Funcionario> funcionario = funcionarioRepository.findByLoginAndSenha(login, senha);
         if (funcionario.isPresent()) {
             String token = jwtUtil.gerarToken(login);
             return ResponseEntity.ok().body(Map.of("token", token, "tipo", "funcionario"));
         }
 
+        // Verificar credenciais do visitante
         Optional<Visitante> visitante = visitanteRepository.findByLoginAndSenha(login, senha);
         if (visitante.isPresent()) {
             String token = jwtUtil.gerarToken(login);
             return ResponseEntity.ok().body(Map.of("token", token, "tipo", "visitante"));
         }
 
+        // Credenciais inválidas
         return ResponseEntity.status(401).body("Credenciais inválidas");
     }
 }

@@ -7,14 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class VisitanteService {
 
+    private final VisitanteRepository visitanteRepository;
+
     @Autowired
-    private VisitanteRepository visitanteRepository;
+    public VisitanteService(VisitanteRepository visitanteRepository) {
+        this.visitanteRepository = visitanteRepository;
+    }
 
     public List<Visitante> findAll() {
         return visitanteRepository.findAll();
@@ -25,10 +30,15 @@ public class VisitanteService {
     }
 
     public Visitante save(Visitante visitante) {
+        if (visitante.getDataCadastro() == null) {
+            visitante.setDataCadastro(LocalDateTime.now());
+        }
         return visitanteRepository.save(visitante);
     }
+
 
     public void deleteById(BigInteger id) {
         visitanteRepository.deleteById(id);
     }
 }
+

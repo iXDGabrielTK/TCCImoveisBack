@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
+import java.time.YearMonth;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/relatorios")
@@ -29,9 +31,10 @@ public class RelatorioController {
     @Autowired
     private RelatorioVistoriaService relatorioVistoriaService;
 
+    // Relatório de Usuários
     @GetMapping("/usuarios")
-    public ResponseEntity<InputStreamResource> downloadRelatorioUsuarios(@RequestParam BigInteger imovelId) {
-        ByteArrayInputStream bis = relatorioUsuarioService.gerarRelatorioUsuarios(imovelId);
+    public ResponseEntity<InputStreamResource> downloadRelatorioUsuarios(@RequestParam YearMonth mesAno) {
+        ByteArrayInputStream bis = relatorioUsuarioService.gerarRelatorioUsuarios(mesAno);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=relatorio_usuarios.pdf");
@@ -42,9 +45,10 @@ public class RelatorioController {
                 .body(new InputStreamResource(bis));
     }
 
+    // Relatório de Agendamentos
     @GetMapping("/agendamentos")
-    public ResponseEntity<InputStreamResource> downloadRelatorioAgendamentos(@RequestParam BigInteger imovelId) {
-        ByteArrayInputStream bis = relatorioAgendamentoService.gerarRelatorioAgendamentos(imovelId);
+    public ResponseEntity<InputStreamResource> downloadRelatorioAgendamentos(@RequestParam YearMonth mesAno) {
+        ByteArrayInputStream bis = relatorioAgendamentoService.gerarRelatorioAgendamentos(mesAno);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=relatorio_agendamentos.pdf");
@@ -55,9 +59,10 @@ public class RelatorioController {
                 .body(new InputStreamResource(bis));
     }
 
+    // Relatório de Vistorias
     @GetMapping("/vistorias")
-    public ResponseEntity<InputStreamResource> downloadRelatorioVistorias(@RequestParam BigInteger imovelId) {
-        ByteArrayInputStream bis = relatorioVistoriaService.gerarRelatorioVistorias(imovelId);
+    public ResponseEntity<InputStreamResource> downloadRelatorioVistorias(@RequestParam BigInteger idImovel) {
+        ByteArrayInputStream bis = relatorioVistoriaService.gerarRelatorioVistorias(idImovel);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=relatorio_vistorias.pdf");

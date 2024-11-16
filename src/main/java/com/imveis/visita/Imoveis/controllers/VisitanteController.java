@@ -17,10 +17,12 @@ import java.util.Optional;
 @RequestMapping("/visitantes")
 public class VisitanteController {
 
+    private final VisitanteService visitanteService;
+
     @Autowired
-    private VisitanteService visitanteService;
-
-
+    public VisitanteController(VisitanteService visitanteService) {
+        this.visitanteService = visitanteService;
+    }
 
     @GetMapping
     public List<Visitante> getAllVisitantes() {
@@ -36,6 +38,7 @@ public class VisitanteController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar visitante: " + e.getMessage());
         }
     }
+
     @GetMapping("/{id}")
     public Optional<Visitante> getVisitanteById(@PathVariable BigInteger id) {
         return visitanteService.findById(id);
@@ -46,3 +49,4 @@ public class VisitanteController {
         visitanteService.deleteById(id);
     }
 }
+

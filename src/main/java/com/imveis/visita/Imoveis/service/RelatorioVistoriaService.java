@@ -4,23 +4,19 @@ import com.imveis.visita.Imoveis.entities.FotoVistoria;
 import com.imveis.visita.Imoveis.entities.Vistoria;
 import com.imveis.visita.Imoveis.repositories.FotoVistoriaRepository;
 import com.imveis.visita.Imoveis.repositories.VistoriaRepository;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
-import java.util.Optional;
-
-/*import static org.graalvm.compiler.debug.TTY.out;*/
-
+import java.util.List;
 
 @Service
-public class RelatorioVistoriaService {
+public class RelatorioVistoriaService extends RelatorioBase {
 
     @Autowired
     private VistoriaRepository vistoriaRepository;
@@ -28,32 +24,62 @@ public class RelatorioVistoriaService {
     @Autowired
     private FotoVistoriaRepository fotoVistoriaRepository;
 
-    public ByteArrayInputStream gerarRelatorioVistorias(BigInteger imovelId) {
+    public ByteArrayInputStream gerarRelatorioVistorias(BigInteger idImovel) {
+        // Inicializar o fluxo de saída para armazenar o PDF
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        Document document = criarDocumento(out);
+
+        if (document == null) {
+            return null; // Retorna null se o documento não puder ser criado
+        }
+
         try {
+            // Adicionar título ao relatório
+            document.add(criarTitulo("Relatório de Vistorias"));
 
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            PdfWriter writer = new PdfWriter(out);
-            PdfDocument pdfDocument = new PdfDocument(writer);
-            Document document = new Document(pdfDocument);
+            // Adicionar subtítulo
+            document.add(criarSubtitulo("Histórico de vistorias para o Imóvel ID: " + idImovel));
 
-            Optional<Vistoria> vistorias = vistoriaRepository.findById(imovelId);
+            // Buscar as vistorias associadas ao imóvel
+            List<Vistoria> vistorias = vistoriaRepository.findByImovelId(idImovel);
 
-            document.add(new Paragraph("Relatório de Vistorias para Imóvel ID " + imovelId));
 
-            for (Vistoria vistoria : vistorias.stream().toList()) {
-                document.add(new Paragraph("Data da Vistoria: " + vistoria.getDataVistoria()));
-                document.add(new Paragraph("Laudo: " + vistoria.getLaudoVistoria()));
+            if (vistorias.isEmpty()) {
+                document.add(new Paragraph("Nenhuma vistoria encontrada para o imóvel."));
+            } else {
+                // Criar tabela para exibir os dados das vistorias
+                Table table = criarTabela(new float[]{1, 3, 3});
+                adicionarCabecalhos(table, "ID", "Data", "Laudo");
 
-                Optional<FotoVistoria> fotos = fotoVistoriaRepository.findById(vistoria.getIdVistoria());
-                for (FotoVistoria foto : fotos.stream().toList()) {
-                    document.add(new Paragraph("Foto URL: " + foto.getUrlFotoVistoria()));
+                for (Vistoria vistoria : vistorias) {
+                    table.addCell(String.valueOf(vistoria.getIdVistoria()));
+                    table.addCell(vistoria.getDataVistoria().toString());
+                    table.addCell(vistoria.getLaudoVistoria());
+                }
+
+                document.add(table);
+
+                // Adicionar seção de fotos relacionadas às vistorias
+                document.add(criarSubtitulo("Fotos das vistorias:"));
+
+                for (Vistoria vistoria : vistorias) {
+                    List<FotoVistoria> fotos = fotoVistoriaRepository.findByVistoria(vistoria);
+
+                    if (fotos.isEmpty()) {
+                        document.add(new Paragraph("Nenhuma foto registrada para a vistoria ID: " + vistoria.getIdVistoria()));
+                    } else {
+                        for (FotoVistoria foto : fotos) {
+                            document.add(new Paragraph("Foto URL: " + foto.getUrlFotoVistoria()));
+                        }
+                    }
                 }
             }
-            document.close();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            document.close(); // Certifique-se de fechar o documento para liberar recursos
         }
-       /* return new ByteArrayInputStream(out.toByteArray());*/
-        return null;
+
+        return new ByteArrayInputStream(out.toByteArray());
     }
 }

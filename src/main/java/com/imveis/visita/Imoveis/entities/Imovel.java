@@ -1,6 +1,8 @@
 package com.imveis.visita.Imoveis.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,12 +16,16 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class Imovel {
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 
-    @Id
+public class Imovel {
     @Column(name = "ID")
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger idImovel;
+
+    @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL)
+    private List<Visitante> visitantes;
 
     @Column(name = "TIPO_IMOVEL")
     private String tipoImovel;
@@ -55,4 +61,7 @@ public class Imovel {
     @JoinColumn(name = "FUNCIONARIO_ID")
     private Funcionario funcionario;
 
+    @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Agendamento> agendamentos;
 }

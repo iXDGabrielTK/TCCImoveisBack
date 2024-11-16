@@ -1,23 +1,28 @@
 package com.imveis.visita.Imoveis.entities;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigInteger;
 import java.sql.Date;
-
-
+import java.util.List;
 @Entity
-@Table (name = "vistoria")
+@Table(name = "vistoria")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+
 public class Vistoria {
+
     @Id
-    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private BigInteger idVistoria;
 
     @Column(name = "laudo_vistoria", columnDefinition = "TEXT")
@@ -27,5 +32,6 @@ public class Vistoria {
     private Date dataVistoria;
 
     @ManyToOne
+    @JoinColumn(name = "imovel_id", nullable = false)
     private Imovel imovel;
 }

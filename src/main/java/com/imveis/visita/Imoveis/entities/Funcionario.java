@@ -1,22 +1,21 @@
 package com.imveis.visita.Imoveis.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
-@Table(name = "funcionario")
-
-@Getter
-@Setter
+@DiscriminatorValue("FUNCIONARIO")
+@Data
 @NoArgsConstructor
-@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class Funcionario extends Usuario {
-    @Column(name = "cpf", nullable = false, unique = true)
+
+    @Column(name = "CPF", nullable = false, unique = true)
     private String cpf;
 
+    // Construtor personalizado
+    public Funcionario(String nome, String login, String senha, String telefone, String cpf) {
+        super(null, nome, login, senha, telefone);
+        this.cpf = cpf;
+    }
 }

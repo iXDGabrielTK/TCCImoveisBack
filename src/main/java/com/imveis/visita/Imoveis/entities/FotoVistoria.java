@@ -4,27 +4,25 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigInteger;
-import java.util.List;
 
 @Entity
-@Table (name = "fotos_vistoria")
+@Table(name = "fotos_vistoria")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-
+@Setter
 public class FotoVistoria {
-    //sdpidofds
+
     @Id
-    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger idFotosVistoria;
+    private BigInteger id;
 
     @ManyToOne
-    @JoinColumn(name = "vistoria_id", nullable = false)
+    @JoinColumn(name = "vistoria_id", nullable = false) // FK na tabela fotos_vistoria
     private Vistoria vistoria;
 
-    @ElementCollection
-    private List<String> urlFotoVistoria;
+    @Column(name = "url_foto_vistoria", nullable = false, length = 1000)
+    private String urlFotoVistoria;
 }

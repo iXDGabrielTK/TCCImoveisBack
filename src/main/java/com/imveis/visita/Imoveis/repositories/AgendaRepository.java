@@ -8,14 +8,22 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
-import java.util.Date;
 import java.util.List;
 
 @Repository
 public interface AgendaRepository extends JpaRepository<Agendamento, BigInteger> {
 
-    boolean existsByImovelAndDataAgendamentoAndHorarioMarcado(Imovel imovel, Date dataAgendamento,Boolean horarioMarcado);
+    // Conta o total de agendamentos no mês
+    @Query("SELECT COUNT(a) FROM Agendamento a " +
+            "WHERE EXTRACT(YEAR FROM a.dataAgendamento) = :ano " +
+            "AND EXTRACT(MONTH FROM a.dataAgendamento) = :mes")
+    long countAgendamentosByMonth(@Param("ano") int ano, @Param("mes") int mes);
 
-    @Query("SELECT a FROM Agendamento a WHERE a.imovel.idImovel = :imovelId")
-    List<Agendamento> findByImovelId(@Param("imovelId") BigInteger imovelId);
+    // Conta o total de agendamentos por imóvel no mês
+    @Query("SELECT a.imovel.id AS imovelId, COUNT(a) AS totalAgendamentos " +
+            "FROM Agendamento a " +
+            "WHERE EXTRACT(YEAR FROM a.dataAgendamento) = :ano " +
+            "AND EXTRACT(MONTH FROM a.dataAgendamento) = :mes " +
+            "GROUP BY a.imovel.id")
+    List<Object[]> countAgendamentosByImovelAndMonth(@Param("ano") int ano, @Param("mes") int mes);
 }

@@ -10,34 +10,28 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/agendamentos")
 public class AgendaController {
 
-    private final ImovelRepository imovelRepository;
     private final AgendamentoService agendamentoService;
 
-    public AgendaController(ImovelRepository imovelRepository, AgendamentoService agendamentoService) {
-        this.imovelRepository = imovelRepository;
+    public AgendaController(AgendamentoService agendamentoService) {
         this.agendamentoService = agendamentoService;
     }
 
-    @PostMapping("/agendar")
-    public ResponseEntity<String> agendarVisita(@RequestBody AgendamentoRequest request) {
-        try {
-            Imovel imovel = imovelRepository.findById(request.getImovelId())
-                    .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado."));
-            agendamentoService.agendarVisita(request.getNomeVisitante(), imovel, request.getDataAgendamento(), request.getHorarioMarcado());
-            return ResponseEntity.ok("Agendado com sucesso!");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @GetMapping("/relatorio/mes")
+    public ResponseEntity<Long> relatorioMensal(@RequestParam int ano, @RequestParam int mes) {
+        long totalAgendamentos = agendamentoService.countAgendamentosByMonth(ano, mes);
+        return ResponseEntity.ok(totalAgendamentos);
     }
 
-    @GetMapping("/listar/{imovelId}")
-    public ResponseEntity<List<Agendamento>> listarAgendamento(@PathVariable BigInteger imovelId) {
-        List<Agendamento> agendamentos = agendamentoService.listarAgendamentos(imovelId);
-        return ResponseEntity.ok(agendamentos);
+    @GetMapping("/relatorio/mes/imoveis")
+    public ResponseEntity<Map<BigInteger, Long>> relatorioMensalPorImovel(@RequestParam int ano, @RequestParam int mes) {
+        Map<BigInteger, Long> agendamentosPorImovel = agendamentoService.countAgendamentosByImovelAndMonth(ano, mes);
+        return ResponseEntity.ok(agendamentosPorImovel);
     }
 }
+

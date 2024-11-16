@@ -1,42 +1,46 @@
-
 package com.imveis.visita.Imoveis.service;
 
-import com.imveis.visita.Imoveis.repositories.ImovelRepository;
 import com.imveis.visita.Imoveis.repositories.VisitanteRepository;
-import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
+import java.time.YearMonth;
 
 @Service
-public class RelatorioUsuarioService {
+public class RelatorioUsuarioService extends RelatorioBase {
 
     @Autowired
     private VisitanteRepository visitanteRepository;
 
-    @Autowired
-    private ImovelRepository imovelRepository;
-
-    public ByteArrayInputStream gerarRelatorioUsuarios(BigInteger imovelId) {
+    public ByteArrayInputStream gerarRelatorioUsuarios(YearMonth mesAno) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try (PdfWriter writer = new PdfWriter(out)) {
-            Document document = new Document(new com.itextpdf.kernel.pdf.PdfDocument(writer));
+        Document document = criarDocumento(out);
 
-            long totalAcessos = visitanteRepository.count(); // Total de acessos
-            BigInteger acessosImovel = imovelRepository.countAccessByImovelId(imovelId); // Total de acessos ao imóvel
+        if (document == null) return null;
 
-            document.add(new Paragraph("Relatório de Usuários"));
-            document.add(new Paragraph("Total de Acessos ao Site: " + totalAcessos));
-            document.add(new Paragraph("Acessos ao Imóvel ID " + imovelId + ": " + acessosImovel));
-            document.close();
+        try {
+            document.add(criarTitulo("Relatório de Usuários"));
+            document.add(criarSubtitulo("Acessos durante o mês: " + mesAno));
+
+            // Extrair ano e mês do YearMonth
+            int ano = mesAno.getYear();
+            int mes = mesAno.getMonthValue();
+
+            // Consultar total de acessos ao site
+            long totalAcessosSite = visitanteRepository.countAccessByMonth(ano, mes);
+            document.add(new Paragraph("Total de Acessos ao Site: " + totalAcessosSite));
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            document.close();
         }
+
         return new ByteArrayInputStream(out.toByteArray());
     }
 }

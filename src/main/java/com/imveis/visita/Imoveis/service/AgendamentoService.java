@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class AgendamentoService {
@@ -18,20 +20,16 @@ public class AgendamentoService {
         this.agendaRepository = agendaRepository;
     }
 
-    public void agendarVisita(String nomeVisitante, Imovel imovel, Date dataAgendamento, Boolean horarioMarcado) {
-        if (agendaRepository.existsByImovelAndDataAgendamentoAndHorarioMarcado(imovel, dataAgendamento, horarioMarcado)) {
-            throw new IllegalArgumentException("Horário já ocupado para esse imóvel.");
-        }
-        Agendamento agendamento = new Agendamento();
-        agendamento.setNomeVisitante(nomeVisitante);
-        agendamento.setImovel(imovel);
-        agendamento.setDataAgendamento(dataAgendamento);
-        agendamento.setHorarioMarcado(horarioMarcado);
-
-        agendaRepository.save(agendamento);
+    public long countAgendamentosByMonth(int ano, int mes) {
+        return agendaRepository.countAgendamentosByMonth(ano, mes);
     }
 
-    public List<Agendamento> listarAgendamentos(BigInteger idImovel) {
-        return agendaRepository.findByImovelId(idImovel);
+    public Map<BigInteger, Long> countAgendamentosByImovelAndMonth(int ano, int mes) {
+        List<Object[]> results = agendaRepository.countAgendamentosByImovelAndMonth(ano, mes);
+        return results.stream()
+                .collect(Collectors.toMap(
+                        r -> (BigInteger) r[0], // ID do imóvel
+                        r -> (Long) r[1]        // Total de agendamentos
+                ));
     }
 }
