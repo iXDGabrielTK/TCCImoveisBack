@@ -2,7 +2,6 @@ package com.imveis.visita.Imoveis.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,20 +11,14 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 public class Visitante extends Usuario {
 
-    @ManyToOne
-    @JoinColumn(name = "imovel_id", nullable = true) // FK para Imovel
-    private Imovel imovel;
-
     @Column(name = "DATA_ACESSO")
     private LocalDateTime dataAcesso;
 
     @Column(name = "DATA_CADASTRO", nullable = false)
     private LocalDateTime dataCadastro;
 
-
     // Construtor personalizado
-    public Visitante(String nome, String login, String senha, String telefone, Imovel imovel) {
+    public Visitante(String nome, String login, String senha, String telefone) {
         super(null, nome, login, senha, telefone);
-        this.imovel = imovel;
     }
 }

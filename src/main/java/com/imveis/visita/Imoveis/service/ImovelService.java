@@ -34,7 +34,7 @@ public class ImovelService {
     }
 
     public Imovel save(Imovel imovel) {
-        System.out.println(imovel.getFuncionario());
+        // Validação do endereço
         if (imovel.getEnderecoImovel() != null) {
             Endereco endereco = imovel.getEnderecoImovel();
             if (endereco.getIdEndereco() == null) {
@@ -43,35 +43,28 @@ public class ImovelService {
             }
         }
 
-        try {
-            if (imovel.getFuncionario() != null) {
-                Funcionario funcionario = imovel.getFuncionario();
-
-                if (funcionario.getLogin() != null) {
-                    Optional<Funcionario> funcionarioExistente = funcionarioRepository.findByLogin(funcionario.getLogin());
-
-                    if (funcionarioExistente.isPresent()) {
-                        System.out.println(imovel.getFuncionario());
-                        imovel.setFuncionario(funcionarioExistente.get());
-                    } else {
-                        throw new IllegalArgumentException("Funcionário com o login fornecido não encontrado");
-                    }
+        // Validação do funcionário
+        if (imovel.getFuncionario() != null) {
+            Funcionario funcionario = imovel.getFuncionario();
+            if (funcionario.getLogin() != null) {
+                Optional<Funcionario> funcionarioExistente = funcionarioRepository.findByLogin(funcionario.getLogin());
+                if (funcionarioExistente.isPresent()) {
+                    imovel.setFuncionario(funcionarioExistente.get());
                 } else {
-                    throw new IllegalArgumentException("Login do funcionário é necessário para associá-lo ao imóvel");
+                    throw new IllegalArgumentException("Funcionário com o login fornecido não encontrado");
                 }
+            } else {
+                throw new IllegalArgumentException("Login do funcionário é necessário para associá-lo ao imóvel");
             }
-
-            if (imovel.getPrecoImovel() < 0) {
-                throw new IllegalArgumentException("O preço não pode ser negativo");
-            }
-
-            return imovelRepository.save(imovel);
-
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Erro ao salvar imóvel: " + e.getMessage());
-        } catch (Exception e) {
-            throw new RuntimeException("Erro interno ao salvar imóvel", e);
         }
+
+        // Validação do preço
+        if (imovel.getPrecoImovel() < 0) {
+            throw new IllegalArgumentException("O preço do imóvel não pode ser negativo");
+        }
+
+        // Salvamento
+        return imovelRepository.save(imovel);
     }
 
     public void deleteById(BigInteger id) {

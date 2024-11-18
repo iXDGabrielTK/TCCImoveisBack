@@ -17,11 +17,5 @@ public interface ImovelRepository extends JpaRepository<Imovel, BigInteger> {
     @Query("SELECT COUNT(a) FROM Agendamento a WHERE a.imovel.idImovel = :idImovel")
     BigInteger countAccessById(@Param("idImovel") BigInteger idImovel);
 
-    @Query("SELECT i.idImovel AS idImovel, COUNT(v.id) AS totalAcessos " +
-            "FROM Visitante v JOIN v.imovel i " +
-            "WHERE YEAR(v.dataAcesso) = YEAR(:mesAno) AND MONTH(v.dataAcesso) = MONTH(:mesAno) " +
-            "GROUP BY i.idImovel")
-    Map<Long, Long> countAccessByImovelAndMonth(@Param("mesAno") LocalDateTime mesAno);
-
 
 }

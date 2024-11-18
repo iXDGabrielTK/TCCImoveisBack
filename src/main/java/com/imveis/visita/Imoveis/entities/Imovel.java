@@ -16,7 +16,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 
 public class Imovel {
     @Column(name = "ID")
@@ -24,8 +23,6 @@ public class Imovel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger idImovel;
 
-    @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL)
-    private List<Visitante> visitantes;
 
     @Column(name = "TIPO_IMOVEL")
     private String tipoImovel;

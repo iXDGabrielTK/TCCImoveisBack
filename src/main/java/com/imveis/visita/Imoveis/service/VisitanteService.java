@@ -1,4 +1,3 @@
-// src/main/java/com/imveis/visita/Imoveis/service/VisitanteService.java
 package com.imveis.visita.Imoveis.service;
 
 import com.imveis.visita.Imoveis.entities.Visitante;
@@ -36,9 +35,7 @@ public class VisitanteService {
         return visitanteRepository.save(visitante);
     }
 
-
     public void deleteById(BigInteger id) {
         visitanteRepository.deleteById(id);
     }
 }
-

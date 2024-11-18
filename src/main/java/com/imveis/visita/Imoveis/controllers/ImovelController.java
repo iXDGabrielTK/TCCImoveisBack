@@ -1,5 +1,6 @@
 package com.imveis.visita.Imoveis.controllers;
 
+import com.imveis.visita.Imoveis.dtos.ImovelDTO;
 import com.imveis.visita.Imoveis.dtos.ImovelRequest;
 import com.imveis.visita.Imoveis.entities.FotoImovel;
 import com.imveis.visita.Imoveis.entities.Imovel;
@@ -26,8 +27,12 @@ public class ImovelController {
     }
 
     @GetMapping
-    public List<Imovel> getAllImoveis() {
-        return imovelService.findAll();
+    public ResponseEntity<List<ImovelDTO>> getAllImoveis() {
+        List<Imovel> imoveis = imovelService.findAll();
+        List<ImovelDTO> imoveisDTO = imoveis.stream()
+                .map(ImovelDTO::new)
+                .toList();
+        return ResponseEntity.ok(imoveisDTO);
     }
 
     @GetMapping("/{id}")

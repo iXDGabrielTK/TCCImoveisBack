@@ -1,9 +1,21 @@
 package com.imveis.visita.Imoveis.entities;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.math.BigInteger;
 
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "tipo"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Visitante.class, name = "visitante"),
+        @JsonSubTypes.Type(value = Funcionario.class, name = "funcionario")
+})
 @Entity
 @Table(name = "usuario")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -28,4 +40,6 @@ public abstract class Usuario {
 
     @Column(name = "TELEFONE")
     private String telefone;
+
+
 }
