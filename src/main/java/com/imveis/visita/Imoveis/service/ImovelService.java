@@ -26,7 +26,9 @@ public class ImovelService {
     private FuncionarioRepository funcionarioRepository;
 
     public List<Imovel> findAll() {
-        return imovelRepository.findAll();
+        List<Imovel> imoveis = imovelRepository.findAll();
+        imoveis.forEach(imovel -> imovel.getFotosImovel().size());
+        return imoveis;
     }
 
     public Optional<Imovel> findById(BigInteger id) {

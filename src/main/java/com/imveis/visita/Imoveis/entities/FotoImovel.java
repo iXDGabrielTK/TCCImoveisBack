@@ -21,8 +21,8 @@ public class FotoImovel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger idFotosImovel;
 
-    @ManyToOne
-    @JoinColumn(name = "imovel_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "imovel_id")
     @JsonBackReference
     private Imovel imovel;
 

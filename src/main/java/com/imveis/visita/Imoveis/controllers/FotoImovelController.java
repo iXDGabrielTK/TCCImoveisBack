@@ -58,6 +58,7 @@ public class FotoImovelController {
     }
 
 
+
     @DeleteMapping("/{id}")
     public void deleteFotoImovel(@PathVariable BigInteger id) {
         fotoImovelService.deleteById(id);
