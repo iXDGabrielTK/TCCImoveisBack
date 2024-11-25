@@ -2,13 +2,14 @@ package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.dtos.AgendamentoRequest;
 import com.imveis.visita.Imoveis.entities.Agendamento;
-import com.imveis.visita.Imoveis.entities.Imovel;
-import com.imveis.visita.Imoveis.repositories.ImovelRepository;
 import com.imveis.visita.Imoveis.service.AgendamentoService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -22,16 +23,45 @@ public class AgendaController {
         this.agendamentoService = agendamentoService;
     }
 
-    @GetMapping("/relatorio/mes")
-    public ResponseEntity<Long> relatorioMensal(@RequestParam int ano, @RequestParam int mes) {
-        long totalAgendamentos = agendamentoService.countAgendamentosByMonth(ano, mes);
-        return ResponseEntity.ok(totalAgendamentos);
+    @PostMapping("/agendar")
+    public ResponseEntity<Agendamento> agendarVisita(@RequestBody AgendamentoRequest request) {
+        if (request.getImovelId() == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        try {
+            Agendamento agendamento = agendamentoService.agendarVisita(request);
+            return ResponseEntity.ok(agendamento);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
 
-    @GetMapping("/relatorio/mes/imoveis")
-    public ResponseEntity<Map<BigInteger, Long>> relatorioMensalPorImovel(@RequestParam int ano, @RequestParam int mes) {
-        Map<BigInteger, Long> agendamentosPorImovel = agendamentoService.countAgendamentosByImovelAndMonth(ano, mes);
-        return ResponseEntity.ok(agendamentosPorImovel);
+    @DeleteMapping("/cancelar")
+    public ResponseEntity<String> cancelarAgendamento(
+            @RequestParam BigInteger imovelId,
+            @RequestParam String data, // Recebe a data como string
+            @RequestParam boolean horarioMarcado) {
+        try {
+            // Converte a string para LocalDate
+            LocalDate dataAgendamento = LocalDate.parse(data);
+            agendamentoService.cancelarAgendamento(imovelId, dataAgendamento, horarioMarcado);
+            return ResponseEntity.ok("Agendamento cancelado com sucesso!");
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest().body("Formato de data inválido.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cancelar agendamento.");
+        }
     }
+
+    @GetMapping
+    public ResponseEntity<List<Agendamento>> listarAgendamentosPorImovel(@RequestParam BigInteger imovelId) {
+        List<Agendamento> agendamentos = agendamentoService.buscarAgendamentosPorImovel(imovelId);
+        return ResponseEntity.ok(agendamentos);
+    }
+
+
+
+
 }
-

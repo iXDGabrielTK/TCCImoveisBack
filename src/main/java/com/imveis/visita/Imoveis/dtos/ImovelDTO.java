@@ -6,12 +6,14 @@ import com.imveis.visita.Imoveis.entities.Imovel;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigInteger;
 import java.util.List;
 
 
 @Getter
 @Setter
 public class ImovelDTO {
+    private BigInteger idImovel;
     private String tipoImovel;
     private String descricaoImovel;
     private Boolean statusImovel;
@@ -21,6 +23,7 @@ public class ImovelDTO {
     private List<String> fotosImovel;
 
     public ImovelDTO(Imovel imovel) {
+        this.idImovel = imovel.getIdImovel();
         this.tipoImovel = imovel.getTipoImovel();
         this.descricaoImovel = imovel.getDescricaoImovel();
         this.statusImovel = imovel.getStatusImovel();

@@ -5,8 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigInteger;
-import java.util.Date;
-
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,24 +14,22 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 public class Agendamento {
     @Id
-    @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
 
     @Column(name = "DATA_AGENDAMENTO", nullable = false)
-    private LocalDateTime dataAgendamento;
+    private LocalDate dataAgendamento;
 
     @Column(name = "NOME_VISITANTE", nullable = false)
     private String nomeVisitante;
 
+    @Column(name = "HORARIO_MARCADO", nullable = false)
+    private Boolean horarioMarcado;
+
     @ManyToOne
-    @JoinColumn(name = "imovel_id")
+    @JoinColumn(name = "IMOVEL_ID")
     @JsonBackReference
     private Imovel imovel;
-
-
 }
-
