@@ -2,9 +2,8 @@ package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.dtos.ImovelDTO;
 import com.imveis.visita.Imoveis.dtos.ImovelRequest;
-import com.imveis.visita.Imoveis.entities.FotoImovel;
+import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.entities.Imovel;
-import com.imveis.visita.Imoveis.service.FotoImovelService;
 import com.imveis.visita.Imoveis.service.ImovelService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +18,9 @@ import java.util.Optional;
 public class ImovelController {
 
     private final ImovelService imovelService;
-    private final FotoImovelService fotoImovelService;
 
-    public ImovelController(ImovelService imovelService, FotoImovelService fotoImovelService) {
+    public ImovelController(ImovelService imovelService) {
         this.imovelService = imovelService;
-        this.fotoImovelService = fotoImovelService;
     }
 
     @GetMapping
@@ -50,23 +47,21 @@ public class ImovelController {
             imovel.setTamanhoImovel(imovelRequest.getTamanhoImovel());
             imovel.setPrecoImovel(imovelRequest.getPrecoImovel());
             imovel.setEnderecoImovel(imovelRequest.getEnderecoImovel());
-            imovel = imovelService.save(imovel); // Salva o imóvel primeiro
 
-            if (imovelRequest.getUrlFoto() != null && !imovelRequest.getUrlFoto().isEmpty()) {
-                FotoImovel fotoImovel = new FotoImovel();
-                fotoImovel.setImovel(imovel);
-                fotoImovel.setUrlFotoImovel(imovelRequest.getUrlFoto());
-                fotoImovelService.save(fotoImovel);
+            // ALTERAÇÃO: Associar funcionário se funcionarioId for fornecido
+            if (imovelRequest.getFuncionarioId() != null) {
+                Funcionario funcionario = new Funcionario();
+                funcionario.setId(imovelRequest.getFuncionarioId());
+                imovel.setFuncionario(funcionario);
             }
 
+            imovel = imovelService.save(imovel); // Salva o imóvel no banco
             return new ResponseEntity<>(imovel, HttpStatus.CREATED);
         } catch (Exception e) {
-            //noinspection CallToPrintStackTrace
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     @DeleteMapping("/{id}")
     public void deleteImovel(@PathVariable BigInteger id) {

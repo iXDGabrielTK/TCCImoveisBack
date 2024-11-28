@@ -1,4 +1,4 @@
-package com.imveis.visita.Imoveis.controllers;
+/* package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.service.RelatorioAgendamentoService;
 import com.imveis.visita.Imoveis.service.RelatorioUsuarioService;
@@ -73,3 +73,5 @@ public class RelatorioController {
                 .body(new InputStreamResource(bis));
     }
 }
+
+ */

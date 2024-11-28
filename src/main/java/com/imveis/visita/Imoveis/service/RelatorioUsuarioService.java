@@ -1,4 +1,4 @@
-package com.imveis.visita.Imoveis.service;
+/*package com.imveis.visita.Imoveis.service;
 
 import com.imveis.visita.Imoveis.repositories.VisitanteRepository;
 import com.itextpdf.layout.Document;
@@ -44,3 +44,4 @@ public class RelatorioUsuarioService extends RelatorioBase {
         return new ByteArrayInputStream(out.toByteArray());
     }
 }
+*/

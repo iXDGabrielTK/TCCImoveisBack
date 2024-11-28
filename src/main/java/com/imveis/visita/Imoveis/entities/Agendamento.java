@@ -6,7 +6,6 @@ import lombok.*;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "agendamento")
@@ -32,4 +31,9 @@ public class Agendamento {
     @JoinColumn(name = "IMOVEL_ID")
     @JsonBackReference
     private Imovel imovel;
+
+    // ALTERAÇÃO: Relacionamento com Usuario adicionado
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USUARIO_ID", nullable = true)
+    private Usuario usuario;
 }

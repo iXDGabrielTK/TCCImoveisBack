@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigInteger;
+
 @Getter
 @Setter
 @Data
@@ -16,4 +18,7 @@ public class ImovelRequest {
     private Float precoImovel;
     private Endereco enderecoImovel;
     private String urlFoto;
+
+    // ALTERAÇÃO: Adicionando o campo funcionarioId
+    private BigInteger funcionarioId;
 }

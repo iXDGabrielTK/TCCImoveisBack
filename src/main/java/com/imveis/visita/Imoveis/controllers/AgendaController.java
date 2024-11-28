@@ -2,6 +2,7 @@ package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.dtos.AgendamentoRequest;
 import com.imveis.visita.Imoveis.entities.Agendamento;
+import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.service.AgendamentoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,6 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/agendamentos")
@@ -25,10 +25,16 @@ public class AgendaController {
 
     @PostMapping("/agendar")
     public ResponseEntity<Agendamento> agendarVisita(@RequestBody AgendamentoRequest request) {
-        if (request.getImovelId() == null) {
-            return ResponseEntity.badRequest().body(null);
-        }
         try {
+            // ALTERAÇÃO: Associar usuário se usuarioId for fornecido
+            if (request.getUsuarioId() != null) {
+                Usuario usuario = new Usuario() {
+                    // Classe anônima já que Usuario é abstrata
+                };
+                usuario.setId(request.getUsuarioId());
+                request.setUsuario(usuario);
+            }
+
             Agendamento agendamento = agendamentoService.agendarVisita(request);
             return ResponseEntity.ok(agendamento);
         } catch (IllegalArgumentException e) {
@@ -42,7 +48,6 @@ public class AgendaController {
             @RequestParam String data, // Recebe a data como string
             @RequestParam boolean horarioMarcado) {
         try {
-            // Converte a string para LocalDate
             LocalDate dataAgendamento = LocalDate.parse(data);
             agendamentoService.cancelarAgendamento(imovelId, dataAgendamento, horarioMarcado);
             return ResponseEntity.ok("Agendamento cancelado com sucesso!");
@@ -60,8 +65,4 @@ public class AgendaController {
         List<Agendamento> agendamentos = agendamentoService.buscarAgendamentosPorImovel(imovelId);
         return ResponseEntity.ok(agendamentos);
     }
-
-
-
-
 }

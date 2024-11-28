@@ -1,5 +1,6 @@
 package com.imveis.visita.Imoveis.dtos;
 
+import com.imveis.visita.Imoveis.entities.Usuario;
 import lombok.Data;
 
 import java.math.BigInteger;
@@ -9,6 +10,12 @@ import java.time.LocalDate;
 public class AgendamentoRequest {
     private BigInteger imovelId;
     private String nomeVisitante;
-    private LocalDate dataAgendamento; // Agora só dia, mês e ano
-    private boolean horarioMarcado; // true = tarde, false = manhã
+    private LocalDate dataAgendamento;
+    private boolean horarioMarcado;
+
+    // ALTERAÇÃO: Adicionando o campo usuarioId
+    private BigInteger usuarioId;
+
+    public void setUsuario(Usuario usuario) {
+    }
 }

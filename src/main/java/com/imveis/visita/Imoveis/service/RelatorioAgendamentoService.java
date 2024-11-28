@@ -1,9 +1,8 @@
 package com.imveis.visita.Imoveis.service;
 
 import com.imveis.visita.Imoveis.repositories.AgendaRepository;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Table;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,62 +10,48 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.time.YearMonth;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
-public class RelatorioAgendamentoService extends RelatorioBase {
+public class RelatorioAgendamentoService {
 
     @Autowired
     private AgendaRepository agendaRepository;
 
     public ByteArrayInputStream gerarRelatorioAgendamentos(YearMonth mesAno) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Document document = criarDocumento(out);
-
-        if (document == null) return null;
-
         try {
-            // Adicionando título e subtítulo
-            document.add(criarTitulo("Relatório de Agendamentos"));
-            document.add(criarSubtitulo("Agendamentos durante o mês: " + mesAno));
+            // Caminho do template JRXML
+            String templatePath = "src/main/resources/reports/RelatorioAgendamentos.jrxml";
 
-            // Extrair ano e mês do YearMonth
+            // Compila o template JRXML para um objeto JasperReport
+            JasperReport jasperReport = JasperCompileManager.compileReport(templatePath);
+
+            // Extrair ano e mês
             int ano = mesAno.getYear();
             int mes = mesAno.getMonthValue();
 
-            // Total de agendamentos gerais
-            long totalAgendamentos = agendaRepository.countAgendamentosByMonth(ano, mes);
-            document.add(new Paragraph("Total de Agendamentos no Mês: " + totalAgendamentos));
-
-            // Total de agendamentos por imóvel
+            // Obter os dados do relatório
             List<Object[]> rawResults = agendaRepository.countAgendamentosByImovelAndMonth(ano, mes);
-            Map<BigInteger, Long> agendamentosPorImovel = rawResults.stream()
-                    .collect(Collectors.toMap(
-                            r -> (BigInteger) r[0], // ID do imóvel
-                            r -> (Long) r[1] // Total de agendamentos
-                    ));
 
-            if (agendamentosPorImovel.isEmpty()) {
-                document.add(new Paragraph("Nenhum agendamento encontrado para o mês."));
-            } else {
-                Table table = criarTabela(new float[]{1, 2});
-                adicionarCabecalhos(table, "ID Imóvel", "Total Agendamentos");
+            // Mapear parâmetros para o relatório
+            Map<String, Object> parametros = new HashMap<>();
+            parametros.put("ANO", ano);
+            parametros.put("MES", mes);
 
-                agendamentosPorImovel.forEach((idImovel, total) -> {
-                    table.addCell(String.valueOf(idImovel));
-                    table.addCell(String.valueOf(total));
-                });
+            // Preencher o relatório com os dados
+            JRDataSource dataSource = new JRBeanCollectionDataSource(rawResults);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parametros, dataSource);
 
-                document.add(table);
-            }
+            // Exportar para PDF
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+
+            return new ByteArrayInputStream(outputStream.toByteArray());
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            document.close();
+            return null;
         }
-
-        return new ByteArrayInputStream(out.toByteArray());
     }
 }

@@ -1,4 +1,4 @@
-package com.imveis.visita.Imoveis.service;
+/*package com.imveis.visita.Imoveis.service;
 import com.itextpdf.io.font.FontConstants;
 import com.itextpdf.kernel.font.PdfFont;
 import com.itextpdf.kernel.font.PdfFontFactory;
@@ -68,3 +68,4 @@ public abstract class RelatorioBase {
     }
 
 }
+*/

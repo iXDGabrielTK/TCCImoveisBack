@@ -14,7 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-
 public class Imovel {
     @Column(name = "id")
     @Id
@@ -50,8 +49,9 @@ public class Imovel {
     @JsonManagedReference
     private List<FotoImovel> fotosImovel;
 
-    @ManyToOne
-    @JoinColumn(name = "FUNCIONARIO_ID")
+    // ALTERAÇÃO: Relacionamento Funcionario -> Imovel agora é opcional
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FUNCIONARIO_ID", nullable = true)
     private Funcionario funcionario;
 
     @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL)

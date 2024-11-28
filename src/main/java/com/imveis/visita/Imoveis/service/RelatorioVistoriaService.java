@@ -1,3 +1,4 @@
+/*
 package com.imveis.visita.Imoveis.service;
 
 import com.imveis.visita.Imoveis.entities.FotoVistoria;
@@ -83,3 +84,4 @@ public class RelatorioVistoriaService extends RelatorioBase {
         return new ByteArrayInputStream(out.toByteArray());
     }
 }
+*/
