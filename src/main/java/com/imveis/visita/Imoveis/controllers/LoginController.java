@@ -6,6 +6,7 @@ import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.entities.Visitante;
 import com.imveis.visita.Imoveis.repositories.FuncionarioRepository;
 import com.imveis.visita.Imoveis.repositories.VisitanteRepository;
+import com.imveis.visita.Imoveis.service.LogAcessoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +21,14 @@ public class LoginController {
     private final JwtUtil jwtUtil;
     private final VisitanteRepository visitanteRepository;
     private final FuncionarioRepository funcionarioRepository;
+    private final LogAcessoService logAcessoService;
 
     @Autowired
-    public LoginController(JwtUtil jwtUtil, VisitanteRepository visitanteRepository, FuncionarioRepository funcionarioRepository) {
+    public LoginController(JwtUtil jwtUtil, VisitanteRepository visitanteRepository, FuncionarioRepository funcionarioRepository, LogAcessoService logAcessoService) {
         this.jwtUtil = jwtUtil;
         this.visitanteRepository = visitanteRepository;
         this.funcionarioRepository = funcionarioRepository;
+        this.logAcessoService = logAcessoService;
     }
 
     @PostMapping
@@ -37,6 +40,9 @@ public class LoginController {
         Optional<Funcionario> funcionario = funcionarioRepository.findByLoginAndSenha(login, senha);
         if (funcionario.isPresent()) {
             String token = jwtUtil.gerarToken(login);
+
+            logAcessoService.registrarLog(funcionario.get(), "LOGIN");
+
             return ResponseEntity.ok().body(Map.of("token", token, "tipo", "funcionario"));
         }
 
@@ -44,6 +50,9 @@ public class LoginController {
         Optional<Visitante> visitante = visitanteRepository.findByLoginAndSenha(login, senha);
         if (visitante.isPresent()) {
             String token = jwtUtil.gerarToken(login);
+
+            logAcessoService.registrarLog(visitante.get(), "LOGIN");
+
             return ResponseEntity.ok().body(Map.of("token", token, "tipo", "visitante"));
         }
 

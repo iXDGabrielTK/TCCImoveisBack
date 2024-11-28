@@ -3,12 +3,10 @@ package com.imveis.visita.Imoveis.service;
 import com.imveis.visita.Imoveis.repositories.AgendaRepository;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.math.BigInteger;
 import java.time.YearMonth;
 import java.util.HashMap;
 import java.util.List;
@@ -17,38 +15,42 @@ import java.util.Map;
 @Service
 public class RelatorioAgendamentoService {
 
-    @Autowired
-    private AgendaRepository agendaRepository;
+    private final AgendaRepository agendaRepository;
+
+    public RelatorioAgendamentoService(AgendaRepository agendaRepository) {
+        this.agendaRepository = agendaRepository;
+    }
 
     public ByteArrayInputStream gerarRelatorioAgendamentos(YearMonth mesAno) {
         try {
-            // Caminho do template JRXML
-            String templatePath = "src/main/resources/reports/RelatorioAgendamentos.jrxml";
+            // Carregar template Jasper (.jrxml)
+            JasperReport jasperReport = JasperCompileManager.compileReport(
+                    "src/main/resources/reports/relatorio_agendamentos.jrxml"
+            );
 
-            // Compila o template JRXML para um objeto JasperReport
-            JasperReport jasperReport = JasperCompileManager.compileReport(templatePath);
-
-            // Extrair ano e mês
+            // Extrair ano e mês do parâmetro
             int ano = mesAno.getYear();
             int mes = mesAno.getMonthValue();
 
-            // Obter os dados do relatório
-            List<Object[]> rawResults = agendaRepository.countAgendamentosByImovelAndMonth(ano, mes);
+            // Consultar os dados do banco para o período
+            List<Object[]> agendamentos = agendaRepository.countAgendamentosByImovelAndMonth(ano, mes);
 
-            // Mapear parâmetros para o relatório
+            // Transformar os dados em um DataSource para JasperReports
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(agendamentos);
+
+            // Passar parâmetros para o relatório
             Map<String, Object> parametros = new HashMap<>();
-            parametros.put("ANO", ano);
-            parametros.put("MES", mes);
+            parametros.put("titulo", "Relatório de Agendamentos");
+            parametros.put("subtitulo", "Agendamentos no período: " + mesAno);
 
-            // Preencher o relatório com os dados
-            JRDataSource dataSource = new JRBeanCollectionDataSource(rawResults);
+            // Preencher o relatório com dados
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parametros, dataSource);
 
-            // Exportar para PDF
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+            // Exportar o relatório para PDF
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, out);
 
-            return new ByteArrayInputStream(outputStream.toByteArray());
+            return new ByteArrayInputStream(out.toByteArray());
         } catch (Exception e) {
             e.printStackTrace();
             return null;

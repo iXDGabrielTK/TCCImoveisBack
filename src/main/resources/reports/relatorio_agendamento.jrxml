@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+                http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="RelatorioAgendamentos" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20"
+              rightMargin="20" topMargin="20" bottomMargin="20" uuid="12345678-abcd-1234-efgh-1234567890ab">
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="data.json"/>
+    <queryString>
+        <![CDATA[]]>
+    </queryString>
+    <field name="imovelId" class="java.lang.Long"/>
+    <field name="totalAgendamentos" class="java.lang.Long"/>
+    <title>
+        <band height="50">
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="30" uuid="title1"/>
+                <textElement textAlignment="Center">
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <text><![CDATA[$P{titulo}]]></text>
+            </staticText>
+        </band>
+    </title>
+    <columnHeader>
+        <band height="30">
+            <staticText>
+                <reportElement x="0" y="0" width="200" height="30" uuid="header1"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Imóvel ID]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="200" y="0" width="200" height="30" uuid="header2"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Total de Agendamentos]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="20">
+            <textField>
+                <reportElement x="0" y="0" width="200" height="20" uuid="field1"/>
+                <textFieldExpression><![CDATA[$F{imovelId}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="200" y="0" width="200" height="20" uuid="field2"/>
+                <textFieldExpression><![CDATA[$F{totalAgendamentos}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+</jasperReport>

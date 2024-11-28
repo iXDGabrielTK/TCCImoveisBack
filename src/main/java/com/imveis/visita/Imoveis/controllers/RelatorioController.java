@@ -1,8 +1,7 @@
-/* package com.imveis.visita.Imoveis.controllers;
+package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.service.RelatorioAgendamentoService;
 import com.imveis.visita.Imoveis.service.RelatorioUsuarioService;
-import com.imveis.visita.Imoveis.service.RelatorioVistoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -14,24 +13,26 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayInputStream;
-import java.math.BigInteger;
 import java.time.YearMonth;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/relatorios")
 public class RelatorioController {
 
-    @Autowired
-    private RelatorioUsuarioService relatorioUsuarioService;
+    private final RelatorioUsuarioService relatorioUsuarioService;
+    private final RelatorioAgendamentoService relatorioAgendamentoService;
 
+    // Construtor para injetar as dependências
     @Autowired
-    private RelatorioAgendamentoService relatorioAgendamentoService;
+    public RelatorioController(
+            RelatorioUsuarioService relatorioUsuarioService,
+            RelatorioAgendamentoService relatorioAgendamentoService
+    ) {
+        this.relatorioUsuarioService = relatorioUsuarioService;
+        this.relatorioAgendamentoService = relatorioAgendamentoService;
+    }
 
-    @Autowired
-    private RelatorioVistoriaService relatorioVistoriaService;
-
-    // Relatório de Usuários
+    // Endpoint para relatório de usuários
     @GetMapping("/usuarios")
     public ResponseEntity<InputStreamResource> downloadRelatorioUsuarios(@RequestParam YearMonth mesAno) {
         ByteArrayInputStream bis = relatorioUsuarioService.gerarRelatorioUsuarios(mesAno);
@@ -45,7 +46,7 @@ public class RelatorioController {
                 .body(new InputStreamResource(bis));
     }
 
-    // Relatório de Agendamentos
+    // Endpoint para relatório de agendamentos
     @GetMapping("/agendamentos")
     public ResponseEntity<InputStreamResource> downloadRelatorioAgendamentos(@RequestParam YearMonth mesAno) {
         ByteArrayInputStream bis = relatorioAgendamentoService.gerarRelatorioAgendamentos(mesAno);
@@ -58,20 +59,4 @@ public class RelatorioController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(bis));
     }
-
-    // Relatório de Vistorias
-    @GetMapping("/vistorias")
-    public ResponseEntity<InputStreamResource> downloadRelatorioVistorias(@RequestParam BigInteger idImovel) {
-        ByteArrayInputStream bis = relatorioVistoriaService.gerarRelatorioVistorias(idImovel);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=relatorio_vistorias.pdf");
-
-        return ResponseEntity.ok()
-                .headers(headers)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(bis));
-    }
 }
-
- */

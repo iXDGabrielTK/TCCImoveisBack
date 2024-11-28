@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+              http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="RelatorioUsuarios" pageWidth="595" pageHeight="842"
+              columnWidth="555" leftMargin="20" rightMargin="20"
+              topMargin="20" bottomMargin="20" uuid="123e4567-e89b-12d3-a456-426614174000">
+
+    <!-- CONSULTA: Buscar dados do banco -->
+    <queryString>
+        <![CDATA[
+        SELECT u.nome AS nome, u.data_cadastro AS dataCadastro
+        FROM usuario u
+        WHERE u.tipo_usuario = 'visitante'
+        ]]>
+    </queryString>
+
+    <!-- CAMPOS: Dados do banco -->
+    <field name="nome" class="java.lang.String"/>
+    <field name="dataCadastro" class="java.sql.Timestamp"/>
+
+    <!-- TÍTULO DO RELATÓRIO -->
+    <title>
+        <band height="50">
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="30"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <text><![CDATA[Relatório de Usuários Visitantes]]></text>
+            </staticText>
+        </band>
+    </title>
+
+    <!-- CABEÇALHO DA TABELA -->
+    <columnHeader>
+        <band height="20">
+            <staticText>
+                <reportElement x="0" y="0" width="300" height="20"/>
+                <text><![CDATA[Nome]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="300" y="0" width="255" height="20"/>
+                <text><![CDATA[Data de Cadastro]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <!-- DETALHES: Linhas da tabela -->
+    <detail>
+        <band height="20">
+            <textField>
+                <reportElement x="0" y="0" width="300" height="20"/>
+                <textFieldExpression><![CDATA[$F{nome}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="300" y="0" width="255" height="20"/>
+                <textFieldExpression><![CDATA[$F{dataCadastro}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+</jasperReport>

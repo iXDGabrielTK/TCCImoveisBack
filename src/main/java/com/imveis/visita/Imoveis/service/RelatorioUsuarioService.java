@@ -1,47 +1,53 @@
-/*package com.imveis.visita.Imoveis.service;
+package com.imveis.visita.Imoveis.service;
 
-import com.imveis.visita.Imoveis.repositories.VisitanteRepository;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Table;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.math.BigInteger;
 import java.time.YearMonth;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
-public class RelatorioUsuarioService extends RelatorioBase {
+public class RelatorioUsuarioService {
 
-    @Autowired
-    private VisitanteRepository visitanteRepository;
+    private final LogAcessoService logAcessoService;
+
+    public RelatorioUsuarioService(LogAcessoService logAcessoService) {
+        this.logAcessoService = logAcessoService;
+    }
 
     public ByteArrayInputStream gerarRelatorioUsuarios(YearMonth mesAno) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Document document = criarDocumento(out);
-
-        if (document == null) return null;
-
         try {
-            document.add(criarTitulo("Relatório de Usuários"));
-            document.add(criarSubtitulo("Acessos durante o mês: " + mesAno));
+            // Carregar o template Jasper
+            JasperReport jasperReport = JasperCompileManager.compileReport("src/main/resources/reports/relatorio_usuarios.jrxml");
 
-            // Extrair ano e mês do YearMonth
-            int ano = mesAno.getYear();
-            int mes = mesAno.getMonthValue();
+            // Obter dados para o relatório
+            long totalLogins = logAcessoService.contarLoginsPorMes(mesAno);
+            List<Object[]> loginsPorUsuario = logAcessoService.contarLoginsPorUsuario();
 
-            // Consultar total de acessos ao site
-            long totalAcessosSite = visitanteRepository.countAccessByMonth(ano, mes);
-            document.add(new Paragraph("Total de Acessos ao Site: " + totalAcessosSite));
+            // Transformar em DataSource
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(loginsPorUsuario);
+
+            // Criar parâmetros
+            Map<String, Object> parametros = new HashMap<>();
+            parametros.put("totalLogins", totalLogins);
+            parametros.put("titulo", "Relatório de Usuários - " + mesAno);
+
+            // Preencher o relatório
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parametros, dataSource);
+
+            // Exportar para PDF
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, out);
+
+            return new ByteArrayInputStream(out.toByteArray());
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            document.close();
+            return null;
         }
-
-        return new ByteArrayInputStream(out.toByteArray());
     }
 }
-*/
