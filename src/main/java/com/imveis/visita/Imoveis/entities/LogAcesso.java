@@ -19,16 +19,13 @@ public class LogAcesso {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger id;
 
-    // Relacionamento com Usuário (quem fez o login ou visualizou)
     @ManyToOne
     @JoinColumn(name = "USUARIO_ID", nullable = false)
     private Usuario usuario;
 
-    // Data/hora do acesso ou visualização
     @Column(name = "DATA_HORA", nullable = false)
     private LocalDateTime dataHora;
 
-    // Tipo de ação (ex.: LOGIN, VISUALIZACAO_IMOVEL)
     @Column(name = "ACAO", nullable = false)
     private String acao;
 }

@@ -87,10 +87,11 @@ CREATE TABLE fotos_vistoria (
                                 URL_FOTO_VISTORIA VARCHAR(255) NOT NULL
 );
 
+-- Tabela LogAcesso
 CREATE TABLE log_acesso (
-    id BIGSERIAL PRIMARY KEY,
-    USUARIO_ID BIGINT NOT NULL REFERENCES usuario(id) ON DELETE CASCADE,
-    DATA_HORA TIMESTAMP NOT NULL,
-    ACAO VARCHAR(50) NOT NULL
+                            id BIGSERIAL PRIMARY KEY,
+                            USUARIO_ID BIGINT NOT NULL REFERENCES usuario(id) ON DELETE CASCADE,
+                            DATA_HORA TIMESTAMP NOT NULL,
+                            ACAO VARCHAR(50) NOT NULL
 );
 
