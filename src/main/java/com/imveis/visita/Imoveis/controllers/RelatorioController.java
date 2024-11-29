@@ -2,61 +2,102 @@ package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.service.RelatorioAgendamentoService;
 import com.imveis.visita.Imoveis.service.RelatorioUsuarioService;
+import com.imveis.visita.Imoveis.service.RelatorioVistoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.ByteArrayInputStream;
-import java.time.YearMonth;
+import java.math.BigInteger;
 
 @RestController
-@RequestMapping("/relatorios")
 public class RelatorioController {
 
-    private final RelatorioUsuarioService relatorioUsuarioService;
-    private final RelatorioAgendamentoService relatorioAgendamentoService;
-
-    // Construtor para injetar as dependências
     @Autowired
-    public RelatorioController(
-            RelatorioUsuarioService relatorioUsuarioService,
-            RelatorioAgendamentoService relatorioAgendamentoService
-    ) {
-        this.relatorioUsuarioService = relatorioUsuarioService;
-        this.relatorioAgendamentoService = relatorioAgendamentoService;
+    private RelatorioVistoriaService relatorioVistoriaService;
+
+    @Autowired
+    private RelatorioUsuarioService relatorioUsuarioService;
+
+    @Autowired
+    private RelatorioAgendamentoService relatorioAgendamentoService;
+
+    // Relatório de Vistorias
+    @GetMapping("/relatorios/vistorias")
+    public ResponseEntity<byte[]> gerarRelatorioVistorias(
+            @RequestParam BigInteger idImovel,
+            @RequestParam String mesAno) {
+
+        byte[] pdf = relatorioVistoriaService.gerarRelatorioVistorias(idImovel, mesAno);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=relatorio_vistorias.pdf")
+                .body(pdf);
     }
 
-    // Endpoint para relatório de usuários
-    @GetMapping("/usuarios")
-    public ResponseEntity<InputStreamResource> downloadRelatorioUsuarios(@RequestParam YearMonth mesAno) {
-        ByteArrayInputStream bis = relatorioUsuarioService.gerarRelatorioUsuarios(mesAno);
+    @GetMapping("/relatorios/vistorias/download")
+    public ResponseEntity<InputStreamResource> baixarRelatorioVistorias(
+            @RequestParam BigInteger idImovel,
+            @RequestParam String mesAno) {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=relatorio_usuarios.pdf");
-
+        byte[] pdf = relatorioVistoriaService.gerarRelatorioVistorias(idImovel, mesAno);
         return ResponseEntity.ok()
-                .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(bis));
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=relatorio_vistorias.pdf")
+                .body(new InputStreamResource(new java.io.ByteArrayInputStream(pdf)));
     }
 
-    // Endpoint para relatório de agendamentos
-    @GetMapping("/agendamentos")
-    public ResponseEntity<InputStreamResource> downloadRelatorioAgendamentos(@RequestParam YearMonth mesAno) {
-        ByteArrayInputStream bis = relatorioAgendamentoService.gerarRelatorioAgendamentos(mesAno);
+    // Relatório de Usuários
+    @GetMapping("/relatorios/usuarios")
+    public ResponseEntity<byte[]> gerarRelatorioUsuarios(
+            @RequestParam(required = false) BigInteger idImovel,
+            @RequestParam(required = false) String mesAno) {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=relatorio_agendamentos.pdf");
-
+        byte[] pdf = relatorioUsuarioService.gerarRelatorioUsuarios(idImovel, mesAno);
         return ResponseEntity.ok()
-                .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(bis));
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=relatorio_usuarios.pdf")
+                .body(pdf);
+    }
+
+    @GetMapping("/relatorios/usuarios/download")
+    public ResponseEntity<InputStreamResource> baixarRelatorioUsuarios(
+            @RequestParam(required = false) BigInteger idImovel,
+            @RequestParam(required = false) String mesAno) {
+
+        byte[] pdf = relatorioUsuarioService.gerarRelatorioUsuarios(idImovel, mesAno);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=relatorio_usuarios.pdf")
+                .body(new InputStreamResource(new java.io.ByteArrayInputStream(pdf)));
+    }
+
+    // Relatório de Agendamentos
+    @GetMapping("/relatorios/agendamentos")
+    public ResponseEntity<byte[]> gerarRelatorioAgendamentos(
+            @RequestParam BigInteger idImovel,
+            @RequestParam String mesAno) {
+
+        byte[] pdf = relatorioAgendamentoService.gerarRelatorioAgendamentos(idImovel, mesAno);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=relatorio_agendamentos.pdf")
+                .body(pdf);
+    }
+
+    @GetMapping("/relatorios/agendamentos/download")
+    public ResponseEntity<InputStreamResource> baixarRelatorioAgendamentos(
+            @RequestParam BigInteger idImovel,
+            @RequestParam String mesAno) {
+
+        byte[] pdf = relatorioAgendamentoService.gerarRelatorioAgendamentos(idImovel, mesAno);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=relatorio_agendamentos.pdf")
+                .body(new InputStreamResource(new java.io.ByteArrayInputStream(pdf)));
     }
 }

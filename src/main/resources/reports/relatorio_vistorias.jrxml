@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
+              http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="relatorio_vistorias"
+              pageWidth="595"
+              pageHeight="842"
+              columnWidth="555"
+              leftMargin="20"
+              rightMargin="20"
+              topMargin="30"
+              bottomMargin="30"
+              uuid="123e4567-e89b-12d3-a456-426614174001">
+
+    <!-- Parâmetros -->
+    <parameter name="titulo" class="java.lang.String"/>
+    <parameter name="subtitulo" class="java.lang.String"/>
+
+    <!-- Campos do relatório -->
+    <field name="idVistoria" class="java.lang.Long"/> <!-- Alterado para Long -->
+    <field name="dataVistoria" class="java.util.Date"/>
+    <field name="laudoVistoria" class="java.lang.String"/>
+    <field name="fotos" class="java.util.List"/>
+
+    <!-- Título do relatório -->
+    <title>
+        <band height="50">
+            <textField>
+                <reportElement x="0" y="10" width="555" height="20" uuid="223e4567-e89b-12d3-a456-426614174020"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="16" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{titulo}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="0" y="30" width="555" height="20" uuid="323e4567-e89b-12d3-a456-426614174021"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="12" isItalic="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{subtitulo}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <!-- Cabeçalho da tabela -->
+    <columnHeader>
+        <band height="20">
+            <staticText>
+                <reportElement x="0" y="0" width="50" height="20" uuid="423e4567-e89b-12d3-a456-426614174022"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[ID]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="50" y="0" width="100" height="20" uuid="523e4567-e89b-12d3-a456-426614174023"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Data]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="150" y="0" width="255" height="20" uuid="623e4567-e89b-12d3-a456-426614174024"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Laudo]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="405" y="0" width="150" height="20" uuid="723e4567-e89b-12d3-a456-426614174025"/>
+                <textElement>
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Fotos]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <!-- Detalhes da tabela -->
+    <detail>
+        <band height="20">
+            <textField>
+                <reportElement x="0" y="0" width="50" height="20" uuid="823e4567-e89b-12d3-a456-426614174026"/>
+                <textFieldExpression><![CDATA[$F{idVistoria}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="50" y="0" width="100" height="20" uuid="923e4567-e89b-12d3-a456-426614174027"/>
+                <textFieldExpression><![CDATA[$F{dataVistoria}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="150" y="0" width="255" height="20" uuid="a23e4567-e89b-12d3-a456-426614174028"/>
+                <textFieldExpression><![CDATA[$F{laudoVistoria}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="405" y="0" width="150" height="20" uuid="b23e4567-e89b-12d3-a456-426614174029"/>
+                <textFieldExpression><![CDATA[String.join(", ", $F{fotos})]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+</jasperReport>

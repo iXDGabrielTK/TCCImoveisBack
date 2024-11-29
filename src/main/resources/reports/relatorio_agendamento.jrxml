@@ -4,7 +4,7 @@
               xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports
                 http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
               name="RelatorioAgendamentos" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20"
-              rightMargin="20" topMargin="20" bottomMargin="20" uuid="12345678-abcd-1234-efgh-1234567890ab">
+              rightMargin="20" topMargin="20" bottomMargin="20" uuid="a9f7a1c4-55b4-48df-91a6-88fbb28f4d1e">
     <property name="com.jaspersoft.studio.data.defaultdataadapter" value="data.json"/>
     <queryString>
         <![CDATA[]]>
@@ -14,7 +14,7 @@
     <title>
         <band height="50">
             <staticText>
-                <reportElement x="0" y="0" width="555" height="30" uuid="title1"/>
+                <reportElement x="0" y="0" width="555" height="30" uuid="123e4567-e89b-12d3-a456-426614174010"/>
                 <textElement textAlignment="Center">
                     <font size="16" isBold="true"/>
                 </textElement>
@@ -25,14 +25,14 @@
     <columnHeader>
         <band height="30">
             <staticText>
-                <reportElement x="0" y="0" width="200" height="30" uuid="header1"/>
+                <reportElement x="0" y="0" width="200" height="30" uuid="223e4567-e89b-12d3-a456-426614174011"/>
                 <textElement>
                     <font isBold="true"/>
                 </textElement>
                 <text><![CDATA[Imóvel ID]]></text>
             </staticText>
             <staticText>
-                <reportElement x="200" y="0" width="200" height="30" uuid="header2"/>
+                <reportElement x="200" y="0" width="200" height="30" uuid="323e4567-e89b-12d3-a456-426614174012"/>
                 <textElement>
                     <font isBold="true"/>
                 </textElement>
@@ -43,11 +43,11 @@
     <detail>
         <band height="20">
             <textField>
-                <reportElement x="0" y="0" width="200" height="20" uuid="field1"/>
+                <reportElement x="0" y="0" width="200" height="20" uuid="423e4567-e89b-12d3-a456-426614174013"/>
                 <textFieldExpression><![CDATA[$F{imovelId}]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="200" y="0" width="200" height="20" uuid="field2"/>
+                <reportElement x="200" y="0" width="200" height="20" uuid="523e4567-e89b-12d3-a456-426614174014"/>
                 <textFieldExpression><![CDATA[$F{totalAgendamentos}]]></textFieldExpression>
             </textField>
         </band>

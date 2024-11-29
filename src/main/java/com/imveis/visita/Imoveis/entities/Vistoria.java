@@ -8,6 +8,7 @@ import lombok.*;
 import java.math.BigInteger;
 import java.sql.Date;
 import java.util.List;
+
 @Entity
 @Table(name = "vistoria")
 @Data
@@ -17,7 +18,6 @@ import java.util.List;
 @Getter
 @Setter
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-
 public class Vistoria {
 
     @Id
@@ -34,4 +34,8 @@ public class Vistoria {
     @ManyToOne
     @JoinColumn(name = "imovel_id", nullable = false)
     private Imovel imovel;
+
+    // Adicionar relacionamento com fotos
+    @OneToMany(mappedBy = "vistoria", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FotoVistoria> fotos;
 }

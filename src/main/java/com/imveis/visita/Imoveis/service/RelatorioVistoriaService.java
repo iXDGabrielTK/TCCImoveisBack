@@ -1,87 +1,45 @@
-/*
 package com.imveis.visita.Imoveis.service;
 
-import com.imveis.visita.Imoveis.entities.FotoVistoria;
-import com.imveis.visita.Imoveis.entities.Vistoria;
-import com.imveis.visita.Imoveis.repositories.FotoVistoriaRepository;
-import com.imveis.visita.Imoveis.repositories.VistoriaRepository;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Table;
-import org.springframework.beans.factory.annotation.Autowired;
+import net.sf.jasperreports.engine.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.math.BigInteger;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
-public class RelatorioVistoriaService extends RelatorioBase {
+public class RelatorioVistoriaService {
 
-    @Autowired
-    private VistoriaRepository vistoriaRepository;
+    @Value("${relatorios.caminho}")
+    private String caminhoRelatorios;
 
-    @Autowired
-    private FotoVistoriaRepository fotoVistoriaRepository;
-
-    public ByteArrayInputStream gerarRelatorioVistorias(BigInteger idImovel) {
-        // Inicializar o fluxo de saída para armazenar o PDF
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        Document document = criarDocumento(out);
-
-        if (document == null) {
-            return null; // Retorna null se o documento não puder ser criado
+    public byte[] gerarRelatorioVistorias(BigInteger idImovel, String mesAno) {
+        if (idImovel == null) {
+            throw new IllegalArgumentException("O ID do imóvel não pode ser nulo.");
         }
 
         try {
-            // Adicionar título ao relatório
-            document.add(criarTitulo("Relatório de Vistorias"));
+            String caminhoRelatorio = caminhoRelatorios + "relatorio_vistorias.jasper";
+            File relatorio = new File(caminhoRelatorio);
 
-            // Adicionar subtítulo
-            document.add(criarSubtitulo("Histórico de vistorias para o Imóvel ID: " + idImovel));
-
-            // Buscar as vistorias associadas ao imóvel
-            List<Vistoria> vistorias = vistoriaRepository.findByImovelId(idImovel);
-
-
-            if (vistorias.isEmpty()) {
-                document.add(new Paragraph("Nenhuma vistoria encontrada para o imóvel."));
-            } else {
-                // Criar tabela para exibir os dados das vistorias
-                Table table = criarTabela(new float[]{1, 3, 3});
-                adicionarCabecalhos(table, "ID", "Data", "Laudo");
-
-                for (Vistoria vistoria : vistorias) {
-                    table.addCell(String.valueOf(vistoria.getIdVistoria()));
-                    table.addCell(vistoria.getDataVistoria().toString());
-                    table.addCell(vistoria.getLaudoVistoria());
-                }
-
-                document.add(table);
-
-                // Adicionar seção de fotos relacionadas às vistorias
-                document.add(criarSubtitulo("Fotos das vistorias:"));
-
-                for (Vistoria vistoria : vistorias) {
-                    List<FotoVistoria> fotos = fotoVistoriaRepository.findByVistoria(vistoria);
-
-                    if (fotos.isEmpty()) {
-                        document.add(new Paragraph("Nenhuma foto registrada para a vistoria ID: " + vistoria.getIdVistoria()));
-                    } else {
-                        for (FotoVistoria foto : fotos) {
-                            document.add(new Paragraph("Foto URL: " + foto.getUrlFotoVistoria()));
-                        }
-                    }
-                }
+            if (!relatorio.exists()) {
+                throw new JRException("O arquivo do relatório não foi encontrado no caminho: " + caminhoRelatorio);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            document.close(); // Certifique-se de fechar o documento para liberar recursos
-        }
 
-        return new ByteArrayInputStream(out.toByteArray());
+            Map<String, Object> parametros = new HashMap<>();
+            parametros.put("ID_IMOVEL", idImovel);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(
+                    relatorio.getAbsolutePath(),
+                    parametros,
+                    new JREmptyDataSource() // Conecte ao seu datasource real aqui
+            );
+
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+        } catch (JRException e) {
+            throw new RuntimeException("Erro ao gerar o relatório de vistorias.", e);
+        }
     }
 }
-*/
