@@ -6,11 +6,12 @@
               name="RelatorioAgendamentos" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20"
               rightMargin="20" topMargin="20" bottomMargin="20" uuid="a9f7a1c4-55b4-48df-91a6-88fbb28f4d1e">
     <property name="com.jaspersoft.studio.data.defaultdataadapter" value="data.json"/>
-    <queryString>
-        <![CDATA[]]>
-    </queryString>
+
+    <!-- Campos do relatório -->
     <field name="imovelId" class="java.lang.Long"/>
     <field name="totalAgendamentos" class="java.lang.Long"/>
+
+    <!-- Título do relatório -->
     <title>
         <band height="50">
             <staticText>
@@ -18,10 +19,12 @@
                 <textElement textAlignment="Center">
                     <font size="16" isBold="true"/>
                 </textElement>
-                <text><![CDATA[$P{titulo}]]></text>
+                <text><![CDATA[Relatório de Agendamentos]]></text>
             </staticText>
         </band>
     </title>
+
+    <!-- Cabeçalho das colunas -->
     <columnHeader>
         <band height="30">
             <staticText>
@@ -40,6 +43,8 @@
             </staticText>
         </band>
     </columnHeader>
+
+    <!-- Detalhes dos dados -->
     <detail>
         <band height="20">
             <textField>
