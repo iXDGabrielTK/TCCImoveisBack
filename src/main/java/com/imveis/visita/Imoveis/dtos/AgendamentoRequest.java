@@ -13,7 +13,6 @@ public class AgendamentoRequest {
     private LocalDate dataAgendamento;
     private boolean horarioMarcado;
 
-    // ALTERAÇÃO: Adicionando o campo usuarioId
     private BigInteger usuarioId;
 
     public void setUsuario(Usuario usuario) {

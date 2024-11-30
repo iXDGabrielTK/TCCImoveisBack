@@ -2,7 +2,10 @@ package com.imveis.visita.Imoveis.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
@@ -32,7 +35,9 @@ public class Agendamento {
     @JsonBackReference
     private Imovel imovel;
 
-    // ALTERAÇÃO: Relacionamento com Usuario adicionado
+    @Column(name = "CANCELADO", nullable = false)
+    private boolean cancelado = false;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USUARIO_ID", nullable = true)
     private Usuario usuario;

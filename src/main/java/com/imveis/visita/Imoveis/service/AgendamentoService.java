@@ -8,12 +8,8 @@ import com.imveis.visita.Imoveis.repositories.ImovelRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class AgendamentoService {
@@ -54,22 +50,22 @@ public class AgendamentoService {
         return agendaRepository.save(agendamento);
     }
 
-    public void cancelarAgendamento(BigInteger imovelId, LocalDate data, boolean horarioMarcado) {
-        Optional<Agendamento> agendamento = agendaRepository.findByImovelIdAndDataAgendamentoAndHorarioMarcado(imovelId, data, horarioMarcado);
+    public void cancelarAgendamento(BigInteger id) {
+        Optional<Agendamento> agendamentoOptional = agendaRepository.findById(id);
 
-        if (agendamento.isEmpty()) {
-            throw new IllegalArgumentException("Nenhum agendamento encontrado para o imóvel na data especificada.");
+        if (agendamentoOptional.isEmpty()) {
+            throw new IllegalArgumentException("Nenhum agendamento encontrado com o ID especificado.");
         }
 
-        agendaRepository.delete(agendamento.get());
+        Agendamento agendamento = agendamentoOptional.get();
+        agendamento.setCancelado(true);
+        agendaRepository.save(agendamento);
     }
 
-    public List<Agendamento> buscarAgendamentosPorImovel(BigInteger imovelId) {
-        return agendaRepository.findByImovelId(imovelId);
+
+    public List<Agendamento> buscarAgendamentosPorUsuario(BigInteger usuarioId) {
+        return agendaRepository.findByUsuarioId(usuarioId);
     }
-
-
-
 
 }
 

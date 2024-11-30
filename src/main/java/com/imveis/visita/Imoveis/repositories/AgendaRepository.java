@@ -8,28 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
-import java.util.BitSet;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface AgendaRepository extends JpaRepository<Agendamento, BigInteger> {
-
-
-    @Query("SELECT COUNT(a) FROM Agendamento a " +
-            "WHERE EXTRACT(YEAR FROM a.dataAgendamento) = :ano " +
-            "AND EXTRACT(MONTH FROM a.dataAgendamento) = :mes")
-    long countAgendamentosByMonth(@Param("ano") int ano, @Param("mes") int mes);
-
-    @Query("SELECT a.imovel.id AS imovelId, COUNT(a) AS totalAgendamentos " +
-            "FROM Agendamento a " +
-            "WHERE EXTRACT(YEAR FROM a.dataAgendamento) = :ano " +
-            "AND EXTRACT(MONTH FROM a.dataAgendamento) = :mes " +
-            "GROUP BY a.imovel.id")
-    List<Object[]> countAgendamentosByImovelAndMonth(@Param("ano") int ano, @Param("mes") int mes);
-
-    @Query("SELECT a FROM Agendamento a WHERE a.imovel.idImovel = :imovelId")
-    List<Agendamento> findByImovelId(@Param("imovelId") BigInteger imovelId);
 
     @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END " +
             "FROM Agendamento a " +
@@ -42,12 +24,8 @@ public interface AgendaRepository extends JpaRepository<Agendamento, BigInteger>
             @Param("horarioMarcado") boolean horarioMarcado
     );
 
-    @Query("SELECT a FROM Agendamento a WHERE a.imovel.idImovel = :imovelId AND a.dataAgendamento = :data AND a.horarioMarcado = :horarioMarcado")
-    Optional<Agendamento> findByImovelIdAndDataAgendamentoAndHorarioMarcado(
-            @Param("imovelId") BigInteger imovelId,
-            @Param("data") LocalDate data,
-            @Param("horarioMarcado") boolean horarioMarcado
-    );
+    @Query("SELECT a FROM Agendamento a WHERE a.usuario.id = :usuarioId")
+    List<Agendamento> findByUsuarioId(@Param("usuarioId") BigInteger usuarioId);
 
 
 }
