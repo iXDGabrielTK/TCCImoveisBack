@@ -4,7 +4,7 @@ import com.imveis.visita.Imoveis.dtos.AgendamentoRequest;
 import com.imveis.visita.Imoveis.entities.Agendamento;
 import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.service.AgendamentoService;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,12 +46,15 @@ public class AgendaController {
 
 
 
-    @GetMapping(value = "/usuario/{usuarioid}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Agendamento>> listarAgendamentosPorUsuario(@PathVariable BigInteger usuarioid) {
-        System.out.println("Endpoint '/agendamentos/usuario/{usuarioId}' chamado com ID: " + usuarioid);
-        List<Agendamento> agendamentos = agendamentoService.buscarAgendamentosPorUsuario(usuarioid);
-        return ResponseEntity.ok(agendamentos);
+    @GetMapping(value = "/usuario/{usuarioId}", produces = "application/json")
+    public ResponseEntity<List<Agendamento>> getAgendamentosByUsuario(@PathVariable BigInteger usuarioId) {
+        try {
+            List<Agendamento> agendamentos = agendamentoService.findByUsuarioId(usuarioId);
+            return ResponseEntity.ok(agendamentos);
+        } catch (Exception e) {
+            System.err.println("Erro ao buscar agendamentos: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-
 
 }

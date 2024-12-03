@@ -24,8 +24,6 @@ public interface AgendaRepository extends JpaRepository<Agendamento, BigInteger>
             @Param("horarioMarcado") boolean horarioMarcado
     );
 
-    @Query("SELECT a FROM Agendamento a WHERE a.usuario.id = :usuarioId")
-    List<Agendamento> findByUsuarioId(@Param("usuarioId") BigInteger usuarioId);
-
+    List<Agendamento> findByUsuarioId(BigInteger usuarioId);
 
 }

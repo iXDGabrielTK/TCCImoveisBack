@@ -40,5 +40,6 @@ public class Agendamento {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USUARIO_ID", nullable = true)
+    @JsonBackReference
     private Usuario usuario;
 }

@@ -63,7 +63,7 @@ public class AgendamentoService {
     }
 
 
-    public List<Agendamento> buscarAgendamentosPorUsuario(BigInteger usuarioId) {
+    public List<Agendamento> findByUsuarioId(BigInteger usuarioId) {
         return agendaRepository.findByUsuarioId(usuarioId);
     }
 
