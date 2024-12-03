@@ -9,7 +9,10 @@ import com.imveis.visita.Imoveis.repositories.VisitanteRepository;
 import com.imveis.visita.Imoveis.service.LogAcessoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 import java.util.Optional;
@@ -40,20 +43,30 @@ public class LoginController {
         Optional<Funcionario> funcionario = funcionarioRepository.findByLoginAndSenha(login, senha);
         if (funcionario.isPresent()) {
             String token = jwtUtil.gerarToken(login);
+            Funcionario funcionarioEncontrado = funcionario.get();
 
-            logAcessoService.registrarLog(funcionario.get(), "LOGIN");
+            logAcessoService.registrarLog(funcionarioEncontrado, "LOGIN");
 
-            return ResponseEntity.ok().body(Map.of("token", token, "tipo", "funcionario"));
+            return ResponseEntity.ok().body(Map.of(
+                    "token", token,
+                    "usuario_Id", funcionarioEncontrado.getId(),
+                    "tipo", "funcionario"
+            ));
         }
 
         // Verificar credenciais do visitante
         Optional<Visitante> visitante = visitanteRepository.findByLoginAndSenha(login, senha);
         if (visitante.isPresent()) {
             String token = jwtUtil.gerarToken(login);
+            Visitante visitanteEncontrado = visitante.get();
 
-            logAcessoService.registrarLog(visitante.get(), "LOGIN");
+            logAcessoService.registrarLog(visitanteEncontrado, "LOGIN");
 
-            return ResponseEntity.ok().body(Map.of("token", token, "tipo", "visitante"));
+            return ResponseEntity.ok().body(Map.of(
+                    "token", token,
+                    "usuario_Id", visitanteEncontrado.getId(),
+                    "tipo", "visitante"
+            ));
         }
 
         // Credenciais inválidas

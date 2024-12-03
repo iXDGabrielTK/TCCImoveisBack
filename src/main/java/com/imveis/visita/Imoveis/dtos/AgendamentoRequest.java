@@ -1,6 +1,5 @@
 package com.imveis.visita.Imoveis.dtos;
 
-import com.imveis.visita.Imoveis.entities.Usuario;
 import lombok.Data;
 
 import java.math.BigInteger;
@@ -12,9 +11,5 @@ public class AgendamentoRequest {
     private String nomeVisitante;
     private LocalDate dataAgendamento;
     private boolean horarioMarcado;
-
-    private BigInteger usuarioId;
-
-    public void setUsuario(Usuario usuario) {
-    }
+    private BigInteger usuario_Id;
 }

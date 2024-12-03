@@ -2,7 +2,6 @@ package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.dtos.AgendamentoRequest;
 import com.imveis.visita.Imoveis.entities.Agendamento;
-import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.service.AgendamentoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +23,7 @@ public class AgendaController {
     @PostMapping("/agendar")
     public ResponseEntity<Agendamento> agendarVisita(@RequestBody AgendamentoRequest request) {
         try {
-            if (request.getUsuarioId() != null) {
-                Usuario usuario = new Usuario() {
-                };
-                usuario.setId(request.getUsuarioId());
-                request.setUsuario(usuario);
-            }
+            System.out.println("Request recebido: " + request);
 
             Agendamento agendamento = agendamentoService.agendarVisita(request);
             return ResponseEntity.ok(agendamento);
@@ -44,8 +38,6 @@ public class AgendaController {
         return ResponseEntity.noContent().build();
     }
 
-
-
     @GetMapping(value = "/usuario/{usuarioId}", produces = "application/json")
     public ResponseEntity<List<Agendamento>> getAgendamentosByUsuario(@PathVariable BigInteger usuarioId) {
         try {
@@ -56,5 +48,4 @@ public class AgendaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-
 }

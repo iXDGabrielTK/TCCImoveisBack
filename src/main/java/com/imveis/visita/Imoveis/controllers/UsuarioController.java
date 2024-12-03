@@ -48,10 +48,6 @@ public class UsuarioController {
         }
     }
 
-
-
-
-
     @GetMapping("/{id}")
     public ResponseEntity<?> getUsuarioById(@PathVariable BigInteger id) {
         Optional<Usuario> usuario = usuarioService.findById(id);
