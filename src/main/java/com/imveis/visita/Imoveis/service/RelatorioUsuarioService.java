@@ -1,43 +1,25 @@
 package com.imveis.visita.Imoveis.service;
 
-import net.sf.jasperreports.engine.*;
-import org.springframework.beans.factory.annotation.Value;
+import com.imveis.visita.Imoveis.dtos.RelatorioUsuarioDTO;
+import com.imveis.visita.Imoveis.repositories.LogAcessoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @Service
 public class RelatorioUsuarioService {
 
-    @Value("${relatorios.caminho}")
-    private String caminhoRelatorios;
+    @Autowired
+    private LogAcessoRepository logAcessoRepository;
 
-    public byte[] gerarRelatorioUsuarios(BigInteger idImovel, String mesAno) {
-        try {
-            String caminhoRelatorio = caminhoRelatorios + "relatorio_usuarios.jasper";
-            File relatorio = new File(caminhoRelatorio);
+    public List<RelatorioUsuarioDTO> buscarRelatorioUsuarios(String mesAno) {
+        // Divide o mesAno (exemplo: "2024-11") em ano e mês
+        String[] parts = mesAno.split("-");
+        int ano = Integer.parseInt(parts[0]);
+        int mes = Integer.parseInt(parts[1]);
 
-            if (!relatorio.exists()) {
-                throw new JRException("O arquivo do relatório não foi encontrado no caminho: " + caminhoRelatorio);
-            }
-
-            Map<String, Object> parametros = new HashMap<>();
-            parametros.put("ID_IMOVEL", idImovel);
-            parametros.put("MES_ANO", mesAno);
-
-            JasperPrint jasperPrint = JasperFillManager.fillReport(
-                    relatorio.getAbsolutePath(),
-                    parametros,
-                    new JREmptyDataSource()
-            );
-
-            return JasperExportManager.exportReportToPdf(jasperPrint);
-        } catch (JRException e) {
-            throw new RuntimeException("Erro ao gerar o relatório de usuários.", e);
-        }
+        // Busca os dados no repositório
+        return logAcessoRepository.buscarRelatorioUsuarios(ano, mes);
     }
-
 }

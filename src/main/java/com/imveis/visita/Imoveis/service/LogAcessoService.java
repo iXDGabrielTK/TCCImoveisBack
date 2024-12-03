@@ -1,5 +1,6 @@
 package com.imveis.visita.Imoveis.service;
 
+import com.imveis.visita.Imoveis.dtos.RelatorioUsuarioDTO;
 import com.imveis.visita.Imoveis.entities.LogAcesso;
 import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.repositories.LogAcessoRepository;
@@ -19,7 +20,6 @@ public class LogAcessoService {
         this.logAcessoRepository = logAcessoRepository;
     }
 
-    // Registrar um novo log
     public void registrarLog(Usuario usuario, String acao) {
         LogAcesso log = new LogAcesso();
         log.setUsuario(usuario);
@@ -28,13 +28,15 @@ public class LogAcessoService {
         logAcessoRepository.save(log);
     }
 
-    // Contar logins por mês
-    public long contarLoginsPorMes(YearMonth mesAno) {
-        return logAcessoRepository.countLoginsByMonth(mesAno.getYear(), mesAno.getMonthValue());
+    public long countLoginsByMonth(int ano, int mes) {
+        return logAcessoRepository.countLoginsByMonth(ano, mes);
     }
 
-    // Consultar logins por usuário
-    public List<Object[]> contarLoginsPorUsuario() {
+    public List<Object[]> countLoginsByUsuario() {
         return logAcessoRepository.countLoginsByUsuario();
+    }
+
+    public List<RelatorioUsuarioDTO> buscarRelatorioUsuarios(int ano, int mes) {
+        return logAcessoRepository.buscarRelatorioUsuarios(ano, mes);
     }
 }

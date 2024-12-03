@@ -32,7 +32,7 @@ public class Vistoria {
     private Date dataVistoria;
 
     @ManyToOne
-    @JoinColumn(name = "imovel_id", nullable = false)
+    @JoinColumn(name = "imovel_id", nullable = false, referencedColumnName = "id")
     private Imovel imovel;
 
     // Adicionar relacionamento com fotos

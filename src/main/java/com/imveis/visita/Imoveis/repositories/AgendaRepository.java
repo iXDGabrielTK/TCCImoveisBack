@@ -1,5 +1,7 @@
 package com.imveis.visita.Imoveis.repositories;
 
+import com.imveis.visita.Imoveis.dtos.RelatorioAgendamentoDTO;
+import com.imveis.visita.Imoveis.dtos.RelatorioUsuarioDTO;
 import com.imveis.visita.Imoveis.entities.Agendamento;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,39 +17,43 @@ import java.util.Optional;
 @Repository
 public interface AgendaRepository extends JpaRepository<Agendamento, BigInteger> {
 
-
-    @Query("SELECT COUNT(a) FROM Agendamento a " +
-            "WHERE EXTRACT(YEAR FROM a.dataAgendamento) = :ano " +
-            "AND EXTRACT(MONTH FROM a.dataAgendamento) = :mes")
+    @Query("SELECT COUNT(a) FROM Agendamento a WHERE EXTRACT(YEAR FROM a.dataAgendamento) = :ano AND EXTRACT(MONTH FROM a.dataAgendamento) = :mes")
     long countAgendamentosByMonth(@Param("ano") int ano, @Param("mes") int mes);
 
-    @Query("SELECT a.imovel.id AS imovelId, COUNT(a) AS totalAgendamentos " +
-            "FROM Agendamento a " +
-            "WHERE EXTRACT(YEAR FROM a.dataAgendamento) = :ano " +
-            "AND EXTRACT(MONTH FROM a.dataAgendamento) = :mes " +
-            "GROUP BY a.imovel.id")
+    @Query("SELECT a.imovel.idImovel AS imovelId, COUNT(a) AS totalAgendamentos " +
+            "FROM Agendamento a WHERE EXTRACT(YEAR FROM a.dataAgendamento) = :ano AND EXTRACT(MONTH FROM a.dataAgendamento) = :mes " +
+            "GROUP BY a.imovel.idImovel")
     List<Object[]> countAgendamentosByImovelAndMonth(@Param("ano") int ano, @Param("mes") int mes);
 
     @Query("SELECT a FROM Agendamento a WHERE a.imovel.idImovel = :imovelId")
     List<Agendamento> findByImovelId(@Param("imovelId") BigInteger imovelId);
 
     @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END " +
-            "FROM Agendamento a " +
-            "WHERE a.imovel.idImovel = :imovelId " +
-            "AND a.dataAgendamento = :dataAgendamento " +
+            "FROM Agendamento a WHERE a.imovel.idImovel = :imovelId AND a.dataAgendamento = :dataAgendamento " +
             "AND a.horarioMarcado = :horarioMarcado")
     boolean existsByImovelIdAndDataAgendamentoAndHorarioMarcado(
             @Param("imovelId") BigInteger imovelId,
             @Param("dataAgendamento") LocalDate dataAgendamento,
             @Param("horarioMarcado") boolean horarioMarcado
     );
+    @Query("SELECT new com.imveis.visita.Imoveis.dtos.RelatorioAgendamentoDTO( " +
+            "a.imovel.idImovel, a.imovel.descricaoImovel, COUNT(a)) " +
+            "FROM Agendamento a " +
+            "WHERE EXTRACT(YEAR FROM a.dataAgendamento) = :ano " +
+            "AND EXTRACT(MONTH FROM a.dataAgendamento) = :mes " +
+            "GROUP BY a.imovel.idImovel, a.imovel.descricaoImovel")
+    List<RelatorioAgendamentoDTO> buscarRelatorioAgendamentos(@Param("ano") int ano, @Param("mes") int mes);
 
-    @Query("SELECT a FROM Agendamento a WHERE a.imovel.idImovel = :imovelId AND a.dataAgendamento = :data AND a.horarioMarcado = :horarioMarcado")
+
+    @Query("SELECT a FROM Agendamento a " +
+            "WHERE a.imovel.idImovel = :imovelId " +
+            "AND a.dataAgendamento = :dataAgendamento " +
+            "AND a.horarioMarcado = :horarioMarcado")
     Optional<Agendamento> findByImovelIdAndDataAgendamentoAndHorarioMarcado(
             @Param("imovelId") BigInteger imovelId,
-            @Param("data") LocalDate data,
+            @Param("dataAgendamento") LocalDate dataAgendamento,
             @Param("horarioMarcado") boolean horarioMarcado
     );
 
-
 }
+
