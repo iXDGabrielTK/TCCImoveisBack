@@ -27,3 +27,4 @@ public interface LogAcessoRepository extends JpaRepository<LogAcesso, BigInteger
             "GROUP BY l.usuario.id, l.usuario.nome")
     List<RelatorioUsuarioDTO> buscarRelatorioUsuarios(@Param("ano") int ano, @Param("mes") int mes);
 }
+

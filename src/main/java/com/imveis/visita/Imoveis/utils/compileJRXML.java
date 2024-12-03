@@ -8,7 +8,7 @@ import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 
-public class CompileJRXML {
+public class compileJRXML {
 
     public static void main(String[] args) {
         // Lista de arquivos .jrxml
@@ -50,6 +50,5 @@ public class CompileJRXML {
             throw e; // Interrompe a execução se houver erro
         }
     }
-
 
 }
