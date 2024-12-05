@@ -26,5 +26,12 @@ public interface LogAcessoRepository extends JpaRepository<LogAcesso, BigInteger
             "WHERE l.acao = 'LOGIN' AND EXTRACT(YEAR FROM l.dataHora) = :ano AND EXTRACT(MONTH FROM l.dataHora) = :mes " +
             "GROUP BY l.usuario.id, l.usuario.nome")
     List<RelatorioUsuarioDTO> buscarRelatorioUsuarios(@Param("ano") int ano, @Param("mes") int mes);
-}
 
+    // Método para buscar relatórios de usuários por ano
+    @Query("SELECT new com.imveis.visita.Imoveis.dtos.RelatorioUsuarioDTO( " +
+            "l.usuario.id, l.usuario.nome, COUNT(l)) " +
+            "FROM LogAcesso l " +
+            "WHERE l.acao = 'LOGIN' AND EXTRACT(YEAR FROM l.dataHora) = :ano " +
+            "GROUP BY l.usuario.id, l.usuario.nome")
+    List<RelatorioUsuarioDTO> buscarRelatorioUsuariosPorAno(@Param("ano") int ano);
+}

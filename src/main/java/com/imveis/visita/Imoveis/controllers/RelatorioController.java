@@ -29,27 +29,71 @@ public class RelatorioController {
     @Autowired
     private RelatorioAgendamentoService relatorioAgendamentoService;
 
-    // Relatório de Vistorias
+    /**
+     * Relatório de Vistorias
+     * Filtro: ID do imóvel.
+     */
     @GetMapping("/vistorias")
-    public ResponseEntity<List<RelatorioVistoriaDTO>> getRelatorioVistorias(@RequestParam BigInteger idImovel) {
-        List<RelatorioVistoriaDTO> relatorio = relatorioVistoriaService.buscarRelatorioVistorias(idImovel);
-        return ResponseEntity.ok(relatorio);
+    public ResponseEntity<?> gerarRelatorioVistorias(@RequestParam BigInteger idImovel) {
+        try {
+            List<RelatorioVistoriaDTO> relatorio = relatorioVistoriaService.buscarRelatorioVistorias(idImovel);
+            return ResponseEntity.ok(relatorio);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
-    // Relatório de Usuários
+    /**
+     * Relatório de Usuários
+     * Filtros: mês e ano (formato "YYYY-MM").
+     */
     @GetMapping("/usuarios")
-    public ResponseEntity<List<RelatorioUsuarioDTO>> getRelatorioUsuarios(@RequestParam String mesAno) {
-        List<RelatorioUsuarioDTO> relatorio = relatorioUsuarioService.buscarRelatorioUsuarios(mesAno);
-        return ResponseEntity.ok(relatorio);
+    public ResponseEntity<?> gerarRelatorioUsuarios(
+            @RequestParam(required = false) String mesAno,
+            @RequestParam(required = false) Integer ano) {
+        try {
+            // Filtro principal com mesAno
+            if (mesAno != null) {
+                List<RelatorioUsuarioDTO> relatorio = relatorioUsuarioService.buscarRelatorioUsuarios(mesAno);
+                return ResponseEntity.ok(relatorio);
+            }
+
+            // Caso o filtro mesAno não seja fornecido, usar ano
+            if (ano != null) {
+                List<RelatorioUsuarioDTO> relatorio = relatorioUsuarioService.buscarRelatorioUsuariosPorAno(ano);
+                return ResponseEntity.ok(relatorio);
+            }
+
+            return ResponseEntity.badRequest().body("Por favor, forneça o parâmetro 'mesAno' ou 'ano'.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
-
-
-
-    // Relatório de Agendamentos
+    /**
+     * Relatório de Agendamentos
+     * Filtros: mês e ano (formato "YYYY-MM").
+     */
     @GetMapping("/agendamentos")
-    public ResponseEntity<List<RelatorioAgendamentoDTO>> getRelatorioAgendamentos(@RequestParam String mesAno) {
-        List<RelatorioAgendamentoDTO> relatorio = relatorioAgendamentoService.buscarRelatorioAgendamentos(mesAno);
-        return ResponseEntity.ok(relatorio);
+    public ResponseEntity<?> getRelatorioAgendamentos(
+            @RequestParam(required = false) String mesAno,
+            @RequestParam(required = false) Integer ano) {
+        try {
+            // Filtro principal com mesAno
+            if (mesAno != null) {
+                List<RelatorioAgendamentoDTO> relatorio = relatorioAgendamentoService.buscarRelatorioAgendamentos(mesAno);
+                return ResponseEntity.ok(relatorio);
+            }
+
+            // Caso o filtro mesAno não seja fornecido, usar ano
+            if (ano != null) {
+                List<RelatorioAgendamentoDTO> relatorio = relatorioAgendamentoService.buscarRelatorioAgendamentosPorAno(ano);
+                return ResponseEntity.ok(relatorio);
+            }
+
+            return ResponseEntity.badRequest().body("Por favor, forneça o parâmetro 'mesAno' ou 'ano'.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

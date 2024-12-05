@@ -15,6 +15,9 @@ public class RelatorioVistoriaService {
     private VistoriaRepository vistoriaRepository;
 
     public List<RelatorioVistoriaDTO> buscarRelatorioVistorias(BigInteger idImovel) {
+        if (idImovel == null) {
+            throw new IllegalArgumentException("O ID do imóvel não pode ser nulo.");
+        }
         // Busca os dados no repositório
         return vistoriaRepository.buscarRelatorioVistorias(idImovel);
     }

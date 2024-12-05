@@ -41,6 +41,12 @@ public interface AgendaRepository extends JpaRepository<Agendamento, BigInteger>
             @Param("dataAgendamento") LocalDate dataAgendamento,
             @Param("horarioMarcado") boolean horarioMarcado
     );
+    @Query("SELECT new com.imveis.visita.Imoveis.dtos.RelatorioAgendamentoDTO( " +
+            "a.imovel.idImovel, a.imovel.descricaoImovel, COUNT(a)) " +
+            "FROM Agendamento a " +
+            "WHERE EXTRACT(YEAR FROM a.dataAgendamento) = :ano " +
+            "GROUP BY a.imovel.idImovel, a.imovel.descricaoImovel")
+    List<RelatorioAgendamentoDTO> buscarRelatorioAgendamentosPorAno(@Param("ano") int ano);
 
     /*
     @Query("SELECT a FROM Agendamento a WHERE a.imovel.idImovel = :imovelId AND a.dataAgendamento = :data AND a.horarioMarcado = :horarioMarcado")
