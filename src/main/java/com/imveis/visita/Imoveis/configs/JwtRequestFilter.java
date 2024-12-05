@@ -23,7 +23,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
             boolean isValid = jwtUtil.validarToken(token);
-
+            System.out.println("Authorization Header: " + request.getHeader("Authorization"));
             if (!isValid) {
                 response.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
                 return;

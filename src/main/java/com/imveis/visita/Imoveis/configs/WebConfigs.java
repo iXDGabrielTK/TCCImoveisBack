@@ -29,6 +29,7 @@ public class WebConfigs {
                         .allowedOrigins("http://localhost:5173") // Domínio do seu front-end
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
+                        .exposedHeaders("Authorization")
                         .allowCredentials(true);
             }
         };

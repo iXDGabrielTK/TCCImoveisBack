@@ -34,6 +34,7 @@ public class JwtUtil {
             Jwts.parserBuilder().setSigningKey(chaveSecreta).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
+            System.out.println("Token validation error: " + e.getMessage());
             return false;
         }
     }

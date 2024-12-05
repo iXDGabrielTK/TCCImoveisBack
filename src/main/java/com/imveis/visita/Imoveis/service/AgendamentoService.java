@@ -43,7 +43,7 @@ public class AgendamentoService {
         boolean agendamentoExistente = agendaRepository.existsByImovelIdAndDataAgendamentoAndHorarioMarcado(
                 request.getImovelId(),
                 request.getDataAgendamento(),
-                request.isHorarioMarcado()
+                request.getHorarioMarcado()
         );
 
         if (agendamentoExistente) {
@@ -56,11 +56,11 @@ public class AgendamentoService {
         agendamento.setImovel(imovel);
         agendamento.setNomeVisitante(request.getNomeVisitante());
         agendamento.setDataAgendamento(request.getDataAgendamento());
-        agendamento.setHorarioMarcado(request.isHorarioMarcado());
+        agendamento.setHorarioMarcado(request.getHorarioMarcado());
 
-        if (request.getUsuario_Id() != null) {
-            Usuario usuario = usuarioRepository.findById(request.getUsuario_Id())
-                    .orElseThrow(() -> new IllegalArgumentException("Visitante com ID " + request.getUsuario_Id() + " não encontrado."));
+        if (request.getUsuarioId() != null) {
+            Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
+                    .orElseThrow(() -> new IllegalArgumentException("Visitante com ID " + request.getUsuarioId() + " não encontrado."));
             agendamento.setUsuario(usuario);
         }
 

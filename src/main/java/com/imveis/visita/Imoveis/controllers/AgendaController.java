@@ -25,6 +25,16 @@ public class AgendaController {
         try {
             System.out.println("Request recebido: " + request);
 
+            if (request.getNomeVisitante() == null || request.getNomeVisitante().isEmpty()) {
+                throw new IllegalArgumentException("Nome do visitante é obrigatório");
+            }
+            if (request.getImovelId() == null) {
+                throw new IllegalArgumentException("ID do imóvel é obrigatório");
+            }
+            if (request.getDataAgendamento() == null) {
+                throw new IllegalArgumentException("Data de agendamento é obrigatória");
+            }
+
             Agendamento agendamento = agendamentoService.agendarVisita(request);
             return ResponseEntity.ok(agendamento);
         } catch (IllegalArgumentException e) {
