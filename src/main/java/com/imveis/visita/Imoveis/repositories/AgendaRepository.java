@@ -58,11 +58,14 @@ public interface AgendaRepository extends JpaRepository<Agendamento, BigInteger>
     */
     List<Agendamento> findByUsuarioId(BigInteger usuarioId);
 
-    @Query("SELECT new com.imveis.visita.Imoveis.dtos.RelatorioAgendamentoDTO(" +
+    @Query("SELECT new com.imveis.visita.Imoveis.dtos.RelatorioAgendamentoDTO( " +
             "a.imovel.idImovel, a.imovel.descricaoImovel, COUNT(a)) " +
             "FROM Agendamento a " +
-            "WHERE YEAR(a.dataAgendamento) = :ano AND MONTH(a.dataAgendamento) = :mes " +
-            "GROUP BY a.imovel.idImovel, a.imovel.descricaoImovel")
+            "WHERE EXTRACT(YEAR FROM a.dataAgendamento) = :ano " +
+            "AND EXTRACT(MONTH FROM a.dataAgendamento) = :mes " +
+            "AND a.cancelado = false " +
+            "GROUP BY a.imovel.idImovel, a.imovel.descricaoImovel " +
+            "ORDER BY COUNT(a) DESC")
     List<RelatorioAgendamentoDTO> buscarRelatorioAgendamentos(@Param("ano") int ano, @Param("mes") int mes);
 
 }

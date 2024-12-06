@@ -14,11 +14,12 @@ import java.util.List;
 public interface VistoriaRepository extends JpaRepository<Vistoria, BigInteger> {
 
     @Query("SELECT new com.imveis.visita.Imoveis.dtos.RelatorioVistoriaDTO( " +
-            "v.imovel.idImovel, v.imovel.descricaoImovel, TO_CHAR(v.dataVistoria, 'YYYY-MM-DD'), v.laudoVistoria) " +
+            "v.idVistoria, v.imovel.idImovel, v.imovel.descricaoImovel, v.dataVistoria, v.laudoVistoria) " +
             "FROM Vistoria v " +
             "WHERE v.imovel.idImovel = :idImovel " +
             "ORDER BY v.dataVistoria DESC")
     List<RelatorioVistoriaDTO> buscarRelatorioVistorias(@Param("idImovel") BigInteger idImovel);
+
 
 }
 

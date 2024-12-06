@@ -11,13 +11,13 @@ import java.math.BigInteger;
 public class RelatorioAgendamentoDTO {
     private BigInteger idImovel;
     private String descricaoImovel;
-    private long totalAgendamentos;
+    private long quantidadeAgendamentos;
 
-    public RelatorioAgendamentoDTO(BigInteger idImovel, String descricaoImovel, long totalAgendamentos) {
+    public RelatorioAgendamentoDTO(BigInteger idImovel, String descricaoImovel, long quantidadeAgendamentos) {
         this.idImovel = idImovel;
         this.descricaoImovel = descricaoImovel;
-        this.totalAgendamentos = totalAgendamentos;
+        this.quantidadeAgendamentos = quantidadeAgendamentos;
     }
 
-    // Getters e setters
+    // Getters e Setters
 }
