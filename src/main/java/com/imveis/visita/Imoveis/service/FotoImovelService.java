@@ -31,10 +31,6 @@ public class FotoImovelService {
         return fotoImovelRepository.save(fotoImovel);
     }
 
-    public List<FotoImovel> saveAll(List<FotoImovel> fotos) {
-        return fotoImovelRepository.saveAll(fotos);
-    }
-
     public void deleteById(BigInteger id) {
         fotoImovelRepository.deleteById(id);
     }

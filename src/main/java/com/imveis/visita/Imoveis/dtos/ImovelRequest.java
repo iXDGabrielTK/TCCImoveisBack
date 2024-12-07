@@ -19,7 +19,5 @@ public class ImovelRequest {
     private Float precoImovel;
     private Endereco enderecoImovel;
     private List<String> fotosImovel;
-
-    // ALTERAÇÃO: Adicionando o campo funcionarioId
     private BigInteger funcionarioId;
 }

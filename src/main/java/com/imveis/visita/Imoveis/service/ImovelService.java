@@ -72,4 +72,8 @@ public class ImovelService {
     public void deleteById(BigInteger id) {
         imovelRepository.deleteById(id);
     }
+
+    public Optional<Imovel> findByEndereco(String rua, String numero, String bairro) {
+        return imovelRepository.findByEnderecoImovel_RuaAndEnderecoImovel_NumeroAndEnderecoImovel_Bairro(rua, numero, bairro);
+    }
 }

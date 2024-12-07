@@ -1,6 +1,7 @@
 package com.imveis.visita.Imoveis.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,6 +37,7 @@ public class Vistoria {
     private Imovel imovel;
 
     // Adicionar relacionamento com fotos
-    @OneToMany(mappedBy = "vistoria", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FotoVistoria> fotos;
+    @OneToMany(mappedBy = "vistoria", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<FotoVistoria> fotosvistoria;
 }
