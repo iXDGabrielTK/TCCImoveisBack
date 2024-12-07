@@ -13,6 +13,7 @@ import java.util.List;
 @Data
 public class VistoriaRequest {
     private BigInteger idVistoria;
+    private String tipoVistoria;
     private String laudoVistoria;
     private Date dataVistoria;
     private List<String> fotosVistoria;

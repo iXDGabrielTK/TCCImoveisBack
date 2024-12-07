@@ -37,8 +37,17 @@ public class VistoriaController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Vistoria> getVistoriaById(@PathVariable BigInteger id) {
-        return vistoriaService.findById(id);
+    public ResponseEntity<?> getVistoriaById(@PathVariable BigInteger id) {
+        try {
+            Optional<Vistoria> vistoria = vistoriaService.findById(id);
+            if (vistoria.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vistoria não encontrada.");
+            }
+            return ResponseEntity.ok(vistoria);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Erro ao buscar vistoria: " + e.getMessage());
+        }
     }
 
     @PostMapping
@@ -50,6 +59,7 @@ public class VistoriaController {
 
             // Criar a entidade de Vistoria
             Vistoria vistoria = new Vistoria();
+            vistoria.setTipoVistoria(vistoriaRequest.getTipoVistoria());
             vistoria.setLaudoVistoria(vistoriaRequest.getLaudoVistoria());
             vistoria.setDataVistoria((Date) vistoriaRequest.getDataVistoria());
             vistoria.setImovel(imovel);
@@ -69,6 +79,30 @@ public class VistoriaController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateVistoria(@PathVariable BigInteger id, @RequestBody VistoriaRequest vistoriaRequest) {
+        try {
+            Vistoria vistoria = vistoriaService.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Vistoria não encontrada"));
+
+            vistoria.setTipoVistoria(vistoriaRequest.getTipoVistoria());
+            vistoria.setLaudoVistoria(vistoriaRequest.getLaudoVistoria());
+            vistoria.setDataVistoria((Date) vistoriaRequest.getDataVistoria());
+
+            Vistoria updatedVistoria = vistoriaService.save(vistoria);
+            return ResponseEntity.ok(new VistoriaDTO(updatedVistoria));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar vistoria: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}/cancelar")
+    public ResponseEntity<Void> cancelarVistoria(@PathVariable BigInteger id) {
+        vistoriaService.cancelarVistoria(id);
+        return ResponseEntity.noContent().build();
+    }
 
     @DeleteMapping("/{id}")
     public void deleteVistoria(@PathVariable BigInteger id){

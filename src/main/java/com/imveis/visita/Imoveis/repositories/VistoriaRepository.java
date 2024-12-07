@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface VistoriaRepository extends JpaRepository<Vistoria, BigInteger> {
@@ -19,6 +20,14 @@ public interface VistoriaRepository extends JpaRepository<Vistoria, BigInteger> 
             "WHERE v.imovel.idImovel = :idImovel " +
             "ORDER BY v.dataVistoria DESC")
     List<RelatorioVistoriaDTO> buscarRelatorioVistorias(@Param("idImovel") BigInteger idImovel);
+
+
+    @Query("SELECT v FROM Vistoria v WHERE v.apagado = false")
+    List<Vistoria> findAllActive();
+
+    @Query("SELECT v FROM Vistoria v WHERE v.idVistoria = :id AND v.apagado = false")
+    Optional<Vistoria> findByIdActive(@Param("id") BigInteger id);
+
 
 
 }

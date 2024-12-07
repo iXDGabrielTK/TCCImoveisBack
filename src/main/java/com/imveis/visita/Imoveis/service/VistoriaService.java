@@ -21,15 +21,23 @@ public class VistoriaService {
     }
 
     public List<Vistoria> findAll() {
-        return vistoriaRepository.findAll();
+        return vistoriaRepository.findAllActive();
     }
 
-    public Optional<Vistoria> findById(BigInteger id){
-        return vistoriaRepository.findById(id);
+    public Optional<Vistoria> findById(BigInteger id) {
+        return vistoriaRepository.findByIdActive(id);
     }
 
     public Vistoria save(Vistoria vistoria) {
         return vistoriaRepository.save(vistoria);
+    }
+
+    public void cancelarVistoria(BigInteger id) {
+        Vistoria vistoria = vistoriaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Nenhuma Vistoria encontrado com o ID especificado."));
+
+        vistoria.setApagado(true);
+        vistoriaRepository.save(vistoria);
     }
 
     public void deleteById(BigInteger id) {

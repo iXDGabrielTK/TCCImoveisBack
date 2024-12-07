@@ -11,12 +11,14 @@ import java.util.List;
 @Setter
 public class VistoriaDTO {
     private BigInteger idVistoria;
+    private String tipoVistoria;
     private String laudoVistoria;
     private Date dataVistoria;
     private List<String> fotosVistoria;
 
     public VistoriaDTO(Vistoria vistoria){
         this.idVistoria = vistoria.getIdVistoria();
+        this.tipoVistoria = vistoria.getTipoVistoria();
         this.laudoVistoria = vistoria.getLaudoVistoria();
         this.dataVistoria = vistoria.getDataVistoria();
         this.fotosVistoria = vistoria.getFotosvistoria()

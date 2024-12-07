@@ -26,6 +26,10 @@ public class Vistoria {
     @Column(name = "ID")
     private BigInteger idVistoria;
 
+
+    @Column(name = "tipo_vistoria")
+    private String tipoVistoria;
+
     @Column(name = "laudo_vistoria", columnDefinition = "TEXT")
     private String laudoVistoria;
 
@@ -40,4 +44,8 @@ public class Vistoria {
     @OneToMany(mappedBy = "vistoria", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<FotoVistoria> fotosvistoria;
+
+    @Column(name = "apagado", nullable = false)
+    private boolean apagado = false;
+
 }
