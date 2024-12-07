@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,24 +40,27 @@ public class FotoImovelController {
     }
 
     @PostMapping
-    public ResponseEntity<List<FotoImovel>> createFotosImovel(@RequestBody List<String> urls, @RequestParam BigInteger imovelId) {
+    public ResponseEntity<Object> createFotosImovel(@RequestBody String urls, @RequestParam BigInteger imovelId) {
         Imovel imovel = imovelService.findById(imovelId)
                 .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado"));
 
-        List<FotoImovel> fotos = urls.stream()
+        List<FotoImovel> fotos = Arrays.stream(urls.split(","))
+                .map(String::trim)
+                .filter(url -> !url.isEmpty() && url.startsWith("http"))
                 .map(url -> {
                     FotoImovel foto = new FotoImovel();
                     foto.setImovel(imovel);
-                    foto.setUrlFotoImovel(url.trim());
-                    return foto;
+                    foto.setUrlFotoImovel(url);
+                    return fotoImovelService.save(foto);
                 })
                 .collect(Collectors.toList());
 
-        List<FotoImovel> savedFotos = fotoImovelService.saveAll(fotos);
+        if (fotos.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Nenhuma URL válida fornecida.");
+        }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedFotos);
+        return ResponseEntity.status(HttpStatus.CREATED).body(fotos);
     }
-
 
 
     @DeleteMapping("/{id}")

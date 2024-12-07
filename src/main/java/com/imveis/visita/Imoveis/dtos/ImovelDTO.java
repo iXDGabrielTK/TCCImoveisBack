@@ -1,12 +1,12 @@
 package com.imveis.visita.Imoveis.dtos;
 
 import com.imveis.visita.Imoveis.entities.Endereco;
-import com.imveis.visita.Imoveis.entities.FotoImovel;
 import com.imveis.visita.Imoveis.entities.Imovel;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -32,7 +32,8 @@ public class ImovelDTO {
         this.enderecoImovel = imovel.getEnderecoImovel();
         this.fotosImovel = imovel.getFotosImovel()
                 .stream()
-                .map(FotoImovel::getUrlFotoImovel)
+                .flatMap(foto -> Arrays.stream(foto.getUrlFotoImovel().split(",")))
+                .map(String::trim)
                 .toList();
     }
 }

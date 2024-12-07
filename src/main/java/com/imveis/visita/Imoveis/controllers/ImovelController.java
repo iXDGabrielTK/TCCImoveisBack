@@ -4,7 +4,6 @@ import com.imveis.visita.Imoveis.dtos.ImovelDTO;
 import com.imveis.visita.Imoveis.dtos.ImovelRequest;
 import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.entities.Imovel;
-import com.imveis.visita.Imoveis.entities.LogAcesso;
 import com.imveis.visita.Imoveis.service.ImovelService;
 import com.imveis.visita.Imoveis.service.LogAcessoService;
 import com.imveis.visita.Imoveis.service.UsuarioService;
@@ -23,11 +22,13 @@ public class ImovelController {
     private final ImovelService imovelService;
     private final LogAcessoService logAcessoService;
     private final UsuarioService usuarioService;
+    private final FotoImovelController fotoImovelController;
 
-    public ImovelController(ImovelService imovelService, LogAcessoService logAcessoService, UsuarioService usuarioService) {
+    public ImovelController(ImovelService imovelService, LogAcessoService logAcessoService, UsuarioService usuarioService, FotoImovelController fotoImovelController) {
         this.imovelService = imovelService;
         this.logAcessoService = logAcessoService;
         this.usuarioService = usuarioService;
+        this.fotoImovelController = fotoImovelController;
     }
 
     @GetMapping
@@ -71,14 +72,21 @@ public class ImovelController {
             imovel.setPrecoImovel(imovelRequest.getPrecoImovel());
             imovel.setEnderecoImovel(imovelRequest.getEnderecoImovel());
 
-            // ALTERAÇÃO: Associar funcionário se funcionarioId for fornecido
+            // Associar funcionário, se fornecido
             if (imovelRequest.getFuncionarioId() != null) {
                 Funcionario funcionario = new Funcionario();
                 funcionario.setId(imovelRequest.getFuncionarioId());
                 imovel.setFuncionario(funcionario);
             }
 
-            imovel = imovelService.save(imovel); // Salva o imóvel no banco
+            // Salva o imóvel
+            imovel = imovelService.save(imovel);
+
+            if (imovelRequest.getFotosImovel() != null && !imovelRequest.getFotosImovel().isEmpty()) {
+                String urls = String.join(",", imovelRequest.getFotosImovel());
+                fotoImovelController.createFotosImovel(urls, imovel.getIdImovel());
+            }
+
             return new ResponseEntity<>(imovel, HttpStatus.CREATED);
         } catch (Exception e) {
             e.printStackTrace();
