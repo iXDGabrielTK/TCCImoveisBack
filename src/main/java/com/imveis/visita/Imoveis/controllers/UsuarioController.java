@@ -30,6 +30,7 @@ public class UsuarioController {
         this.funcionarioService = funcionarioService;
     }
 
+
     @PostMapping
     public ResponseEntity<?> criarUsuario(@RequestBody Usuario usuario) {
         try {
@@ -48,31 +49,93 @@ public class UsuarioController {
         }
     }
 
+    // Buscar usuário pelo ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getUsuarioById(@PathVariable BigInteger id) {
-        Optional<Usuario> usuario = usuarioService.findById(id);
-        return usuario.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        try {
+            Optional<Usuario> usuario = usuarioService.findById(id);
+
+            if (usuario.isPresent()) {
+                return ResponseEntity.ok(usuario.get());
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao buscar usuário: " + e.getMessage());
+        }
     }
 
+    // Atualizar dados do usuário pelo ID
+    @PutMapping("/{id}")
+    public ResponseEntity<?> atualizarUsuario(@PathVariable BigInteger id, @RequestBody Usuario usuarioAtualizado) {
+        System.out.println("Requisição recebida para atualizar o usuário com ID: " + id);
+        System.out.println("Dados recebidos: " + usuarioAtualizado);
+
+        try {
+            if (usuarioAtualizado.getNome() == null || usuarioAtualizado.getLogin() == null) {
+                return ResponseEntity.badRequest().body("Campos obrigatórios ausentes: nome e login são obrigatórios.");
+            }
+
+            Optional<Usuario> usuarioExistente = usuarioService.findById(id);
+
+            if (usuarioExistente.isPresent()) {
+                Usuario usuario = usuarioExistente.get();
+
+                if (usuarioAtualizado.getNome() != null) {
+                    usuario.setNome(usuarioAtualizado.getNome());
+                }
+                if (usuarioAtualizado.getTelefone() != null) {
+                    usuario.setTelefone(usuarioAtualizado.getTelefone());
+                }
+                if (usuarioAtualizado.getLogin() != null) {
+                    usuario.setLogin(usuarioAtualizado.getLogin());
+                }
+                if (usuarioAtualizado.getSenha() != null) {
+                    usuario.setSenha(usuarioAtualizado.getSenha());
+                }
+
+                Usuario usuarioSalvo = usuarioService.save(usuario);
+                return ResponseEntity.ok(usuarioSalvo);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
+            }
+        } catch (Exception e) {
+            System.err.println("Erro ao atualizar usuário: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao atualizar usuário: " + e.getMessage());
+        }
+    }
+
+
+
+
+
+
+    // Listar usuários por tipo
     @GetMapping("/tipo/{tipo}")
     public ResponseEntity<List<Usuario>> listarUsuariosPorTipo(@PathVariable String tipo) {
-        List<Usuario> usuarios;
-        if ("visitante".equalsIgnoreCase(tipo)) {
-            usuarios = usuarioService.findByTipo(Visitante.class);
-        } else if ("funcionario".equalsIgnoreCase(tipo)) {
-            usuarios = usuarioService.findByTipo(Funcionario.class);
-        } else {
-            return ResponseEntity.badRequest().body(null);
-        }
+        try {
+            List<Usuario> usuarios;
+            if ("visitante".equalsIgnoreCase(tipo)) {
+                usuarios = usuarioService.findByTipo(Visitante.class);
+            } else if ("funcionario".equalsIgnoreCase(tipo)) {
+                usuarios = usuarioService.findByTipo(Funcionario.class);
+            } else {
+                return ResponseEntity.badRequest().body(null);
+            }
 
-        if (usuarios.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            if (usuarios.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.ok(usuarios);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
         }
-        return ResponseEntity.ok(usuarios);
     }
 
-
+    // Deletar usuário pelo ID
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletarUsuario(@PathVariable BigInteger id) {
         try {
