@@ -57,4 +57,8 @@ public class Imovel {
     @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Agendamento> agendamentos;
+
+    @Column(name = "APAGADO", nullable = false)
+    private Boolean apagado = false;
+
 }

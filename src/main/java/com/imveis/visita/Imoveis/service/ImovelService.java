@@ -26,13 +26,13 @@ public class ImovelService {
     private FuncionarioRepository funcionarioRepository;
 
     public List<Imovel> findAll() {
-        List<Imovel> imoveis = imovelRepository.findAll();
+        List<Imovel> imoveis = imovelRepository.findAllActive();
         imoveis.forEach(imovel -> imovel.getFotosImovel().size());
         return imoveis;
     }
 
     public Optional<Imovel> findById(BigInteger id) {
-        return imovelRepository.findById(id);
+        return imovelRepository.findByIdActive(id);
     }
 
     public Imovel save(Imovel imovel) {
@@ -68,7 +68,12 @@ public class ImovelService {
         // Salvamento
         return imovelRepository.save(imovel);
     }
-
+    public void cancelarImovel(BigInteger id) {
+        Imovel imovel = imovelRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Nenhum imóvel encontrado com o ID especificado."));
+        imovel.setApagado(true);
+        imovelRepository.save(imovel);
+    }
     public void deleteById(BigInteger id) {
         imovelRepository.deleteById(id);
     }

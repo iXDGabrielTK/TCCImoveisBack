@@ -94,6 +94,35 @@ public class ImovelController {
         }
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Imovel> updateImovel(@PathVariable BigInteger id, @RequestBody ImovelRequest imovelRequest) {
+        try {
+            Imovel imovel = imovelService.findById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado"));
+
+            imovel.setTipoImovel(imovelRequest.getTipoImovel());
+            imovel.setDescricaoImovel(imovelRequest.getDescricaoImovel());
+            imovel.setStatusImovel(imovelRequest.getStatusImovel());
+            imovel.setTamanhoImovel(imovelRequest.getTamanhoImovel());
+            imovel.setPrecoImovel(imovelRequest.getPrecoImovel());
+            imovel.setEnderecoImovel(imovelRequest.getEnderecoImovel());
+
+            Imovel updatedImovel = imovelService.save(imovel);
+            return ResponseEntity.ok(updatedImovel);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @PutMapping("/{id}/cancelar")
+    public ResponseEntity<Void> cancelarImovel(@PathVariable BigInteger id) {
+        imovelService.cancelarImovel(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
     @DeleteMapping("/{id}")
     public void deleteImovel(@PathVariable BigInteger id) {
         imovelService.deleteById(id);
