@@ -95,11 +95,16 @@ public class ImovelController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Imovel> updateImovel(@PathVariable BigInteger id, @RequestBody ImovelRequest imovelRequest) {
+    public ResponseEntity<?> updateImovel(@PathVariable BigInteger id, @RequestBody ImovelRequest imovelRequest) {
+        System.out.println("Updating Imovel ID: " + id); // Debugging
         try {
-            Imovel imovel = imovelService.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado"));
+            Optional<Imovel> imovelOptional = imovelService.findById(id);
 
+            if (imovelOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Imóvel não encontrado.");
+            }
+
+            Imovel imovel = imovelOptional.get();
             imovel.setTipoImovel(imovelRequest.getTipoImovel());
             imovel.setTamanhoImovel(imovelRequest.getTamanhoImovel());
             imovel.setPrecoImovel(imovelRequest.getPrecoImovel());
@@ -109,19 +114,19 @@ public class ImovelController {
             imovel.setEnderecoImovel(imovelRequest.getEnderecoImovel());
 
             Imovel updatedImovel = imovelService.save(imovel);
-
+            System.out.println("Updating Imovel ID: " + id); // Debugging
             if (imovelRequest.getFotosImovel() != null && !imovelRequest.getFotosImovel().isEmpty()) {
                 String urls = String.join(",", imovelRequest.getFotosImovel());
                 fotoImovelController.createFotosImovel(urls, imovel.getIdImovel());
             }
 
             return ResponseEntity.ok(updatedImovel);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o imóvel.");
         }
     }
+
 
     @PutMapping("/{id}/cancelar")
     public ResponseEntity<Void> cancelarImovel(@PathVariable BigInteger id) {

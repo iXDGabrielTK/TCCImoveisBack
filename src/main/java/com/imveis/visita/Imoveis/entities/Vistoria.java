@@ -26,7 +26,6 @@ public class Vistoria {
     @Column(name = "ID")
     private BigInteger idVistoria;
 
-
     @Column(name = "tipo_vistoria")
     private String tipoVistoria;
 
