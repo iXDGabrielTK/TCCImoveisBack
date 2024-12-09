@@ -5,13 +5,12 @@ import com.imveis.visita.Imoveis.dtos.ImovelRequest;
 import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.entities.Imovel;
 import com.imveis.visita.Imoveis.service.ImovelService;
-import com.imveis.visita.Imoveis.service.LogAcessoService;
-import com.imveis.visita.Imoveis.service.UsuarioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,40 +19,40 @@ import java.util.Optional;
 public class ImovelController {
 
     private final ImovelService imovelService;
-    private final LogAcessoService logAcessoService;
-    private final UsuarioService usuarioService;
+
     private final FotoImovelController fotoImovelController;
 
-    public ImovelController(ImovelService imovelService, LogAcessoService logAcessoService, UsuarioService usuarioService, FotoImovelController fotoImovelController) {
+    public ImovelController(ImovelService imovelService, FotoImovelController fotoImovelController) {
         this.imovelService = imovelService;
-        this.logAcessoService = logAcessoService;
-        this.usuarioService = usuarioService;
+
         this.fotoImovelController = fotoImovelController;
     }
 
     @GetMapping
     public ResponseEntity<List<ImovelDTO>> getAllImoveis() {
-        List<Imovel> imoveis = imovelService.findAll();
-        List<ImovelDTO> imoveisDTO = imoveis.stream()
-                .map(ImovelDTO::new)
-                .toList();
-        return ResponseEntity.ok(imoveisDTO);
+        try {
+            List<Imovel> imoveis = imovelService.findAll();
+            List<ImovelDTO> imoveisDTO = imoveis.stream()
+                    .map(ImovelDTO::new)
+                    .toList();
+            return ResponseEntity.ok(imoveisDTO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.emptyList());
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<Imovel>> getImoveisById(@PathVariable BigInteger id, @RequestParam BigInteger usuarioId) {
+    public ResponseEntity<?> getImoveisById(@PathVariable BigInteger id) {
         try {
             // Obter o imóvel pelo ID
             Optional<Imovel> imovel = imovelService.findById(id);
 
-            if (imovel.isPresent()) {
-                // Registrar log de visualização
-                usuarioService.findById(usuarioId).ifPresent(usuario ->
-                        logAcessoService.registrarLog(usuario, "VISUALIZACAO_IMOVEL")
-                );
+            if (imovel.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Imovel não encontrada.");
+            }else {
                 return ResponseEntity.ok(imovel);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Optional.empty());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,10 +65,11 @@ public class ImovelController {
         try {
             Imovel imovel = new Imovel();
             imovel.setTipoImovel(imovelRequest.getTipoImovel());
-            imovel.setDescricaoImovel(imovelRequest.getDescricaoImovel());
-            imovel.setStatusImovel(imovelRequest.getStatusImovel());
             imovel.setTamanhoImovel(imovelRequest.getTamanhoImovel());
             imovel.setPrecoImovel(imovelRequest.getPrecoImovel());
+            imovel.setStatusImovel(imovelRequest.getStatusImovel());
+            imovel.setDescricaoImovel(imovelRequest.getDescricaoImovel());
+            imovel.setHistoricoManutencao(imovelRequest.getHistoricoManutencao());
             imovel.setEnderecoImovel(imovelRequest.getEnderecoImovel());
 
             // Associar funcionário, se fornecido
@@ -101,13 +101,20 @@ public class ImovelController {
                     .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado"));
 
             imovel.setTipoImovel(imovelRequest.getTipoImovel());
-            imovel.setDescricaoImovel(imovelRequest.getDescricaoImovel());
-            imovel.setStatusImovel(imovelRequest.getStatusImovel());
             imovel.setTamanhoImovel(imovelRequest.getTamanhoImovel());
             imovel.setPrecoImovel(imovelRequest.getPrecoImovel());
+            imovel.setStatusImovel(imovelRequest.getStatusImovel());
+            imovel.setDescricaoImovel(imovelRequest.getDescricaoImovel());
+            imovel.setHistoricoManutencao(imovelRequest.getHistoricoManutencao());
             imovel.setEnderecoImovel(imovelRequest.getEnderecoImovel());
 
             Imovel updatedImovel = imovelService.save(imovel);
+
+            if (imovelRequest.getFotosImovel() != null && !imovelRequest.getFotosImovel().isEmpty()) {
+                String urls = String.join(",", imovelRequest.getFotosImovel());
+                fotoImovelController.createFotosImovel(urls, imovel.getIdImovel());
+            }
+
             return ResponseEntity.ok(updatedImovel);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
@@ -121,7 +128,6 @@ public class ImovelController {
         imovelService.cancelarImovel(id);
         return ResponseEntity.noContent().build();
     }
-
 
     @DeleteMapping("/{id}")
     public void deleteImovel(@PathVariable BigInteger id) {

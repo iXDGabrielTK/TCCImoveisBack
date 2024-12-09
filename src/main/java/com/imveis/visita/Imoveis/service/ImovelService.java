@@ -68,12 +68,14 @@ public class ImovelService {
         // Salvamento
         return imovelRepository.save(imovel);
     }
+
     public void cancelarImovel(BigInteger id) {
         Imovel imovel = imovelRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Nenhum imóvel encontrado com o ID especificado."));
         imovel.setApagado(true);
         imovelRepository.save(imovel);
     }
+
     public void deleteById(BigInteger id) {
         imovelRepository.deleteById(id);
     }

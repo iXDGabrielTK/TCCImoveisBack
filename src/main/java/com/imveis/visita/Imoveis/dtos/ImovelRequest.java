@@ -17,6 +17,7 @@ public class ImovelRequest {
     private Boolean statusImovel;
     private Float tamanhoImovel;
     private Float precoImovel;
+    private String historicoManutencao;
     private Endereco enderecoImovel;
     private List<String> fotosImovel;
     private BigInteger funcionarioId;

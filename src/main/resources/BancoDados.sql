@@ -81,7 +81,8 @@ CREATE TABLE vistoria (
                           TIPO_VISTORIA VARCHAR(255),
                           LAUDO_VISTORIA TEXT,
                           FOTO_VISTORIA TEXT[],
-                          DATA_VISTORIA DATE NOT NULL
+                          DATA_VISTORIA DATE NOT NULL,
+                          APAGADO BOOLEAN DEFAULT FALSE NOT NULL
 );
 
 -- Tabela FotosVistoria
