@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Getter
@@ -20,5 +19,4 @@ public class ImovelRequest {
     private String historicoManutencao;
     private Endereco enderecoImovel;
     private List<String> fotosImovel;
-    private BigInteger funcionarioId;
 }

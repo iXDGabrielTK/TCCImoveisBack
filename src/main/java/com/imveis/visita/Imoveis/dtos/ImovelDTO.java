@@ -20,9 +20,8 @@ public class ImovelDTO {
     private Float tamanhoImovel;
     private Float precoImovel;
     private Endereco enderecoImovel;
+    private String historicoManutencao;
     private List<String> fotosImovel;
-    private String historicoManutencao; // Adicionado
-    private BigInteger funcionarioId; // Adicionado
 
     public ImovelDTO(Imovel imovel) {
         this.idImovel = imovel.getIdImovel();
@@ -31,12 +30,12 @@ public class ImovelDTO {
         this.statusImovel = imovel.getStatusImovel();
         this.tamanhoImovel = imovel.getTamanhoImovel();
         this.precoImovel = imovel.getPrecoImovel();
+        this.historicoManutencao = imovel.getHistoricoManutencao();
         this.enderecoImovel = imovel.getEnderecoImovel();
         this.fotosImovel = imovel.getFotosImovel()
                 .stream()
                 .flatMap(foto -> Arrays.stream(foto.getUrlFotoImovel().split(",")))
                 .map(String::trim)
                 .toList();
-        this.historicoManutencao = imovel.getHistoricoManutencao(); // Adicionado
     }
 }

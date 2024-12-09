@@ -36,6 +36,9 @@ public class EnderecoController {
         return enderecoService.save(endereco);
     }
 
+    @PutMapping
+    public Endereco updateEndereco(@RequestBody Endereco endereco){return enderecoService.save(endereco);}
+
     @DeleteMapping("/{id}")
     public void deleteEndereco(@PathVariable BigInteger id) {
         enderecoService.deleteById(id);

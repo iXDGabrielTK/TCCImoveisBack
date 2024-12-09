@@ -36,7 +36,7 @@ public class Imovel {
     private Float precoImovel;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "ENDERECO_ID", referencedColumnName = "id")
+    @JoinColumn(name = "ENDERECO_ID", referencedColumnName = "id", nullable = false)
     private Endereco enderecoImovel;
 
     @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL)
@@ -48,11 +48,6 @@ public class Imovel {
     @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<FotoImovel> fotosImovel;
-
-    // ALTERAÇÃO: Relacionamento Funcionario -> Imovel agora é opcional
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FUNCIONARIO_ID", nullable = true)
-    private Funcionario funcionario;
 
     @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL)
     @JsonManagedReference

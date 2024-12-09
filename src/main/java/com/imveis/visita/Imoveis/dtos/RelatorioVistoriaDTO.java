@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigInteger;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @Getter
@@ -14,10 +14,10 @@ public class RelatorioVistoriaDTO {
     private BigInteger idVistoria;
     private BigInteger idImovel;
     private String descricaoImovel;
-    private Date dataVistoria;
+    private LocalDate dataVistoria;
     private String laudoVistoria;
 
-    public RelatorioVistoriaDTO(BigInteger idVistoria, BigInteger idImovel, String descricaoImovel, Date dataVistoria, String laudoVistoria) {
+    public RelatorioVistoriaDTO(BigInteger idVistoria, BigInteger idImovel, String descricaoImovel, LocalDate dataVistoria, String laudoVistoria) {
         this.idVistoria = idVistoria;
         this.idImovel = idImovel;
         this.descricaoImovel = descricaoImovel;

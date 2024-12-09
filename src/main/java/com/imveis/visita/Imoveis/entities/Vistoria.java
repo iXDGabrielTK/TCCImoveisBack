@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigInteger;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -33,7 +33,7 @@ public class Vistoria {
     private String laudoVistoria;
 
     @Column(name = "DATA_VISTORIA")
-    private Date dataVistoria;
+    private LocalDate dataVistoria;
 
     @ManyToOne
     @JoinColumn(name = "imovel_id", nullable = false, referencedColumnName = "id")

@@ -2,8 +2,9 @@ package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.dtos.ImovelDTO;
 import com.imveis.visita.Imoveis.dtos.ImovelRequest;
-import com.imveis.visita.Imoveis.entities.Funcionario;
+import com.imveis.visita.Imoveis.entities.Endereco;
 import com.imveis.visita.Imoveis.entities.Imovel;
+import com.imveis.visita.Imoveis.service.EnderecoService;
 import com.imveis.visita.Imoveis.service.ImovelService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +23,13 @@ public class ImovelController {
 
     private final FotoImovelController fotoImovelController;
 
-    public ImovelController(ImovelService imovelService, FotoImovelController fotoImovelController) {
+    private final EnderecoService enderecoService;
+
+    public ImovelController(ImovelService imovelService, FotoImovelController fotoImovelController, EnderecoService enderecoService) {
         this.imovelService = imovelService;
 
         this.fotoImovelController = fotoImovelController;
+        this.enderecoService = enderecoService;
     }
 
     @GetMapping
@@ -72,13 +76,6 @@ public class ImovelController {
             imovel.setHistoricoManutencao(imovelRequest.getHistoricoManutencao());
             imovel.setEnderecoImovel(imovelRequest.getEnderecoImovel());
 
-            // Associar funcionário, se fornecido
-            if (imovelRequest.getFuncionarioId() != null) {
-                Funcionario funcionario = new Funcionario();
-                funcionario.setId(imovelRequest.getFuncionarioId());
-                imovel.setFuncionario(funcionario);
-            }
-
             // Salva o imóvel
             imovel = imovelService.save(imovel);
 
@@ -96,29 +93,33 @@ public class ImovelController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateImovel(@PathVariable BigInteger id, @RequestBody ImovelRequest imovelRequest) {
-        System.out.println("Updating Imovel ID: " + id); // Debugging
+        System.out.println("Payload recebido no backend: " + imovelRequest);
+
         try {
             Optional<Imovel> imovelOptional = imovelService.findById(id);
-
             if (imovelOptional.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Imóvel não encontrado.");
             }
 
             Imovel imovel = imovelOptional.get();
+
+            // Atualize todos os campos
             imovel.setTipoImovel(imovelRequest.getTipoImovel());
+            imovel.setDescricaoImovel(imovelRequest.getDescricaoImovel());
+            imovel.setStatusImovel(imovelRequest.getStatusImovel());
             imovel.setTamanhoImovel(imovelRequest.getTamanhoImovel());
             imovel.setPrecoImovel(imovelRequest.getPrecoImovel());
-            imovel.setStatusImovel(imovelRequest.getStatusImovel());
-            imovel.setDescricaoImovel(imovelRequest.getDescricaoImovel());
             imovel.setHistoricoManutencao(imovelRequest.getHistoricoManutencao());
-            imovel.setEnderecoImovel(imovelRequest.getEnderecoImovel());
 
-            Imovel updatedImovel = imovelService.save(imovel);
-            System.out.println("Updating Imovel ID: " + id); // Debugging
-            if (imovelRequest.getFotosImovel() != null && !imovelRequest.getFotosImovel().isEmpty()) {
-                String urls = String.join(",", imovelRequest.getFotosImovel());
-                fotoImovelController.createFotosImovel(urls, imovel.getIdImovel());
+            // Atualiza o endereço
+            Endereco endereco = imovelRequest.getEnderecoImovel();
+            if (endereco != null) {
+                enderecoService.save(endereco);
+                imovel.setEnderecoImovel(endereco);
             }
+
+            // Atualiza o imóvel
+            Imovel updatedImovel = imovelService.save(imovel);
 
             return ResponseEntity.ok(updatedImovel);
         } catch (Exception e) {
@@ -126,6 +127,8 @@ public class ImovelController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o imóvel.");
         }
     }
+
+
 
 
     @PutMapping("/{id}/cancelar")

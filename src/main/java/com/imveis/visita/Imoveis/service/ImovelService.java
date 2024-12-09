@@ -1,7 +1,6 @@
 package com.imveis.visita.Imoveis.service;
 
 import com.imveis.visita.Imoveis.entities.Endereco;
-import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.entities.Imovel;
 import com.imveis.visita.Imoveis.repositories.EnderecoRepository;
 import com.imveis.visita.Imoveis.repositories.FuncionarioRepository;
@@ -42,21 +41,6 @@ public class ImovelService {
             if (endereco.getIdEndereco() == null) {
                 Endereco enderecoSalvo = enderecoRepository.save(endereco);
                 imovel.setEnderecoImovel(enderecoSalvo);
-            }
-        }
-
-        // Validação do funcionário
-        if (imovel.getFuncionario() != null) {
-            Funcionario funcionario = imovel.getFuncionario();
-            if (funcionario.getLogin() != null) {
-                Optional<Funcionario> funcionarioExistente = funcionarioRepository.findByLogin(funcionario.getLogin());
-                if (funcionarioExistente.isPresent()) {
-                    imovel.setFuncionario(funcionarioExistente.get());
-                } else {
-                    throw new IllegalArgumentException("Funcionário com o login fornecido não encontrado");
-                }
-            } else {
-                throw new IllegalArgumentException("Login do funcionário é necessário para associá-lo ao imóvel");
             }
         }
 

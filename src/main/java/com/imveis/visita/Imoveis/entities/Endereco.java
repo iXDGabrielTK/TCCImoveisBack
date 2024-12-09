@@ -19,24 +19,24 @@ public class Endereco {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigInteger idEndereco;
 
-    @Column(name = "RUA")
+    @Column(name = "RUA", nullable = false)
     private String rua;
 
-    @Column(name = "NUMERO")
+    @Column(name = "NUMERO", nullable = false)
     private String numero;
 
-    @Column(name = "COMPLEMENTO")
+    @Column(name = "COMPLEMENTO", nullable = false)
     private String complemento;
 
-    @Column(name = "BAIRRO")
+    @Column(name = "BAIRRO", nullable = false)
     private String bairro;
 
-    @Column(name = "CIDADE")
+    @Column(name = "CIDADE", nullable = false)
     private String cidade;
 
-    @Column(name = "ESTADO", length = 2)
+    @Column(name = "ESTADO", length = 2, nullable = false)
     private String estado;
 
-    @Column(name = "CEP")
+    @Column(name = "CEP", nullable = false)
     private String cep;
 }

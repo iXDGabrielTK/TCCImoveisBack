@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,7 +60,7 @@ public class VistoriaController {
             Vistoria vistoria = new Vistoria();
             vistoria.setTipoVistoria(vistoriaRequest.getTipoVistoria());
             vistoria.setLaudoVistoria(vistoriaRequest.getLaudoVistoria());
-            vistoria.setDataVistoria((Date) vistoriaRequest.getDataVistoria());
+            vistoria.setDataVistoria(vistoriaRequest.getDataVistoria());
             vistoria.setImovel(imovel);
 
             Vistoria novaVistoria = vistoriaService.save(vistoria);
@@ -87,7 +86,7 @@ public class VistoriaController {
 
             vistoria.setTipoVistoria(vistoriaRequest.getTipoVistoria());
             vistoria.setLaudoVistoria(vistoriaRequest.getLaudoVistoria());
-            vistoria.setDataVistoria((Date) vistoriaRequest.getDataVistoria());
+            vistoria.setDataVistoria(vistoriaRequest.getDataVistoria());
 
             Vistoria updatedVistoria = vistoriaService.save(vistoria);
             return ResponseEntity.ok(new VistoriaDTO(updatedVistoria));

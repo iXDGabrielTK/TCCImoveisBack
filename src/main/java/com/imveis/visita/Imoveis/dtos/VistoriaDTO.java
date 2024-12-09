@@ -1,11 +1,12 @@
 package com.imveis.visita.Imoveis.dtos;
+
 import com.imveis.visita.Imoveis.entities.Vistoria;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 @Getter
 @Setter
@@ -13,7 +14,7 @@ public class VistoriaDTO {
     private BigInteger idVistoria;
     private String tipoVistoria;
     private String laudoVistoria;
-    private Date dataVistoria;
+    private LocalDate dataVistoria;
     private List<String> fotosVistoria;
 
     public VistoriaDTO(Vistoria vistoria){
