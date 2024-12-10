@@ -34,6 +34,9 @@ public class AgendaController {
             if (request.getDataAgendamento() == null) {
                 throw new IllegalArgumentException("Data de agendamento é obrigatória");
             }
+            if (request.getUsuarioId() == null){
+                throw new IllegalArgumentException("UsuarioId de agendamento é obrigatório");
+            }
 
             Agendamento agendamento = agendamentoService.agendarVisita(request);
             return ResponseEntity.ok(agendamento);
