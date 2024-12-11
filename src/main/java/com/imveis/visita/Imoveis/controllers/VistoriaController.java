@@ -2,8 +2,10 @@ package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.dtos.VistoriaDTO;
 import com.imveis.visita.Imoveis.dtos.VistoriaRequest;
+import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.entities.Imovel;
 import com.imveis.visita.Imoveis.entities.Vistoria;
+import com.imveis.visita.Imoveis.service.FuncionarioService;
 import com.imveis.visita.Imoveis.service.ImovelService;
 import com.imveis.visita.Imoveis.service.VistoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +23,14 @@ public class VistoriaController {
 
     private final VistoriaService vistoriaService;
     private final ImovelService imovelService;
-    private final FotoVistoriaController fotoVistoriaController;
+    private final FuncionarioService funcionarioService;
+    //private final FotoVistoriaController fotoVistoriaController;
 
     @Autowired
-    public VistoriaController(VistoriaService vistoriaService, ImovelService imovelService, FotoVistoriaController fotoVistoriaController){
+    public VistoriaController(VistoriaService vistoriaService, ImovelService imovelService, FuncionarioService funcionarioService){
         this.vistoriaService = vistoriaService;
         this.imovelService = imovelService;
-        this.fotoVistoriaController = fotoVistoriaController;
+        this.funcionarioService = funcionarioService;
     }
 
     @GetMapping
@@ -56,19 +59,19 @@ public class VistoriaController {
             Imovel imovel = imovelService.findByEndereco(vistoriaRequest.getRua(), vistoriaRequest.getNumero(), vistoriaRequest.getBairro())
                     .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado para o endereço fornecido"));
 
+            // Buscar o funcionário pelo ID
+            Funcionario funcionario = funcionarioService.findById(vistoriaRequest.getUsuarioId())
+                    .orElseThrow(() -> new IllegalArgumentException("Funcionário não encontrado para o ID fornecido"));
+
             // Criar a entidade de Vistoria
             Vistoria vistoria = new Vistoria();
             vistoria.setTipoVistoria(vistoriaRequest.getTipoVistoria());
             vistoria.setLaudoVistoria(vistoriaRequest.getLaudoVistoria());
             vistoria.setDataVistoria(vistoriaRequest.getDataVistoria());
+            vistoria.setFuncionario(funcionario); // Associar o funcionário à vistoria
             vistoria.setImovel(imovel);
 
             Vistoria novaVistoria = vistoriaService.save(vistoria);
-
-            if (vistoriaRequest.getFotosVistoria() != null && !vistoriaRequest.getFotosVistoria().isEmpty()) {
-                String urls = String.join(",", vistoriaRequest.getFotosVistoria());
-                fotoVistoriaController.createFotosVistoria(urls, vistoria.getIdVistoria());
-            }
 
             return ResponseEntity.ok(new VistoriaDTO(novaVistoria));
         } catch (IllegalArgumentException e) {
@@ -77,6 +80,7 @@ public class VistoriaController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar vistoria: " + e.getMessage());
         }
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateVistoria(@PathVariable BigInteger id, @RequestBody VistoriaRequest vistoriaRequest) {

@@ -19,9 +19,9 @@ public class ImovelDTO {
     private Boolean statusImovel;
     private Float tamanhoImovel;
     private Float precoImovel;
+    private List<String> fotosImovel;
     private Endereco enderecoImovel;
     private String historicoManutencao;
-    private List<String> fotosImovel;
 
     public ImovelDTO(Imovel imovel) {
         this.idImovel = imovel.getIdImovel();

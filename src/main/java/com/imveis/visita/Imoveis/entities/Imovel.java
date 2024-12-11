@@ -47,6 +47,7 @@ public class Imovel {
 
     @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
+    @ToString.Exclude
     private List<FotoImovel> fotosImovel;
 
     @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL)

@@ -17,6 +17,6 @@ public class ImovelRequest {
     private Float tamanhoImovel;
     private Float precoImovel;
     private String historicoManutencao;
-    private Endereco enderecoImovel;
     private List<String> fotosImovel;
+    private Endereco enderecoImovel;
 }

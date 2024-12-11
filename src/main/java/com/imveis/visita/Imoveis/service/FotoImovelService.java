@@ -34,4 +34,5 @@ public class FotoImovelService {
     public void deleteById(BigInteger id) {
         fotoImovelRepository.deleteById(id);
     }
+
 }

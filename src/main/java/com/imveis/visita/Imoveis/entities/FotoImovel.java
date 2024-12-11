@@ -24,6 +24,7 @@ public class FotoImovel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "imovel_id")
     @JsonBackReference
+    @ToString.Exclude
     private Imovel imovel;
 
     @Column(name = "url_foto_imovel", nullable = false, length = 1000)

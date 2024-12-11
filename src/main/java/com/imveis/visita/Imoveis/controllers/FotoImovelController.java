@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,11 +39,11 @@ public class FotoImovelController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> createFotosImovel(@RequestBody String urls, @RequestParam BigInteger imovelId) {
+    public ResponseEntity<Object> createFotosImovel(@RequestBody List<String> urls, @RequestParam BigInteger imovelId) {
         Imovel imovel = imovelService.findById(imovelId)
                 .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado"));
 
-        List<FotoImovel> fotos = Arrays.stream(urls.split(","))
+        List<FotoImovel> fotos = urls.stream()
                 .map(String::trim)
                 .filter(url -> !url.isEmpty() && url.startsWith("http"))
                 .map(url -> {
@@ -61,7 +60,6 @@ public class FotoImovelController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(fotos);
     }
-
 
     @DeleteMapping("/{id}")
     public void deleteFotoImovel(@PathVariable BigInteger id) {

@@ -1,14 +1,12 @@
 package com.imveis.visita.Imoveis.entities;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "vistoria")
@@ -39,10 +37,15 @@ public class Vistoria {
     @JoinColumn(name = "imovel_id", nullable = false, referencedColumnName = "id")
     private Imovel imovel;
 
-    // Adicionar relacionamento com fotos
+    @ManyToOne
+    @JoinColumn(name = "funcionario_id", nullable = false)
+    private Funcionario funcionario;
+
+    /*
     @OneToMany(mappedBy = "vistoria", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<FotoVistoria> fotosvistoria;
+     */
 
     @Column(name = "apagado", nullable = false)
     private boolean apagado = false;

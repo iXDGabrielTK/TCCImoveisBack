@@ -3,6 +3,7 @@ package com.imveis.visita.Imoveis.controllers;
 import com.imveis.visita.Imoveis.dtos.ImovelDTO;
 import com.imveis.visita.Imoveis.dtos.ImovelRequest;
 import com.imveis.visita.Imoveis.entities.Endereco;
+import com.imveis.visita.Imoveis.entities.FotoImovel;
 import com.imveis.visita.Imoveis.entities.Imovel;
 import com.imveis.visita.Imoveis.service.EnderecoService;
 import com.imveis.visita.Imoveis.service.ImovelService;
@@ -24,6 +25,7 @@ public class ImovelController {
     private final FotoImovelController fotoImovelController;
 
     private final EnderecoService enderecoService;
+
 
     public ImovelController(ImovelService imovelService, FotoImovelController fotoImovelController, EnderecoService enderecoService) {
         this.imovelService = imovelService;
@@ -80,8 +82,7 @@ public class ImovelController {
             imovel = imovelService.save(imovel);
 
             if (imovelRequest.getFotosImovel() != null && !imovelRequest.getFotosImovel().isEmpty()) {
-                String urls = String.join(",", imovelRequest.getFotosImovel());
-                fotoImovelController.createFotosImovel(urls, imovel.getIdImovel());
+                fotoImovelController.createFotosImovel(imovelRequest.getFotosImovel(), imovel.getIdImovel());
             }
 
             return new ResponseEntity<>(imovel, HttpStatus.CREATED);
@@ -93,8 +94,6 @@ public class ImovelController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateImovel(@PathVariable BigInteger id, @RequestBody ImovelRequest imovelRequest) {
-        System.out.println("Payload recebido no backend: " + imovelRequest);
-
         try {
             Optional<Imovel> imovelOptional = imovelService.findById(id);
             if (imovelOptional.isEmpty()) {
@@ -103,7 +102,7 @@ public class ImovelController {
 
             Imovel imovel = imovelOptional.get();
 
-            // Atualize todos os campos
+            // Atualize os campos principais do imóvel
             imovel.setTipoImovel(imovelRequest.getTipoImovel());
             imovel.setDescricaoImovel(imovelRequest.getDescricaoImovel());
             imovel.setStatusImovel(imovelRequest.getStatusImovel());
@@ -111,14 +110,29 @@ public class ImovelController {
             imovel.setPrecoImovel(imovelRequest.getPrecoImovel());
             imovel.setHistoricoManutencao(imovelRequest.getHistoricoManutencao());
 
-            // Atualiza o endereço
+            // Atualize o endereço
             Endereco endereco = imovelRequest.getEnderecoImovel();
             if (endereco != null) {
                 enderecoService.save(endereco);
                 imovel.setEnderecoImovel(endereco);
             }
 
-            // Atualiza o imóvel
+            System.out.println("Fotos antes da limpeza: " + imovel.getFotosImovel());
+
+            // Atualize a lista de fotos diretamente
+            List<FotoImovel> novasFotos = imovelRequest.getFotosImovel().stream()
+                    .filter(url -> url != null && !url.trim().isEmpty() && url.startsWith("http"))
+                    .map(url -> FotoImovel.builder()
+                            .imovel(imovel)
+                            .urlFotoImovel(url)
+                            .build())
+                    .toList();
+
+            imovel.getFotosImovel().clear(); // Remove as fotos existentes
+            imovel.getFotosImovel().addAll(novasFotos); // Adiciona as novas fotos
+            System.out.println("Fotos após a atualização: " + imovel.getFotosImovel());
+
+            // Atualize o imóvel
             Imovel updatedImovel = imovelService.save(imovel);
 
             return ResponseEntity.ok(updatedImovel);
@@ -127,9 +141,6 @@ public class ImovelController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o imóvel.");
         }
     }
-
-
-
 
     @PutMapping("/{id}/cancelar")
     public ResponseEntity<Void> cancelarImovel(@PathVariable BigInteger id) {
