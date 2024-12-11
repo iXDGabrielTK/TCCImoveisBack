@@ -110,16 +110,28 @@ public class ImovelController {
             imovel.setPrecoImovel(imovelRequest.getPrecoImovel());
             imovel.setHistoricoManutencao(imovelRequest.getHistoricoManutencao());
 
-            // Atualize o endereço
-            Endereco endereco = imovelRequest.getEnderecoImovel();
-            if (endereco != null) {
-                enderecoService.save(endereco);
-                imovel.setEnderecoImovel(endereco);
+            // Atualize ou Reutilize o Endereço
+            Endereco novoEndereco = imovelRequest.getEnderecoImovel();
+            if (novoEndereco != null) {
+                if (imovel.getEnderecoImovel() != null) {
+                    // Atualiza o endereço existente
+                    Endereco enderecoExistente = imovel.getEnderecoImovel();
+                    enderecoExistente.setRua(novoEndereco.getRua());
+                    enderecoExistente.setNumero(novoEndereco.getNumero());
+                    enderecoExistente.setComplemento(novoEndereco.getComplemento());
+                    enderecoExistente.setBairro(novoEndereco.getBairro());
+                    enderecoExistente.setCidade(novoEndereco.getCidade());
+                    enderecoExistente.setEstado(novoEndereco.getEstado());
+                    enderecoExistente.setCep(novoEndereco.getCep());
+                    enderecoService.save(enderecoExistente); // Persistir as alterações
+                } else {
+                    // Caso não exista um endereço associado, cria um novo
+                    Endereco enderecoSalvo = enderecoService.save(novoEndereco);
+                    imovel.setEnderecoImovel(enderecoSalvo);
+                }
             }
 
-            System.out.println("Fotos antes da limpeza: " + imovel.getFotosImovel());
-
-            // Atualize a lista de fotos diretamente
+            // Atualize a lista de fotos
             List<FotoImovel> novasFotos = imovelRequest.getFotosImovel().stream()
                     .filter(url -> url != null && !url.trim().isEmpty() && url.startsWith("http"))
                     .map(url -> FotoImovel.builder()
@@ -130,9 +142,8 @@ public class ImovelController {
 
             imovel.getFotosImovel().clear(); // Remove as fotos existentes
             imovel.getFotosImovel().addAll(novasFotos); // Adiciona as novas fotos
-            System.out.println("Fotos após a atualização: " + imovel.getFotosImovel());
 
-            // Atualize o imóvel
+            // Salvar as alterações no imóvel
             Imovel updatedImovel = imovelService.save(imovel);
 
             return ResponseEntity.ok(updatedImovel);
@@ -141,6 +152,7 @@ public class ImovelController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o imóvel.");
         }
     }
+
 
     @PutMapping("/{id}/cancelar")
     public ResponseEntity<Void> cancelarImovel(@PathVariable BigInteger id) {
