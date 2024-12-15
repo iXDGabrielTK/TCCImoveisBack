@@ -19,5 +19,4 @@ public class RelatorioAgendamentoDTO {
         this.quantidadeAgendamentos = quantidadeAgendamentos;
     }
 
-    // Getters e Setters
 }

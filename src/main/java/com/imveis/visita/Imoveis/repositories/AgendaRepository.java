@@ -14,23 +14,6 @@ import java.util.List;
 @Repository
 public interface AgendaRepository extends JpaRepository<Agendamento, BigInteger> {
 
-    /*
-    @Query("SELECT COUNT(a) FROM Agendamento a " +
-            "WHERE EXTRACT(YEAR FROM a.dataAgendamento) = :ano " +
-            "AND EXTRACT(MONTH FROM a.dataAgendamento) = :mes")
-    long countAgendamentosByMonth(@Param("ano") int ano, @Param("mes") int mes);
-
-    @Query("SELECT a.imovel.id AS imovelId, COUNT(a) AS totalAgendamentos " +
-            "FROM Agendamento a " +
-            "WHERE EXTRACT(YEAR FROM a.dataAgendamento) = :ano " +
-            "AND EXTRACT(MONTH FROM a.dataAgendamento) = :mes " +
-            "GROUP BY a.imovel.id")
-    List<Object[]> countAgendamentosByImovelAndMonth(@Param("ano") int ano, @Param("mes") int mes);
-
-    @Query("SELECT a FROM Agendamento a WHERE a.imovel.idImovel = :imovelId")
-    List<Agendamento> findByImovelId(@Param("imovelId") BigInteger imovelId);
-    */
-
     @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END " +
             "FROM Agendamento a " +
             "WHERE a.imovel.idImovel = :imovelId " +
@@ -48,14 +31,6 @@ public interface AgendaRepository extends JpaRepository<Agendamento, BigInteger>
             "GROUP BY a.imovel.idImovel, a.imovel.descricaoImovel")
     List<RelatorioAgendamentoDTO> buscarRelatorioAgendamentosPorAno(@Param("ano") int ano);
 
-    /*
-    @Query("SELECT a FROM Agendamento a WHERE a.imovel.idImovel = :imovelId AND a.dataAgendamento = :data AND a.horarioMarcado = :horarioMarcado")
-    Optional<Agendamento> findByImovelIdAndDataAgendamentoAndHorarioMarcado(
-            @Param("imovelId") BigInteger imovelId,
-            @Param("data") LocalDate data,
-            @Param("horarioMarcado") boolean horarioMarcado
-    );
-    */
     List<Agendamento> findByUsuarioId(BigInteger usuarioId);
 
     @Query("SELECT new com.imveis.visita.Imoveis.dtos.RelatorioAgendamentoDTO( " +

@@ -24,7 +24,6 @@ public class VistoriaController {
     private final VistoriaService vistoriaService;
     private final ImovelService imovelService;
     private final FuncionarioService funcionarioService;
-    //private final FotoVistoriaController fotoVistoriaController;
 
     @Autowired
     public VistoriaController(VistoriaService vistoriaService, ImovelService imovelService, FuncionarioService funcionarioService){
@@ -55,20 +54,17 @@ public class VistoriaController {
     @PostMapping
     public ResponseEntity<?> createVistoria(@RequestBody VistoriaRequest vistoriaRequest) {
         try {
-            // Buscar o imóvel pela rua, número e bairro
             Imovel imovel = imovelService.findByEndereco(vistoriaRequest.getRua(), vistoriaRequest.getNumero(), vistoriaRequest.getBairro())
                     .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado para o endereço fornecido"));
 
-            // Buscar o funcionário pelo ID
             Funcionario funcionario = funcionarioService.findById(vistoriaRequest.getUsuarioId())
                     .orElseThrow(() -> new IllegalArgumentException("Funcionário não encontrado para o ID fornecido"));
 
-            // Criar a entidade de Vistoria
             Vistoria vistoria = new Vistoria();
             vistoria.setTipoVistoria(vistoriaRequest.getTipoVistoria());
             vistoria.setLaudoVistoria(vistoriaRequest.getLaudoVistoria());
             vistoria.setDataVistoria(vistoriaRequest.getDataVistoria());
-            vistoria.setFuncionario(funcionario); // Associar o funcionário à vistoria
+            vistoria.setFuncionario(funcionario);
             vistoria.setImovel(imovel);
 
             Vistoria novaVistoria = vistoriaService.save(vistoria);

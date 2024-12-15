@@ -13,9 +13,6 @@ import java.util.Optional;
 @Repository
 public interface ImovelRepository extends JpaRepository<Imovel, BigInteger> {
 
-    @Query("SELECT COUNT(a) FROM Agendamento a WHERE a.imovel.idImovel = :idImovel")
-    BigInteger countAccessById(@Param("idImovel") BigInteger idImovel);
-
     Optional<Imovel> findByEnderecoImovel_RuaAndEnderecoImovel_NumeroAndEnderecoImovel_Bairro(String rua, String numero, String bairro);
 
     @Query("SELECT i FROM Imovel i WHERE i.apagado = false")

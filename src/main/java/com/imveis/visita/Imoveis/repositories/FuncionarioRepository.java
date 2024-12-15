@@ -1,4 +1,3 @@
-// src/main/java/com/imveis/visita/Imoveis/repositories/FuncionarioRepository.java
 package com.imveis.visita.Imoveis.repositories;
 
 import com.imveis.visita.Imoveis.entities.Funcionario;
@@ -10,6 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface FuncionarioRepository extends JpaRepository<Funcionario, BigInteger> {
-    Optional<Funcionario> findByLogin(String login);
     Optional<Funcionario> findByLoginAndSenha(String login, String senha);
 }

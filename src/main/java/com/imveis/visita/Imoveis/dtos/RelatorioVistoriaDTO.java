@@ -24,6 +24,4 @@ public class RelatorioVistoriaDTO {
         this.dataVistoria = dataVistoria;
         this.laudoVistoria = laudoVistoria;
     }
-
-    // Getters e Setters
 }

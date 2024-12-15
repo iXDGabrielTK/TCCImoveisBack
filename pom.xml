@@ -49,7 +49,6 @@
 			<artifactId>flyway-database-postgresql</artifactId>
 		</dependency>
 
-
 		<!-- JasperReports -->
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>

@@ -49,7 +49,6 @@ public class UsuarioController {
         }
     }
 
-    // Buscar usuário pelo ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getUsuarioById(@PathVariable BigInteger id) {
         try {
@@ -66,7 +65,6 @@ public class UsuarioController {
         }
     }
 
-    // Atualizar dados do usuário pelo ID
     @PutMapping("/{id}")
     public ResponseEntity<?> atualizarUsuario(@PathVariable BigInteger id, @RequestBody Usuario usuarioAtualizado) {
         System.out.println("Requisição recebida para atualizar o usuário com ID: " + id);
@@ -107,12 +105,6 @@ public class UsuarioController {
         }
     }
 
-
-
-
-
-
-    // Listar usuários por tipo
     @GetMapping("/tipo/{tipo}")
     public ResponseEntity<List<Usuario>> listarUsuariosPorTipo(@PathVariable String tipo) {
         try {
@@ -135,7 +127,6 @@ public class UsuarioController {
         }
     }
 
-    // Deletar usuário pelo ID
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletarUsuario(@PathVariable BigInteger id) {
         try {

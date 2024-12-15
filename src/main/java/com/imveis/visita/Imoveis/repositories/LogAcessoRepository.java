@@ -27,7 +27,6 @@ public interface LogAcessoRepository extends JpaRepository<LogAcesso, BigInteger
             "GROUP BY l.usuario.id, l.usuario.nome")
     List<RelatorioUsuarioDTO> buscarRelatorioUsuarios(@Param("ano") int ano, @Param("mes") int mes);
 
-    // Método para buscar relatórios de usuários por ano
     @Query("SELECT new com.imveis.visita.Imoveis.dtos.RelatorioUsuarioDTO( " +
             "l.usuario.id, l.usuario.nome, COUNT(l)) " +
             "FROM LogAcesso l " +

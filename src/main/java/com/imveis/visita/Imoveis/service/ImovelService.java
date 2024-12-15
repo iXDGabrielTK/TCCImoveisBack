@@ -35,7 +35,6 @@ public class ImovelService {
     }
 
     public Imovel save(Imovel imovel) {
-        // Validação do endereço
         if (imovel.getEnderecoImovel() != null) {
             Endereco endereco = imovel.getEnderecoImovel();
             if (endereco.getIdEndereco() == null) {
@@ -44,12 +43,10 @@ public class ImovelService {
             }
         }
 
-        // Validação do preço
         if (imovel.getPrecoImovel() < 0) {
             throw new IllegalArgumentException("O preço do imóvel não pode ser negativo");
         }
 
-        // Salvamento
         return imovelRepository.save(imovel);
     }
 

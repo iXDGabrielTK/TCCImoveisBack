@@ -39,7 +39,6 @@ public class LoginController {
         String login = loginRequest.getLogin();
         String senha = loginRequest.getSenha();
 
-        // Verificar credenciais do funcionário
         Optional<Funcionario> funcionario = funcionarioRepository.findByLoginAndSenha(login, senha);
         if (funcionario.isPresent()) {
             String token = jwtUtil.gerarToken(login);
@@ -54,7 +53,6 @@ public class LoginController {
             ));
         }
 
-        // Verificar credenciais do visitante
         Optional<Visitante> visitante = visitanteRepository.findByLoginAndSenha(login, senha);
         if (visitante.isPresent()) {
             String token = jwtUtil.gerarToken(login);
@@ -69,7 +67,6 @@ public class LoginController {
             ));
         }
 
-        // Credenciais inválidas
         return ResponseEntity.status(401).body("Credenciais inválidas");
     }
 }

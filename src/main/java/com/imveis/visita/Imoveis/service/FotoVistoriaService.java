@@ -1,6 +1,5 @@
 package com.imveis.visita.Imoveis.service;
 
-
 import com.imveis.visita.Imoveis.entities.FotoVistoria;
 import com.imveis.visita.Imoveis.repositories.FotoVistoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;

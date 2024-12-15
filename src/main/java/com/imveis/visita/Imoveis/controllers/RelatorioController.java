@@ -29,10 +29,7 @@ public class RelatorioController {
     @Autowired
     private RelatorioAgendamentoService relatorioAgendamentoService;
 
-    /**
-     * Relatório de Vistorias
-     * Filtro: ID do imóvel.
-     */
+
     @GetMapping("/vistorias")
     public ResponseEntity<?> gerarRelatorioVistorias(@RequestParam BigInteger idImovel) {
         try {
@@ -43,22 +40,17 @@ public class RelatorioController {
         }
     }
 
-    /**
-     * Relatório de Usuários
-     * Filtros: mês e ano (formato "YYYY-MM").
-     */
+
     @GetMapping("/usuarios")
     public ResponseEntity<?> gerarRelatorioUsuarios(
             @RequestParam(required = false) String mesAno,
             @RequestParam(required = false) Integer ano) {
         try {
-            // Filtro principal com mesAno
             if (mesAno != null) {
                 List<RelatorioUsuarioDTO> relatorio = relatorioUsuarioService.buscarRelatorioUsuarios(mesAno);
                 return ResponseEntity.ok(relatorio);
             }
 
-            // Caso o filtro mesAno não seja fornecido, usar ano
             if (ano != null) {
                 List<RelatorioUsuarioDTO> relatorio = relatorioUsuarioService.buscarRelatorioUsuariosPorAno(ano);
                 return ResponseEntity.ok(relatorio);
@@ -70,22 +62,16 @@ public class RelatorioController {
         }
     }
 
-    /**
-     * Relatório de Agendamentos
-     * Filtros: mês e ano (formato "YYYY-MM").
-     */
     @GetMapping("/agendamentos")
     public ResponseEntity<?> getRelatorioAgendamentos(
             @RequestParam(required = false) String mesAno,
             @RequestParam(required = false) Integer ano) {
         try {
-            // Filtro principal com mesAno
             if (mesAno != null) {
                 List<RelatorioAgendamentoDTO> relatorio = relatorioAgendamentoService.buscarRelatorioAgendamentos(mesAno);
                 return ResponseEntity.ok(relatorio);
             }
 
-            // Caso o filtro mesAno não seja fornecido, usar ano
             if (ano != null) {
                 List<RelatorioAgendamentoDTO> relatorio = relatorioAgendamentoService.buscarRelatorioAgendamentosPorAno(ano);
                 return ResponseEntity.ok(relatorio);

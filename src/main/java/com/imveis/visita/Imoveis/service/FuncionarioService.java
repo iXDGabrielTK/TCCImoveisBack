@@ -1,4 +1,3 @@
-// src/main/java/com/imveis/visita/Imoveis/service/FuncionarioService.java
 package com.imveis.visita.Imoveis.service;
 
 import com.imveis.visita.Imoveis.entities.Funcionario;

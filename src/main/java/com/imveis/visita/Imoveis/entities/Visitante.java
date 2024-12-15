@@ -17,8 +17,4 @@ public class Visitante extends Usuario {
     @Column(name = "DATA_CADASTRO", nullable = false)
     private LocalDateTime dataCadastro;
 
-    // Construtor personalizado
-    public Visitante(String nome, String login, String senha, String telefone) {
-        super(null, nome, login, senha, telefone);
-    }
 }

@@ -1,6 +1,5 @@
 package com.imveis.visita.Imoveis.service;
 
-
 import com.imveis.visita.Imoveis.entities.Endereco;
 import com.imveis.visita.Imoveis.repositories.EnderecoRepository;
 import org.springframework.beans.factory.annotation.Autowired;

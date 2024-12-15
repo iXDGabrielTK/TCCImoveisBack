@@ -52,7 +52,6 @@ public class ImovelController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getImoveisById(@PathVariable BigInteger id) {
         try {
-            // Obter o imóvel pelo ID
             Optional<Imovel> imovel = imovelService.findById(id);
 
             if (imovel.isEmpty()) {
@@ -78,7 +77,6 @@ public class ImovelController {
             imovel.setHistoricoManutencao(imovelRequest.getHistoricoManutencao());
             imovel.setEnderecoImovel(imovelRequest.getEnderecoImovel());
 
-            // Salva o imóvel
             imovel = imovelService.save(imovel);
 
             if (imovelRequest.getFotosImovel() != null && !imovelRequest.getFotosImovel().isEmpty()) {
@@ -102,7 +100,6 @@ public class ImovelController {
 
             Imovel imovel = imovelOptional.get();
 
-            // Atualize os campos principais do imóvel
             imovel.setTipoImovel(imovelRequest.getTipoImovel());
             imovel.setDescricaoImovel(imovelRequest.getDescricaoImovel());
             imovel.setStatusImovel(imovelRequest.getStatusImovel());
@@ -110,7 +107,6 @@ public class ImovelController {
             imovel.setPrecoImovel(imovelRequest.getPrecoImovel());
             imovel.setHistoricoManutencao(imovelRequest.getHistoricoManutencao());
 
-            // Atualize ou Reutilize o Endereço
             Endereco novoEndereco = imovelRequest.getEnderecoImovel();
             if (novoEndereco != null) {
                 if (imovel.getEnderecoImovel() != null) {
@@ -123,15 +119,13 @@ public class ImovelController {
                     enderecoExistente.setCidade(novoEndereco.getCidade());
                     enderecoExistente.setEstado(novoEndereco.getEstado());
                     enderecoExistente.setCep(novoEndereco.getCep());
-                    enderecoService.save(enderecoExistente); // Persistir as alterações
+                    enderecoService.save(enderecoExistente);
                 } else {
-                    // Caso não exista um endereço associado, cria um novo
                     Endereco enderecoSalvo = enderecoService.save(novoEndereco);
                     imovel.setEnderecoImovel(enderecoSalvo);
                 }
             }
 
-            // Atualize a lista de fotos
             List<FotoImovel> novasFotos = imovelRequest.getFotosImovel().stream()
                     .filter(url -> url != null && !url.trim().isEmpty() && url.startsWith("http"))
                     .map(url -> FotoImovel.builder()
@@ -140,10 +134,9 @@ public class ImovelController {
                             .build())
                     .toList();
 
-            imovel.getFotosImovel().clear(); // Remove as fotos existentes
-            imovel.getFotosImovel().addAll(novasFotos); // Adiciona as novas fotos
+            imovel.getFotosImovel().clear();
+            imovel.getFotosImovel().addAll(novasFotos);
 
-            // Salvar as alterações no imóvel
             Imovel updatedImovel = imovelService.save(imovel);
 
             return ResponseEntity.ok(updatedImovel);
