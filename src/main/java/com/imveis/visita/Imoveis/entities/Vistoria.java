@@ -41,12 +41,6 @@ public class Vistoria {
     @JoinColumn(name = "funcionario_id", nullable = false)
     private Funcionario funcionario;
 
-    /*
-    @OneToMany(mappedBy = "vistoria", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
-    private List<FotoVistoria> fotosvistoria;
-     */
-
     @Column(name = "apagado", nullable = false)
     private boolean apagado = false;
 
