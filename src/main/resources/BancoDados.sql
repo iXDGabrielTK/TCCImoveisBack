@@ -99,3 +99,10 @@ CREATE TABLE log_acesso (
                             DATA_HORA TIMESTAMP NOT NULL,
                             ACAO VARCHAR(50) NOT NULL
 );
+
+-- Tabela Roles
+CREATE TABLE roles
+(
+    id   SERIAL PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL UNIQUE
+);

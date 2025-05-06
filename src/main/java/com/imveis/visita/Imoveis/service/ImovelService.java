@@ -1,11 +1,10 @@
 package com.imveis.visita.Imoveis.service;
 
+import com.imveis.visita.Imoveis.dtos.ImovelDTO;
 import com.imveis.visita.Imoveis.entities.Endereco;
 import com.imveis.visita.Imoveis.entities.Imovel;
 import com.imveis.visita.Imoveis.repositories.EnderecoRepository;
-import com.imveis.visita.Imoveis.repositories.FuncionarioRepository;
 import com.imveis.visita.Imoveis.repositories.ImovelRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -15,23 +14,32 @@ import java.util.Optional;
 @Service
 public class ImovelService {
 
-    @Autowired
-    private ImovelRepository imovelRepository;
+    private final ImovelRepository imovelRepository;
 
-    @Autowired
-    private EnderecoRepository enderecoRepository;
+    private final EnderecoRepository enderecoRepository;
 
-    @Autowired
-    private FuncionarioRepository funcionarioRepository;
+    public ImovelService(ImovelRepository imovelRepository, EnderecoRepository enderecoRepository) {
+        this.imovelRepository = imovelRepository;
+        this.enderecoRepository = enderecoRepository;
+    }
 
-    public List<Imovel> findAll() {
-        List<Imovel> imoveis = imovelRepository.findAllActive();
-        imoveis.forEach(imovel -> imovel.getFotosImovel().size());
-        return imoveis;
+    public List<ImovelDTO> findAllDTOs() {
+        return imovelRepository.findAllWithFotos()
+                .stream()
+                .map(ImovelDTO::new)
+                .toList();
     }
 
     public Optional<Imovel> findById(BigInteger id) {
-        return imovelRepository.findByIdActive(id);
+        return imovelRepository.findByIdWithEnderecoAndFotos(id);
+    }
+
+
+    public Optional<ImovelDTO> findDTOById(BigInteger id) {
+        // Aqui você converte manualmente o Imovel para ImovelDTO
+        // se tiver construtor
+        return imovelRepository.findByIdWithEnderecoAndFotos(id)
+                .map(ImovelDTO::new);
     }
 
     public Imovel save(Imovel imovel) {

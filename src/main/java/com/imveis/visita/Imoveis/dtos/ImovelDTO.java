@@ -1,17 +1,16 @@
 package com.imveis.visita.Imoveis.dtos;
 
-import com.imveis.visita.Imoveis.entities.Endereco;
 import com.imveis.visita.Imoveis.entities.Imovel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
 public class ImovelDTO {
     private BigInteger idImovel;
     private String tipoImovel;
@@ -20,7 +19,7 @@ public class ImovelDTO {
     private Float tamanhoImovel;
     private Float precoImovel;
     private List<String> fotosImovel;
-    private Endereco enderecoImovel;
+    private EnderecoDTO enderecoImovel;
     private String historicoManutencao;
 
     public ImovelDTO(Imovel imovel) {
@@ -31,11 +30,14 @@ public class ImovelDTO {
         this.tamanhoImovel = imovel.getTamanhoImovel();
         this.precoImovel = imovel.getPrecoImovel();
         this.historicoManutencao = imovel.getHistoricoManutencao();
-        this.enderecoImovel = imovel.getEnderecoImovel();
-        this.fotosImovel = imovel.getFotosImovel()
-                .stream()
+        this.enderecoImovel = imovel.getEnderecoImovel() != null
+                ? new EnderecoDTO(imovel.getEnderecoImovel())
+                : null;
+        this.fotosImovel = imovel.getFotosImovel() != null
+                ? imovel.getFotosImovel().stream()
                 .flatMap(foto -> Arrays.stream(foto.getUrlFotoImovel().split(",")))
                 .map(String::trim)
-                .toList();
+                .toList()
+                : List.of();
     }
 }

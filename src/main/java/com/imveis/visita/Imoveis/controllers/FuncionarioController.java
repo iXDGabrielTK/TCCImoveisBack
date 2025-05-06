@@ -1,10 +1,10 @@
 // src/main/java/com/imveis/visita/Imoveis/controllers/FuncionarioController.java
 package com.imveis.visita.Imoveis.controllers;
 import com.imveis.visita.Imoveis.entities.Funcionario;
+import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.service.FuncionarioService;
+import com.imveis.visita.Imoveis.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -16,6 +16,9 @@ import java.util.Optional;
 public class FuncionarioController {
 
     @Autowired
+    private UsuarioService usuarioService;
+
+    @Autowired
     private FuncionarioService funcionarioService;
 
     //private Usuario usuario;
@@ -25,16 +28,13 @@ public class FuncionarioController {
         return funcionarioService.findAll();
     }
 
-    @PostMapping
-    public ResponseEntity<?> criarFuncionario(@RequestBody Funcionario funcionario) {
-       // System.out.println("Tipo recebido: " + usuario.g);
-        try {
-            Funcionario novoFuncionario = funcionarioService.save(funcionario);
-            return ResponseEntity.ok(novoFuncionario);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao criar funcionário: " + e.getMessage());
-        }
+    public Funcionario save(Funcionario funcionario) {
+
+        Usuario salvo = usuarioService.save(funcionario);
+
+        return (Funcionario) salvo;
     }
+
 
     @GetMapping("/{id}")
     public Optional<Funcionario> getFuncionarioById(@PathVariable BigInteger id) {

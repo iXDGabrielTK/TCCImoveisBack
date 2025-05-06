@@ -3,11 +3,14 @@ package com.imveis.visita.Imoveis.entities;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -24,6 +27,8 @@ import java.math.BigInteger;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 public abstract class Usuario {
 
     @Id
@@ -33,8 +38,8 @@ public abstract class Usuario {
     @Column(name = "NOME", nullable = false)
     private String nome;
 
-    @Column(name = "LOGIN", nullable = false, unique = true)
-    private String login;
+    @Column(name = "EMAIL", nullable = false, unique = true)
+    private String email;
 
     @Column(name = "SENHA", nullable = false)
     private String senha;
@@ -42,5 +47,19 @@ public abstract class Usuario {
     @Column(name = "TELEFONE")
     private String telefone;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "usuario_roles",
+            joinColumns = @JoinColumn(name = "usuario_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
+
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getNome()))
+                .toList();
+    }
 
 }
+

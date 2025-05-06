@@ -9,5 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface FuncionarioRepository extends JpaRepository<Funcionario, BigInteger> {
-    Optional<Funcionario> findByLoginAndSenha(String login, String senha);
+    @SuppressWarnings("unused")
+    Optional<Funcionario> findByEmailAndSenha(String email, String senha);
 }

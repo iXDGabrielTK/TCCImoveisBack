@@ -1,6 +1,5 @@
 package com.imveis.visita.Imoveis.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +12,6 @@ import java.math.BigInteger;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 
 public class FotoImovel {
     @Id
@@ -23,7 +21,6 @@ public class FotoImovel {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "imovel_id")
-    @JsonBackReference
     @ToString.Exclude
     private Imovel imovel;
 

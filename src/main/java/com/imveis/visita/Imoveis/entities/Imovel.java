@@ -1,6 +1,5 @@
 package com.imveis.visita.Imoveis.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,8 +12,8 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 public class Imovel {
+
     @Column(name = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,12 +45,10 @@ public class Imovel {
     private String historicoManutencao;
 
     @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonManagedReference
     @ToString.Exclude
     private List<FotoImovel> fotosImovel;
 
     @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<Agendamento> agendamentos;
 
     @Column(name = "APAGADO", nullable = false)

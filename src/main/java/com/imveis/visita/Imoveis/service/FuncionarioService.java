@@ -12,8 +12,12 @@ import java.util.Optional;
 @Service
 public class FuncionarioService {
 
+    private final FuncionarioRepository funcionarioRepository;
+
     @Autowired
-    private FuncionarioRepository funcionarioRepository;
+    public FuncionarioService(FuncionarioRepository funcionarioRepository) {
+        this.funcionarioRepository = funcionarioRepository;
+    }
 
     public List<Funcionario> findAll() {
         return funcionarioRepository.findAll();
@@ -26,7 +30,6 @@ public class FuncionarioService {
     public Funcionario save(Funcionario funcionario) {
         return funcionarioRepository.save(funcionario);
     }
-
     public void deleteById(BigInteger id) {
         funcionarioRepository.deleteById(id);
     }

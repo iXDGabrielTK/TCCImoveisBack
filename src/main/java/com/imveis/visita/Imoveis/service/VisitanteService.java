@@ -28,12 +28,14 @@ public class VisitanteService {
         return visitanteRepository.findById(id);
     }
 
+
     public Visitante save(Visitante visitante) {
         if (visitante.getDataCadastro() == null) {
             visitante.setDataCadastro(LocalDateTime.now());
         }
         return visitanteRepository.save(visitante);
     }
+
 
     public void deleteById(BigInteger id) {
         visitanteRepository.deleteById(id);

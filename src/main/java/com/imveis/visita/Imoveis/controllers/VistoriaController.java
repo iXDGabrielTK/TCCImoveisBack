@@ -33,18 +33,18 @@ public class VistoriaController {
     }
 
     @GetMapping
-    public List<Vistoria> getAllVistorias(){
-        return vistoriaService.findAll();
+    public ResponseEntity<List<VistoriaDTO>> getAllVistorias() {
+        List<Vistoria> vistorias = vistoriaService.findAll();
+        List<VistoriaDTO> dtos = vistorias.stream().map(VistoriaDTO::new).toList();
+        return ResponseEntity.ok(dtos);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getVistoriaById(@PathVariable BigInteger id) {
         try {
             Optional<Vistoria> vistoria = vistoriaService.findById(id);
-            if (vistoria.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Vistoria não encontrada.");
-            }
-            return ResponseEntity.ok(vistoria);
+            return vistoria.map(v -> ResponseEntity.ok(new VistoriaDTO(v)))
+                    .orElseGet(() -> ResponseEntity.notFound().build());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Erro ao buscar vistoria: " + e.getMessage());

@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+@SuppressWarnings("CallToPrintStackTrace")
 @RestController
 @RequestMapping("/imoveis")
 public class ImovelController {
@@ -26,10 +27,8 @@ public class ImovelController {
 
     private final EnderecoService enderecoService;
 
-
     public ImovelController(ImovelService imovelService, FotoImovelController fotoImovelController, EnderecoService enderecoService) {
         this.imovelService = imovelService;
-
         this.fotoImovelController = fotoImovelController;
         this.enderecoService = enderecoService;
     }
@@ -37,10 +36,7 @@ public class ImovelController {
     @GetMapping
     public ResponseEntity<List<ImovelDTO>> getAllImoveis() {
         try {
-            List<Imovel> imoveis = imovelService.findAll();
-            List<ImovelDTO> imoveisDTO = imoveis.stream()
-                    .map(ImovelDTO::new)
-                    .toList();
+            List<ImovelDTO> imoveisDTO = imovelService.findAllDTOs();
             return ResponseEntity.ok(imoveisDTO);
         } catch (Exception e) {
             e.printStackTrace();
@@ -50,19 +46,10 @@ public class ImovelController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getImoveisById(@PathVariable BigInteger id) {
-        try {
-            Optional<Imovel> imovel = imovelService.findById(id);
-
-            if (imovel.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Imovel não encontrada.");
-            }else {
-                return ResponseEntity.ok(imovel);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Optional.empty());
-        }
+    public ResponseEntity<ImovelDTO> getImovelById(@PathVariable BigInteger id) {
+        return imovelService.findDTOById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -145,7 +132,6 @@ public class ImovelController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o imóvel.");
         }
     }
-
 
     @PutMapping("/{id}/cancelar")
     public ResponseEntity<Void> cancelarImovel(@PathVariable BigInteger id) {

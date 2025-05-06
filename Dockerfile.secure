@@ -1,0 +1,38 @@
+# Etapa 1 - Build da aplicação com Maven
+FROM maven:3.9.6-eclipse-temurin-21 AS builder
+
+WORKDIR /app
+COPY . .
+
+# Empacota a aplicação e executa os testes
+RUN mvn clean package
+
+# Etapa 2 - Imagem final com JDK apenas para executar a aplicação
+FROM eclipse-temurin:21-jdk-alpine
+
+# Create a non-root user to run the application
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+WORKDIR /app
+
+# Copia o .jar gerado na etapa anterior
+COPY --from=builder /app/target/*.jar app.jar
+
+# Set ownership to the non-root user
+RUN chown -R appuser:appgroup /app
+
+# Expõe a porta que o Spring Boot usa por padrão
+EXPOSE 8080
+
+# Switch to non-root user
+USER appuser
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
+  CMD wget -q --spider http://localhost:8080/actuator/health || exit 1
+
+# Set security-related JVM options
+ENV JAVA_OPTS="-Djava.security.egd=file:/dev/./urandom -Djava.awt.headless=true -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -Dspring.profiles.active=secure"
+
+# Executa o jar
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]
