@@ -54,4 +54,22 @@ public class Imovel {
     @Column(name = "APAGADO", nullable = false)
     private Boolean apagado = false;
 
+   @ManyToMany
+    @JoinTable(
+            name = "imovel_corretor",
+            joinColumns = @JoinColumn(name = "id_imovel"),
+            inverseJoinColumns = @JoinColumn(name = "id_corretor")
+    )
+    private List<Corretor> corretores;
+
+
+
+    @ManyToMany
+    @JoinTable(
+            name = "imovel_imobiliaria",
+            joinColumns = @JoinColumn(name = "id_imovel"),
+            inverseJoinColumns = @JoinColumn(name = "id_corretor")
+    )
+    private List<Imobiliaria> imobiliarias;
+
 }
