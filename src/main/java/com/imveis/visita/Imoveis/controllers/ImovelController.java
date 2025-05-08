@@ -2,9 +2,9 @@ package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.dtos.ImovelDTO;
 import com.imveis.visita.Imoveis.dtos.ImovelRequest;
-import com.imveis.visita.Imoveis.entities.Endereco;
-import com.imveis.visita.Imoveis.entities.FotoImovel;
-import com.imveis.visita.Imoveis.entities.Imovel;
+import com.imveis.visita.Imoveis.entities.*;
+import com.imveis.visita.Imoveis.repositories.CorretorRepository;
+import com.imveis.visita.Imoveis.repositories.ImobiliariaRepository;
 import com.imveis.visita.Imoveis.service.EnderecoService;
 import com.imveis.visita.Imoveis.service.ImovelService;
 import org.springframework.http.HttpStatus;
@@ -27,10 +27,20 @@ public class ImovelController {
 
     private final EnderecoService enderecoService;
 
-    public ImovelController(ImovelService imovelService, FotoImovelController fotoImovelController, EnderecoService enderecoService) {
+    private final CorretorRepository corretorRepository;
+
+    private final ImobiliariaRepository imobiliariaRepository;
+
+    public ImovelController(ImovelService imovelService,
+                            FotoImovelController fotoImovelController,
+                            EnderecoService enderecoService,
+                            CorretorRepository corretorRepository,
+                            ImobiliariaRepository imobiliariaRepository) {
         this.imovelService = imovelService;
         this.fotoImovelController = fotoImovelController;
         this.enderecoService = enderecoService;
+        this.corretorRepository = corretorRepository;
+        this.imobiliariaRepository = imobiliariaRepository;
     }
 
     @GetMapping
@@ -68,6 +78,15 @@ public class ImovelController {
 
             if (imovelRequest.getFotosImovel() != null && !imovelRequest.getFotosImovel().isEmpty()) {
                 fotoImovelController.createFotosImovel(imovelRequest.getFotosImovel(), imovel.getIdImovel());
+            }
+            if (imovelRequest.getIdsCorretores() != null) {
+                List<Corretor> corretores = corretorRepository.findAllById(imovelRequest.getIdsCorretores());
+                imovel.setCorretores(corretores);
+            }
+
+            if (imovelRequest.getIdsImobiliarias() != null) {
+                List<Imobiliaria> imobiliarias = imobiliariaRepository.findAllById(imovelRequest.getIdsImobiliarias());
+                imovel.setImobiliarias(imobiliarias);
             }
 
             return new ResponseEntity<>(imovel, HttpStatus.CREATED);

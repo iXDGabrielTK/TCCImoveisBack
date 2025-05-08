@@ -58,4 +58,4 @@ build/
 .vscode/
 
 # Environment variables
-src/main/resources/.env
+.env

@@ -78,7 +78,7 @@ public class SecureSecurityConfig {
                         .requestMatchers("/home/**").hasAnyRole("ADMIN", "FUNCIONARIO", "VISITANTE")
                         .requestMatchers("/imoveis/**").permitAll()
                         .requestMatchers("/agendamentos/**").authenticated()
-                        .requestMatchers("/relatorios/**").hasAuthority("ADMIN")
+                        .requestMatchers("/relatorios/**").hasAnyRole("ADMIN", "FUNCIONARIO")
                         .requestMatchers("/api/funcionario/**").hasAuthority("FUNCIONARIO")
                         .anyRequest().authenticated()
                 )

@@ -1,6 +1,8 @@
 package com.imveis.visita.Imoveis.dtos;
 
+import com.imveis.visita.Imoveis.entities.Imobiliaria;
 import com.imveis.visita.Imoveis.entities.Imovel;
+import com.imveis.visita.Imoveis.entities.Usuario;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +23,8 @@ public class ImovelDTO {
     private List<String> fotosImovel;
     private EnderecoDTO enderecoImovel;
     private String historicoManutencao;
+    private List<String> nomesCorretores;
+    private List<String> nomesImobiliarias;
 
     public ImovelDTO(Imovel imovel) {
         this.idImovel = imovel.getIdImovel();
@@ -39,5 +43,7 @@ public class ImovelDTO {
                 .map(String::trim)
                 .toList()
                 : List.of();
+        this.nomesCorretores = imovel.getCorretores().stream().map(Usuario::getNome).toList();
+        this.nomesImobiliarias = imovel.getImobiliarias().stream().map(Imobiliaria::getNome).toList();
     }
 }
