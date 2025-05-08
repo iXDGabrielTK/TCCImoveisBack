@@ -6,6 +6,7 @@ import lombok.*;
 import java.math.BigInteger;
 import java.util.List;
 
+
 @Entity
 @Table(name = "imovel")
 @Data

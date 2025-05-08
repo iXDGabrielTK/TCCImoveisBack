@@ -72,4 +72,11 @@ public class ImovelService {
     public Optional<Imovel> findByEndereco(String rua, String numero, String bairro) {
         return imovelRepository.findByEnderecoImovel_RuaAndEnderecoImovel_NumeroAndEnderecoImovel_Bairro(rua, numero, bairro);
     }
+
+    public List<ImovelDTO> findDisponiveisPorValor(double valorMax){
+        return imovelRepository.findDisponiveisPorValorMax(valorMax)
+                .stream()
+                .map(ImovelDTO::new)
+                .toList();
+    }
 }

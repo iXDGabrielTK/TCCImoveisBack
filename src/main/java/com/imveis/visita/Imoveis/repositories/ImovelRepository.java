@@ -35,4 +35,8 @@ public interface ImovelRepository extends JpaRepository<Imovel, BigInteger> {
     @Query("SELECT i FROM Imovel i WHERE i.apagado = false")
     List<Imovel> findAllWithFotos();
 
+    @EntityGraph(attributePaths = {"enderecoImovel", "fotosImovel", "corretores", "imobiliarias"})
+    @Query("SELECT i FROM Imovel i WHERE i.apagado = false AND i.precoImovel <= :valorMax")
+    List<Imovel> findDisponiveisPorValorMax(@Param("valorMax") double valorMax);
+
 }

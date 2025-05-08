@@ -62,6 +62,13 @@ public class ImovelController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    // Tem que testar esse endpoint quando o front estiver pronto
+    @GetMapping("/disponiveis")
+    public ResponseEntity<List<ImovelDTO>> getImoveisPorPoderDeCompra(@RequestParam double valorMax){
+        List<ImovelDTO> disponiveis = imovelService.findDisponiveisPorValor(valorMax);
+        return ResponseEntity.ok(disponiveis);
+    }
+
     @PostMapping
     public ResponseEntity<Imovel> criarImovel(@RequestBody ImovelRequest imovelRequest) {
         try {
