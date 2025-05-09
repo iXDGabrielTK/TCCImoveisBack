@@ -4,7 +4,6 @@ import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.repositories.UsuarioRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -25,7 +24,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        System.out.println("Buscando por email: " + login);
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(login);
 
         if (usuarioOpt.isEmpty()) {
@@ -33,13 +31,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 
         Usuario usuario = usuarioOpt.get();
+        var authorities = getAuthorities(usuario);
 
-        return new User(
-                usuario.getEmail(),
-                usuario.getSenha(),
-                true, true, true, true,
-                getAuthorities(usuario)
-        );
+        return new UserDetailsImpl(usuario, authorities);
     }
 
     private Collection<? extends GrantedAuthority> getAuthorities(Usuario usuario) {

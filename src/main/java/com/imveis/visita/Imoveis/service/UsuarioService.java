@@ -35,6 +35,12 @@ public class UsuarioService {
         return usuarioRepository.findById(id);
     }
 
+    public Usuario buscarPorId(BigInteger id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
+    }
+
+
     public Usuario save(Usuario usuario) {
         authService.encodePassword(usuario);
 

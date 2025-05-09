@@ -8,6 +8,7 @@ import com.imveis.visita.Imoveis.service.RelatorioUsuarioService;
 import com.imveis.visita.Imoveis.service.RelatorioVistoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,7 +30,7 @@ public class RelatorioController {
     @Autowired
     private RelatorioAgendamentoService relatorioAgendamentoService;
 
-
+    @PreAuthorize("hasRole('FUNCIONARIO')")
     @GetMapping("/vistorias")
     public ResponseEntity<?> gerarRelatorioVistorias(@RequestParam BigInteger idImovel) {
         try {
@@ -40,7 +41,7 @@ public class RelatorioController {
         }
     }
 
-
+    @PreAuthorize("hasRole('FUNCIONARIO')")
     @GetMapping("/usuarios")
     public ResponseEntity<?> gerarRelatorioUsuarios(
             @RequestParam(required = false) String mesAno,
@@ -62,6 +63,7 @@ public class RelatorioController {
         }
     }
 
+    @PreAuthorize("hasRole('FUNCIONARIO')")
     @GetMapping("/agendamentos")
     public ResponseEntity<?> getRelatorioAgendamentos(
             @RequestParam(required = false) String mesAno,

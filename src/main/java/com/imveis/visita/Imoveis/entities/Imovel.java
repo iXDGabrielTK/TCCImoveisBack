@@ -69,7 +69,7 @@ public class Imovel {
     @JoinTable(
             name = "imovel_imobiliaria",
             joinColumns = @JoinColumn(name = "id_imovel"),
-            inverseJoinColumns = @JoinColumn(name = "id_corretor")
+            inverseJoinColumns = @JoinColumn(name = "id_imobiliaria")
     )
     private List<Imobiliaria> imobiliarias;
 

@@ -1,6 +1,7 @@
 package com.imveis.visita.Imoveis.repositories;
 
 import com.imveis.visita.Imoveis.entities.Usuario;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -20,5 +21,8 @@ public interface UsuarioRepository extends JpaRepository<Usuario, BigInteger> {
 
     @SuppressWarnings("unused")
     Optional<Usuario> findByEmailAndSenha(String email, String senha);
+
+    @NotNull Optional<Usuario> findById(@NotNull BigInteger usuarioId);
+
 
 }
