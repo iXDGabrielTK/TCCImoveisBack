@@ -58,7 +58,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             }
 
             if (secureJwtUtil.validateToken(token)) {
-                if (!secureJwtUtil.validateFingerprint(token)) {
+                if (!secureJwtUtil.isDevProfile() && !secureJwtUtil.validateFingerprint(token)) {
                     sendErrorResponse(response, "Invalid token fingerprint");
                     return;
                 }

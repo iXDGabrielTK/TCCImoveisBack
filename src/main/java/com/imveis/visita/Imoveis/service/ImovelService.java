@@ -7,6 +7,7 @@ import com.imveis.visita.Imoveis.repositories.EnderecoRepository;
 import com.imveis.visita.Imoveis.repositories.ImovelRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
@@ -74,9 +75,10 @@ public class ImovelService {
     }
 
     public List<ImovelDTO> findDisponiveisPorValor(double valorMax){
-        return imovelRepository.findDisponiveisPorValorMax(valorMax)
+        return imovelRepository.findDisponiveisPorValorMax(BigDecimal.valueOf(valorMax))
                 .stream()
                 .map(ImovelDTO::new)
                 .toList();
     }
+
 }

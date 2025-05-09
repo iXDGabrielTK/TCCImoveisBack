@@ -81,6 +81,7 @@ public class SecureSecurityConfig {
                         .requestMatchers("/relatorios/**").hasAnyRole("ADMIN", "FUNCIONARIO")
                         .requestMatchers("/api/funcionario/**").hasAuthority("FUNCIONARIO")
                         .requestMatchers("/propostas").hasAnyRole("VISITANTE", "FUNCIONARIO")
+                        .requestMatchers("/simulacoes").hasAnyRole("VISITANTE", "FUNCIONARIO")
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",

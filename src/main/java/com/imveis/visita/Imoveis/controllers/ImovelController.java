@@ -12,9 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @SuppressWarnings("CallToPrintStackTrace")
 @RestController
@@ -86,8 +84,9 @@ public class ImovelController {
             if (imovelRequest.getFotosImovel() != null && !imovelRequest.getFotosImovel().isEmpty()) {
                 fotoImovelController.createFotosImovel(imovelRequest.getFotosImovel(), imovel.getIdImovel());
             }
+
             if (imovelRequest.getIdsCorretores() != null) {
-                List<Corretor> corretores = corretorRepository.findAllById(imovelRequest.getIdsCorretores());
+                Set<Corretor> corretores = new HashSet<>(corretorRepository.findAllById(imovelRequest.getIdsCorretores()));
                 imovel.setCorretores(corretores);
             }
 
@@ -95,6 +94,7 @@ public class ImovelController {
                 List<Imobiliaria> imobiliarias = imobiliariaRepository.findAllById(imovelRequest.getIdsImobiliarias());
                 imovel.setImobiliarias(imobiliarias);
             }
+
 
             return new ResponseEntity<>(imovel, HttpStatus.CREATED);
         } catch (Exception e) {

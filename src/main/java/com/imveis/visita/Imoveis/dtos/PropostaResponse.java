@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 
 @Getter
@@ -16,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 
 public class PropostaResponse {
-    private BigInteger id;
+    private Long id;
     private BigDecimal rendaMensal;
     private BigDecimal entrada;
     private BigDecimal valorImovel;
@@ -24,7 +23,7 @@ public class PropostaResponse {
     private LocalDate dataProposta;
 
     public PropostaResponse(Proposta proposta) {
-        this.id = BigInteger.valueOf(proposta.getId());
+        this.id = proposta.getId();
         this.rendaMensal = proposta.getRendaMensal();
         this.entrada = proposta.getEntrada();
         this.valorImovel = proposta.getValorImovel();
@@ -32,6 +31,5 @@ public class PropostaResponse {
         this.dataProposta = proposta.getDataProposta();
     }
 
-    // Getters
 }
 

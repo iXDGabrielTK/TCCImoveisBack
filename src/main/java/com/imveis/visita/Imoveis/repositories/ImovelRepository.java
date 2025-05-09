@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +22,7 @@ public interface ImovelRepository extends JpaRepository<Imovel, BigInteger> {
     @EntityGraph(attributePaths = {"fotosImovel", "enderecoImovel"})
     List<Imovel> findAllActiveComFotos();
 
-    @EntityGraph(attributePaths = "vistorias")
+    @EntityGraph(attributePaths = {"corretores", "imobiliarias"})
     Optional<Imovel> findByIdImovel(BigInteger idImovel);
 
     @EntityGraph(attributePaths = {"fotosImovel"})
@@ -35,8 +36,9 @@ public interface ImovelRepository extends JpaRepository<Imovel, BigInteger> {
     @Query("SELECT i FROM Imovel i WHERE i.apagado = false")
     List<Imovel> findAllWithFotos();
 
-    @EntityGraph(attributePaths = {"enderecoImovel", "fotosImovel", "corretores", "imobiliarias"})
+    @EntityGraph(attributePaths = {"fotosImovel", "enderecoImovel"})
     @Query("SELECT i FROM Imovel i WHERE i.apagado = false AND i.precoImovel <= :valorMax")
-    List<Imovel> findDisponiveisPorValorMax(@Param("valorMax") double valorMax);
+    List<Imovel> findDisponiveisPorValorMax(@Param("valorMax") BigDecimal valorMax);
+
 
 }

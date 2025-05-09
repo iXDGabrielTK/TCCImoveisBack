@@ -1,48 +1,38 @@
-# Compiled class file
-*.class
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+# ========================================
+# 🔧 Build Tools
+# ========================================
+/target/
+/build/
+/out/
 
 # Maven
-target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+**/target/
+!**/src/**/target/
+
+# Gradle (caso use em algum módulo)
+.gradle/
+build/
+!**/src/**/build/
+
+# ========================================
+# 🧠 IDEs and Editors
+# ========================================
 
 # IntelliJ IDEA
 .idea/
-*.iws
 *.iml
+*.iws
 *.ipr
 
 # Eclipse
-.apt_generated
 .classpath
-.factorypath
 .project
-.settings
+.settings/
+.apt_generated/
+.factorypath
 .springBeans
-.sts4-cache
+.sts4-cache/
 
 # NetBeans
 /nbproject/private/
@@ -50,12 +40,43 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
 # VS Code
 .vscode/
 
-# Environment variables
+# ========================================
+# 🗃️ Compiled Files and Packages
+# ========================================
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+
+# Java Crash Logs
+hs_err_pid*
+replay_pid*
+
+# ========================================
+# 🔐 Secrets and Configs
+# ========================================
 .env
+*.env
+
+# ========================================
+# 📋 Logs
+# ========================================
+*.log
+
+# ========================================
+# 📱 Mobile Tools for Java (J2ME)
+# ========================================
+.mtj.tmp/
+
+# ========================================
+# 📘 BlueJ
+# ========================================
+*.ctxt

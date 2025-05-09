@@ -1,5 +1,6 @@
 package com.imveis.visita.Imoveis.service;
 
+import com.imveis.visita.Imoveis.controllers.AuthController;
 import com.imveis.visita.Imoveis.dtos.PropostaRequest;
 import com.imveis.visita.Imoveis.dtos.PropostaResponse;
 import com.imveis.visita.Imoveis.entities.*;
@@ -8,6 +9,8 @@ import com.imveis.visita.Imoveis.repositories.NotificacaoPropostaRepository;
 import com.imveis.visita.Imoveis.repositories.PropostaRepository;
 import com.imveis.visita.Imoveis.repositories.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +22,9 @@ import java.util.*;
 
 @Service
 public class PropostaService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
 
     @Autowired
     private PropostaRepository propostaRepository;
@@ -38,6 +44,7 @@ public class PropostaService {
 
     public PropostaResponse criarProposta(PropostaRequest request, Usuario usuario) {
         BigDecimal valorFinanciado = request.getValorImovel().subtract(request.getEntrada());
+        logger.info("Chegou aqui");
 
         Imovel imovel = imovelRepository.findById(request.getIdImovel())
                 .orElseThrow(() -> new RuntimeException("Imóvel não encontrado"));
@@ -50,6 +57,8 @@ public class PropostaService {
         proposta.setValorImovel(request.getValorImovel());
         proposta.setValorFinanciamento(valorFinanciado);
         proposta.setDataProposta(LocalDate.now());
+
+        logger.info("Chegou até aqui");
 
         propostaRepository.save(proposta);
 
@@ -71,6 +80,7 @@ public class PropostaService {
 
         return new PropostaResponse(proposta);
     }
+
     public Map<String, List<BigInteger>> buscarResponsaveisDoImovel(BigInteger idImovel) {
         Imovel imovel = imovelRepository.findByIdImovel(idImovel)
                 .orElseThrow(() -> new EntityNotFoundException("Imóvel não encontrado"));

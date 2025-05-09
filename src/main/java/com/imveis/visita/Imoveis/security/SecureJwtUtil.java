@@ -61,7 +61,7 @@ public class SecureJwtUtil {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    private boolean isDevProfile() {
+    boolean isDevProfile() {
         return Optional.ofNullable(System.getProperty("spring.profiles.active"))
                 .map(profile -> profile.contains("dev"))
                 .orElse(true);

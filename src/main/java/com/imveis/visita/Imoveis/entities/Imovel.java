@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -61,7 +62,7 @@ public class Imovel {
             joinColumns = @JoinColumn(name = "id_imovel"),
             inverseJoinColumns = @JoinColumn(name = "id_corretor")
     )
-    private List<Corretor> corretores;
+   private Set<Corretor> corretores;
 
 
 
