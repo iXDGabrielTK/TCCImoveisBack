@@ -10,4 +10,5 @@ public class SimulacaoRequest {
 
     private BigDecimal rendaMensal;
     private BigDecimal valorEntrada;
+    private int prazo;
 }
