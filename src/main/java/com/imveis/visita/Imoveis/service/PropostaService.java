@@ -11,7 +11,6 @@ import com.imveis.visita.Imoveis.repositories.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,17 +25,20 @@ public class PropostaService {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
 
-    @Autowired
-    private PropostaRepository propostaRepository;
+    private final PropostaRepository propostaRepository;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private ImovelRepository imovelRepository;
+    private final ImovelRepository imovelRepository;
 
-    @Autowired
-    private NotificacaoPropostaRepository notificacaoPropostaRepository;
+    private final NotificacaoPropostaRepository notificacaoPropostaRepository;
+
+    public PropostaService(PropostaRepository propostaRepository, UsuarioRepository usuarioRepository, ImovelRepository imovelRepository, NotificacaoPropostaRepository notificacaoPropostaRepository) {
+        this.propostaRepository = propostaRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.imovelRepository = imovelRepository;
+        this.notificacaoPropostaRepository = notificacaoPropostaRepository;
+    }
 
     public Optional<Usuario> findById(BigInteger id) {
         return usuarioRepository.findById(id);
@@ -88,6 +90,7 @@ public class PropostaService {
         List<BigInteger> idsCorretores = imovel.getCorretores()
                 .stream()
                 .map(Corretor::getId)
+                .map(id -> BigInteger.valueOf(id.longValue()))
                 .toList();
 
         List<BigInteger> idsImobiliarias = imovel.getImobiliarias()

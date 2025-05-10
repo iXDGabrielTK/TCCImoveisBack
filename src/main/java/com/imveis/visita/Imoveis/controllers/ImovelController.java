@@ -60,7 +60,6 @@ public class ImovelController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Tem que testar esse endpoint quando o front estiver pronto
     @GetMapping("/disponiveis")
     public ResponseEntity<List<ImovelDTO>> getImoveisPorPoderDeCompra(@RequestParam double valorMax){
         List<ImovelDTO> disponiveis = imovelService.findDisponiveisPorValor(valorMax);
@@ -86,7 +85,7 @@ public class ImovelController {
             }
 
             if (imovelRequest.getIdsCorretores() != null) {
-                Set<Corretor> corretores = new HashSet<>(corretorRepository.findAllById(imovelRequest.getIdsCorretores()));
+                Set<Corretor> corretores = new HashSet<>(corretorRepository.findAllById((BigInteger) imovelRequest.getIdsCorretores()));
                 imovel.setCorretores(corretores);
             }
 
@@ -123,7 +122,6 @@ public class ImovelController {
             Endereco novoEndereco = imovelRequest.getEnderecoImovel();
             if (novoEndereco != null) {
                 if (imovel.getEnderecoImovel() != null) {
-                    // Atualiza o endereço existente
                     Endereco enderecoExistente = imovel.getEnderecoImovel();
                     enderecoExistente.setRua(novoEndereco.getRua());
                     enderecoExistente.setNumero(novoEndereco.getNumero());

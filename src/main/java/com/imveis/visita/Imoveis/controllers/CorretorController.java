@@ -1,14 +1,14 @@
 package com.imveis.visita.Imoveis.controllers;
 
-import com.imveis.visita.Imoveis.entities.Corretor;
-import com.imveis.visita.Imoveis.repositories.CorretorRepository;
-import lombok.Getter;
+import com.imveis.visita.Imoveis.dtos.CorretorRequest;
+import com.imveis.visita.Imoveis.dtos.CorretorResponse;
+import com.imveis.visita.Imoveis.service.CorretorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -16,31 +16,34 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CorretorController {
 
-    private final CorretorRepository corretorRepository;
+    private final CorretorService corretorService;
 
-    @PostMapping
-    public ResponseEntity<Corretor> createCorretor(@RequestBody Corretor corretor) {
-        return ResponseEntity.ok(corretorRepository.save(corretor));
+    @PostMapping("/candidatura")
+    public ResponseEntity<?> candidatar(@RequestBody CorretorRequest request) {
+        try {
+            CorretorResponse response = corretorService.candidatarUsuarioParaCorretor(
+                    request.getUsuarioId(), request.getCreci()
+            );
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
+
+    @GetMapping("/usuario/{idUsuario}")
+    public ResponseEntity<?> verificarSeEhCorretor(@PathVariable BigInteger idUsuario) {
+        Optional<CorretorResponse> corretor = corretorService.buscarPorUsuarioId(idUsuario);
+        if (corretor.isPresent()) {
+            return ResponseEntity.ok(corretor.get());
+        } else {
+            return ResponseEntity.ok().build();
+        }
+    }
+
 
     @GetMapping
-    public List<Corretor> listTodos(){
-        return corretorRepository.findAll();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPorId(@PathVariable BigInteger id){
-        Optional<Corretor> corretor = corretorRepository.findById(id);
-        return corretor.<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable BigInteger id){
-        if(!corretorRepository.existsById(id)){
-            return ResponseEntity.notFound().build();
-        }
-        corretorRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<List<CorretorResponse>> getAllCorretores() {
+        List<CorretorResponse> corretores = corretorService.buscarTodos();
+        return ResponseEntity.ok(corretores);
     }
 }

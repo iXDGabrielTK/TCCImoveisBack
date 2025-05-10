@@ -80,6 +80,7 @@ public class SecureSecurityConfig {
                         .requestMatchers("/agendamentos/**").authenticated()
                         .requestMatchers("/relatorios/**").hasAnyRole("ADMIN", "FUNCIONARIO")
                         .requestMatchers("/api/funcionario/**").hasAuthority("FUNCIONARIO")
+                        .requestMatchers("/corretores/**").hasRole("VISITANTE")
                         .requestMatchers("/propostas").hasAnyRole("VISITANTE", "FUNCIONARIO")
                         .requestMatchers("/simulacoes").hasAnyRole("VISITANTE", "FUNCIONARIO")
                         .requestMatchers(

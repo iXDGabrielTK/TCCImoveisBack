@@ -2,11 +2,10 @@ package com.imveis.visita.Imoveis.dtos;
 
 import lombok.Data;
 
+import java.math.BigInteger;
+
 @Data
 public class CorretorResponse {
-    private Long id;
-    private String nome;
-    private String login;
-    private String telefone;
+    private BigInteger id;
     private String creci;
 }

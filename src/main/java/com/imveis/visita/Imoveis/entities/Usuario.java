@@ -47,6 +47,8 @@ public abstract class Usuario {
     @Column(name = "TELEFONE")
     private String telefone;
 
+    public abstract String getTipo();
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "usuario_roles",

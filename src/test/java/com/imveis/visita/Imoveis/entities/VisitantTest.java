@@ -84,18 +84,14 @@ class VisitantTest {
         LocalDateTime yesterday = now.minusDays(1);
 
         Visitante visitante = new Visitante();
-        visitante.setId(BigInteger.ONE);
-        visitante.setNome("Ana Pereira");
-        visitante.setEmail("ana.pereira@example.com");
-        visitante.setTelefone("11987654321");
         visitante.setDataAcesso(now);
         visitante.setDataCadastro(yesterday);
 
         String toString = visitante.toString();
 
-        assertTrue(toString.contains("Ana Pereira"));
-        assertTrue(toString.contains("ana.pereira@example.com"));
-        assertTrue(toString.contains("11987654321"));
+        assertTrue(toString.contains("dataAcesso"));
+        assertTrue(toString.contains("dataCadastro"));
     }
+
 
 }

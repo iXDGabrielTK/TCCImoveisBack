@@ -22,9 +22,9 @@ public class ImoveisApplication {
 		// ⚠️ Geração temporária de hash de senha
 		/*
 		PasswordEncoder encoder = context.getBean(PasswordEncoder.class);
-		String rawPassword = "gabrieltk12"; // coloque a senha aqui
+		String rawPassword = "gabrieltk12";
 		String hashedPassword = encoder.encode(rawPassword);
 		System.out.println("🔑 Hashed password: " + hashedPassword);
-		 */
+		*/
 	}
 }

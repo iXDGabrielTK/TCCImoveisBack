@@ -1,6 +1,5 @@
 package com.imveis.visita.Imoveis.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.entities.Visitante;
@@ -36,9 +35,6 @@ class UsuarioControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @MockBean
     private UsuarioService usuarioService;
@@ -78,11 +74,15 @@ class UsuarioControllerTest {
 
     @Test
     void testCriarVisitante() throws Exception {
-        Visitante novo = new Visitante();
-        novo.setNome("Maria Souza");
-        novo.setEmail("maria.souza");
-        novo.setSenha("senha789");
-        novo.setTelefone("11912345678");
+        var json = """
+                {
+                  "nome": "Maria Souza",
+                  "email": "maria.souza",
+                  "senha": "senha789",
+                  "telefone": "11912345678",
+                  "tipo": "visitante"
+                }
+                """;
 
         when(visitanteService.save(any(Visitante.class))).thenAnswer(invocation -> {
             Visitante v = invocation.getArgument(0);
@@ -95,7 +95,7 @@ class UsuarioControllerTest {
 
         mockMvc.perform(post("/usuarios")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(novo)))
+                        .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nome", is("Maria Souza")))
                 .andExpect(jsonPath("$.email", is("maria.souza")));
@@ -107,21 +107,29 @@ class UsuarioControllerTest {
 
     @Test
     void testCriarFuncionario() throws Exception {
-        Funcionario novo = new Funcionario();
-        novo.setNome("Carlos Oliveira");
-        novo.setEmail("carlos.oliveira");
-        novo.setSenha("senha101112");
-        novo.setTelefone("11987654321");
-        novo.setCpf("11122233344");
 
-        when(funcionarioService.save(any(Funcionario.class))).thenReturn(novo);
+        String json = """
+                {
+                  "nome": "Carlos Oliveira",
+                  "email": "carlos.oliveira",
+                  "senha": "senha123",
+                  "telefone": "44999999999",
+                  "tipo": "FUNCIONARIO",
+                  "cpf": "11122233344"
+                }
+                """;
 
+        when(funcionarioService.save(any(Funcionario.class))).thenAnswer(invocation -> {
+            Funcionario f = invocation.getArgument(0);
+            f.setId(BigInteger.TWO);
+            return f;
+        });
         doNothing().when(authService).encodePassword(any(Usuario.class));
         doNothing().when(authService).atribuirRoleParaUsuario(any(Usuario.class), eq("FUNCIONARIO"));
 
         mockMvc.perform(post("/usuarios")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(novo)))
+                        .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nome", is("Carlos Oliveira")))
                 .andExpect(jsonPath("$.email", is("carlos.oliveira")))
@@ -156,18 +164,32 @@ class UsuarioControllerTest {
 
     @Test
     void testAtualizarUsuario() throws Exception {
+        var json = """
+                {
+                  "nome": "João Atualizado",
+                  "email": "joao.atualizado",
+                  "senha": "",
+                  "telefone": "11999999999",
+                  "tipo": "funcionario"
+                }
+                """;
+
         Funcionario atualizado = new Funcionario();
+        atualizado.setId(BigInteger.ONE);
         atualizado.setNome("João Atualizado");
         atualizado.setEmail("joao.atualizado");
         atualizado.setTelefone("11999999999");
         atualizado.setCpf("12345678900");
+        atualizado.setRoles(new HashSet<>());
+
+
 
         when(usuarioService.findById(BigInteger.ONE)).thenReturn(Optional.of(funcionario));
         when(usuarioService.save(any(Usuario.class))).thenReturn(atualizado);
 
         mockMvc.perform(put("/usuarios/{id}", BigInteger.ONE)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(atualizado)))
+                        .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nome", is("João Atualizado")))
                 .andExpect(jsonPath("$.email", is("joao.atualizado")));

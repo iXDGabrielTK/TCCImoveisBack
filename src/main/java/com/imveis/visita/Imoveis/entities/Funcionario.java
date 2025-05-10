@@ -15,6 +15,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Funcionario extends Usuario {
+    @Override
+    public String getTipo() {
+        return "FUNCIONARIO";
+    }
 
     @Column(name = "CPF", nullable = false, unique = true)
     private String cpf;

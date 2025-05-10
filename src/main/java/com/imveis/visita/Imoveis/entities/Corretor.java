@@ -1,21 +1,31 @@
 package com.imveis.visita.Imoveis.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.math.BigInteger;
 
 @Entity
-@DiscriminatorValue("corretor")
+@Table(name = "corretor")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = false)
-public class Corretor extends Usuario {
+public class Corretor {
 
-    @Column(name = "CRECI", nullable = false, unique = true)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private BigInteger id;
+
+    @OneToOne
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
+    private Usuario usuario;
+
+    @Column(name = "creci", nullable = false, unique = true)
     private String creci;
 
-    @ManyToMany(mappedBy = "corretores")
-    private List<Imovel> imoveis;
+    // Se quiser depois:
+    // @ManyToMany(mappedBy = "corretores")
+    // private List<Imovel> imoveis;
 }
