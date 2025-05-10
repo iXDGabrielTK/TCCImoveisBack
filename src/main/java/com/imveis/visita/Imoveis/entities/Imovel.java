@@ -1,5 +1,6 @@
 package com.imveis.visita.Imoveis.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -67,6 +68,7 @@ public class Imovel {
 
 
     @ManyToMany
+    @JsonManagedReference(value = "imovel-imobiliaria")
     @JoinTable(
             name = "imovel_imobiliaria",
             joinColumns = @JoinColumn(name = "id_imovel"),

@@ -1,7 +1,10 @@
 package com.imveis.visita.Imoveis.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -32,6 +35,7 @@ public class Imobiliaria {
     private String cep;
 
     @ManyToMany(mappedBy = "imobiliarias")
+    @JsonBackReference(value = "imovel-imobiliaria")
     private List<Imovel> imoveis;
 
 }
