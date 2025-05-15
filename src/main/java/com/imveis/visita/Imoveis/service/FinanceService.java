@@ -13,7 +13,6 @@ public class FinanceService {
 
     private static final BigDecimal PERCENTUAL_RENDA = new BigDecimal("0.30");
     private static final List<Integer> PRAZO_MESES_PERMITIDOS = List.of(120,180,240,300,360);
-    private int prazo;
 
     public SimulacaoResponse simularFinanciamento(SimulacaoRequest request) {
         BigDecimal rendaMensal = request.getRendaMensal();
