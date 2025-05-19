@@ -21,6 +21,7 @@ public class PropostaResponse {
     private BigDecimal valorImovel;
     private BigDecimal valorFinanciamento;
     private LocalDate dataProposta;
+    private String mensagem;
 
     public PropostaResponse(Proposta proposta) {
         this.id = proposta.getId();
@@ -29,6 +30,10 @@ public class PropostaResponse {
         this.valorImovel = proposta.getValorImovel();
         this.valorFinanciamento = proposta.getValorFinanciamento();
         this.dataProposta = proposta.getDataProposta();
+    }
+
+    public PropostaResponse(String mensagem) {
+        this.mensagem = mensagem;
     }
 
 }

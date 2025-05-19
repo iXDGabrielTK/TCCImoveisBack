@@ -26,7 +26,9 @@ public class CorretorController {
             );
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
+            return ResponseEntity.badRequest().body("Dados inválidos: " + ex.getMessage());
+        } catch(Exception e){
+            return ResponseEntity.status(500).body("Erro interno ao processar candidatura: " + e.getMessage());
         }
     }
 

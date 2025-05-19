@@ -22,13 +22,21 @@ public class FinanceController {
     public ResponseEntity<SimulacaoResponse> simular(@RequestBody SimulacaoRequest request, HttpServletRequest req) {
         try {
             if (request.getRendaMensal() == null || request.getValorEntrada() == null) {
-                return ResponseEntity.badRequest().body(null);
+                return ResponseEntity.badRequest().body(
+                        new SimulacaoResponse("Erro: renda mensal e valor de entrada são obrigatórios para a simulação.")
+                );
             }
             System.out.println("🔐 Header Authorization: " + req.getHeader("Authorization"));
             SimulacaoResponse response = financeService.simularFinanciamento(request);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(new SimulacaoResponse("Erro: " + e.getMessage()));
+            return ResponseEntity.badRequest().body(
+                    new SimulacaoResponse("Erro na simulação: " + e.getMessage())
+            );
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(
+                    new SimulacaoResponse("Erro inesperado ao simular financiamneto. Detalhes: " + e.getMessage())
+            );
         }
 
     }

@@ -41,7 +41,8 @@ public class PropostaController {
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         if (userDetails == null) {
-            return ResponseEntity.status(401).build();
+            return ResponseEntity.status(401)
+                    .body(new PropostaResponse("Usuário não autenticado. Faça login para enviar uma proposta."));
         }
 
         BigInteger usuarioId = userDetails.getId();
@@ -54,8 +55,9 @@ public class PropostaController {
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            logger.error("Erro ao criar proposta", e); // loga a stack trace completa
-            return ResponseEntity.internalServerError().body(null); // opcionalmente, pode retornar uma mensagem
+            logger.error("Erro ao criar proposta", e);
+            return ResponseEntity.internalServerError()
+                    .body(new PropostaResponse("Erro Interno ao processar a proposta. Tente novamente mais tarde."));
         }
     }
 

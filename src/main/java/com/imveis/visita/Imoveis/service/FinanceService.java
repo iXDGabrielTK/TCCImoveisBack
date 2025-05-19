@@ -1,5 +1,6 @@
 package com.imveis.visita.Imoveis.service;
 
+
 import com.imveis.visita.Imoveis.dtos.SimulacaoRequest;
 import com.imveis.visita.Imoveis.dtos.SimulacaoResponse;
 import org.springframework.stereotype.Service;
