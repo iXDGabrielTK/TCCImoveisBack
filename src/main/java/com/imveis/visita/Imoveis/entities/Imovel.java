@@ -37,7 +37,7 @@ public class Imovel {
     @Column(name = "PRECO_IMOVEL")
     private Float precoImovel;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "ENDERECO_ID", referencedColumnName = "id", nullable = false)
     private Endereco enderecoImovel;
 

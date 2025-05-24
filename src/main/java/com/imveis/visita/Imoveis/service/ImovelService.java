@@ -75,6 +75,10 @@ public class ImovelService {
             if (endereco.getIdEndereco() == null) {
                 Endereco enderecoSalvo = enderecoRepository.save(endereco);
                 imovel.setEnderecoImovel(enderecoSalvo);
+            } else {
+                Endereco enderecoExistente = enderecoRepository.findById(endereco.getIdEndereco())
+                        .orElseThrow(() -> new IllegalArgumentException("Endereço não encontrado."));
+                imovel.setEnderecoImovel(enderecoExistente);
             }
         }
 
