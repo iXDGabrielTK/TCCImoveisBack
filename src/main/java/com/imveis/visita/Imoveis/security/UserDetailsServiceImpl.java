@@ -13,6 +13,10 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Implementação do UserDetailsService para carregar os detalhes do usuário durante a autenticação.
+ * Carrega o usuário pelo e-mail e atribui as autoridades (roles) correspondentes.
+ */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -22,6 +26,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    /**
+     * Carrega o usuário pelo e-mail e atribui as autoridades (roles) correspondentes.
+     *
+     * @param login O e-mail do usuário a ser carregado
+     * @return Os detalhes do usuário autenticado
+     * @throws UsernameNotFoundException Se o usuário não for encontrado
+     */
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(login);
@@ -36,6 +47,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return new UserDetailsImpl(usuario, authorities);
     }
 
+    /**
+     * Atribui as autoridades (roles) ao usuário.
+     *
+     * @param usuario O usuário cujas autoridades serão atribuídas
+     * @return As autoridades atribuídas ao usuário
+     */
     private Collection<? extends GrantedAuthority> getAuthorities(Usuario usuario) {
         var authorities = usuario.getRoles().stream()
                 .map(role -> {

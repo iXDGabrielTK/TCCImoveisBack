@@ -40,10 +40,10 @@ public class UsuarioService {
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
     }
 
-
-    public Usuario save(Usuario usuario) {
-        authService.encodePassword(usuario);
-
+    public Usuario save(Usuario usuario, boolean encodePassword) {
+        if (encodePassword) {
+            authService.encodePassword(usuario);
+        }
         if (usuario instanceof Visitante visitante) {
             if (visitante.getDataCadastro() == null) {
                 visitante.setDataCadastro(LocalDateTime.now());

@@ -4,7 +4,6 @@ import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.service.FuncionarioService;
 import com.imveis.visita.Imoveis.service.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -15,26 +14,27 @@ import java.util.Optional;
 @RequestMapping("/funcionarios")
 public class FuncionarioController {
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
 
-    @Autowired
-    private FuncionarioService funcionarioService;
+    private final FuncionarioService funcionarioService;
 
-    //private Usuario usuario;
+    public FuncionarioController(FuncionarioService funcionarioService, UsuarioService usuarioService) {
+        this.funcionarioService = funcionarioService;
+        this.usuarioService = usuarioService;
+    }
+
 
     @GetMapping
     public List<Funcionario> getAllFuncionarios() {
         return funcionarioService.findAll();
     }
 
-    public Funcionario save(Funcionario funcionario) {
-
-        Usuario salvo = usuarioService.save(funcionario);
-
+    @PostMapping
+    public Funcionario save(@RequestBody Funcionario funcionario) {
+        boolean senhaFoiInformada = funcionario.getSenha() != null && !funcionario.getSenha().trim().isEmpty();
+        Usuario salvo = usuarioService.save(funcionario, senhaFoiInformada);
         return (Funcionario) salvo;
     }
-
 
     @GetMapping("/{id}")
     public Optional<Funcionario> getFuncionarioById(@PathVariable BigInteger id) {

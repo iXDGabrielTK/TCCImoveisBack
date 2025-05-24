@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class ImoveisApplication {
@@ -20,11 +21,10 @@ public class ImoveisApplication {
 		System.out.println("🌐 SERVER_PORT via Spring Environment: " + env.getProperty("SERVER_PORT"));
 
 		// ⚠️ Geração temporária de hash de senha
-		/*
+
 		PasswordEncoder encoder = context.getBean(PasswordEncoder.class);
 		String rawPassword = "gabrieltk12";
 		String hashedPassword = encoder.encode(rawPassword);
 		System.out.println("🔑 Hashed password: " + hashedPassword);
-		*/
 	}
 }

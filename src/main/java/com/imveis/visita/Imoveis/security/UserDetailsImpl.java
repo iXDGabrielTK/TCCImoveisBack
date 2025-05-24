@@ -8,6 +8,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.math.BigInteger;
 import java.util.Collection;
 
+/**
+ * Implementação do UserDetails para o Spring Security.
+ * Armazena os detalhes do usuário autenticado.
+ */
 @Getter
 public class UserDetailsImpl implements UserDetails {
 
@@ -16,7 +20,7 @@ public class UserDetailsImpl implements UserDetails {
     private final String senha;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Usuario usuario, Collection<? extends GrantedAuthority> authorities) {
+    UserDetailsImpl(Usuario usuario, Collection<? extends GrantedAuthority> authorities) {
         this.id = usuario.getId();
         this.email = usuario.getEmail();
         this.senha = usuario.getSenha();

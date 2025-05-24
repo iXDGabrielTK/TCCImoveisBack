@@ -26,6 +26,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
+/**
+ * Configuração de segurança para a aplicação.
+ * Define as regras de autenticação, autorização e CORS.
+ */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -46,6 +50,11 @@ public class SecureSecurityConfig {
         System.out.println("⚙️ SecureSecurityConfig ATIVO");
     }
 
+    /**
+     * Configuração de CORS para permitir requisições de origens específicas.
+     *
+     * @return A configuração de CORS
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSourceSecurity() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -65,6 +74,13 @@ public class SecureSecurityConfig {
         return config.getAuthenticationManager();
     }
 
+    /**
+     * Configuração do filtro de segurança.
+     *
+     * @param http O objeto HttpSecurity
+     * @return O SecurityFilterChain configurado
+     * @throws Exception Se ocorrer um erro durante a configuração
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -99,6 +115,11 @@ public class SecureSecurityConfig {
         return http.build();
     }
 
+    /**
+     * Configuração do AuthenticationProvider para autenticação de usuários.
+     *
+     * @return O DaoAuthenticationProvider configurado
+     */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -107,9 +128,14 @@ public class SecureSecurityConfig {
         return authProvider;
     }
 
+    /**
+     * Configuração do PasswordEncoder para codificação de senhas.
+     *
+     * @return O PasswordEncoder configurado
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12); // Increased strength (default is 10)
+        return new BCryptPasswordEncoder(12);
     }
 
 }

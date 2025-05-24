@@ -5,12 +5,17 @@ import com.imveis.visita.Imoveis.entities.Endereco;
 import com.imveis.visita.Imoveis.entities.Imovel;
 import com.imveis.visita.Imoveis.repositories.EnderecoRepository;
 import com.imveis.visita.Imoveis.repositories.ImovelRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ImovelService {
@@ -24,11 +29,32 @@ public class ImovelService {
         this.enderecoRepository = enderecoRepository;
     }
 
-    public List<ImovelDTO> findAllDTOs() {
-        return imovelRepository.findAllWithFotos()
-                .stream()
-                .map(ImovelDTO::new)
-                .toList();
+    public Page<ImovelDTO> findAllPaginado(int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("idImovel").descending());
+        Page<BigInteger> pageIds = imovelRepository.findAllIdsPaginado(pageable);
+
+        if (pageIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        List<Imovel> imoveis = imovelRepository.findAllByIdInWithFotosAndEndereco(pageIds.getContent());
+        List<ImovelDTO> dtos = imoveis.stream().map(ImovelDTO::new).collect(Collectors.toList());
+
+        return new PageImpl<>(dtos, pageable, pageIds.getTotalElements());
+    }
+
+    public Page<ImovelDTO> findDisponiveisPorValorPaginado(double valorMax, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("idImovel").descending());
+        Page<BigInteger> pageIds = imovelRepository.findDisponiveisIdsPorValorMax(BigDecimal.valueOf(valorMax), pageable);
+
+        if (pageIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        List<Imovel> imoveis = imovelRepository.findAllByIdInWithFotosAndEndereco(pageIds.getContent());
+        List<ImovelDTO> dtos = imoveis.stream().map(ImovelDTO::new).collect(Collectors.toList());
+
+        return new PageImpl<>(dtos, pageable, pageIds.getTotalElements());
     }
 
     public Optional<Imovel> findById(BigInteger id) {
@@ -72,13 +98,6 @@ public class ImovelService {
 
     public Optional<Imovel> findByEndereco(String rua, String numero, String bairro) {
         return imovelRepository.findByEnderecoImovel_RuaAndEnderecoImovel_NumeroAndEnderecoImovel_Bairro(rua, numero, bairro);
-    }
-
-    public List<ImovelDTO> findDisponiveisPorValor(double valorMax){
-        return imovelRepository.findDisponiveisPorValorMax(BigDecimal.valueOf(valorMax))
-                .stream()
-                .map(ImovelDTO::new)
-                .toList();
     }
 
 }

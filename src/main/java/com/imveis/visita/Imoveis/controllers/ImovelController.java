@@ -7,12 +7,16 @@ import com.imveis.visita.Imoveis.repositories.CorretorRepository;
 import com.imveis.visita.Imoveis.repositories.ImobiliariaRepository;
 import com.imveis.visita.Imoveis.service.EnderecoService;
 import com.imveis.visita.Imoveis.service.ImovelService;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @SuppressWarnings("CallToPrintStackTrace")
 @RestController
@@ -41,16 +45,16 @@ public class ImovelController {
         this.imobiliariaRepository = imobiliariaRepository;
     }
 
-    @GetMapping
-    public ResponseEntity<List<ImovelDTO>> getAllImoveis() {
-        try {
-            List<ImovelDTO> imoveisDTO = imovelService.findAllDTOs();
-            return ResponseEntity.ok(imoveisDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Collections.emptyList());
-        }
+    private static @NotNull Endereco getEndereco(Imovel imovel, Endereco novoEndereco) {
+        Endereco enderecoExistente = imovel.getEnderecoImovel();
+        enderecoExistente.setRua(novoEndereco.getRua());
+        enderecoExistente.setNumero(novoEndereco.getNumero());
+        enderecoExistente.setComplemento(novoEndereco.getComplemento());
+        enderecoExistente.setBairro(novoEndereco.getBairro());
+        enderecoExistente.setCidade(novoEndereco.getCidade());
+        enderecoExistente.setEstado(novoEndereco.getEstado());
+        enderecoExistente.setCep(novoEndereco.getCep());
+        return enderecoExistente;
     }
 
     @GetMapping("/{id}")
@@ -60,10 +64,15 @@ public class ImovelController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("/disponiveis")
-    public ResponseEntity<List<ImovelDTO>> getImoveisPorPoderDeCompra(@RequestParam double valorMax){
-        List<ImovelDTO> disponiveis = imovelService.findDisponiveisPorValor(valorMax);
-        return ResponseEntity.ok(disponiveis);
+    @GetMapping
+    public ResponseEntity<?> getAllImoveis(@RequestParam(defaultValue = "0") int page,
+                                           @RequestParam(defaultValue = "8") int size) {
+        try {
+            return ResponseEntity.ok(imovelService.findAllPaginado(page, size));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao buscar imóveis");
+        }
     }
 
     @PostMapping
@@ -102,6 +111,13 @@ public class ImovelController {
         }
     }
 
+    @GetMapping("/disponiveis")
+    public ResponseEntity<?> getImoveisPorPoderDeCompra(@RequestParam double valorMax,
+                                                        @RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "8") int size) {
+        return ResponseEntity.ok(imovelService.findDisponiveisPorValorPaginado(valorMax, page, size));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateImovel(@PathVariable BigInteger id, @RequestBody ImovelRequest imovelRequest) {
         try {
@@ -122,14 +138,7 @@ public class ImovelController {
             Endereco novoEndereco = imovelRequest.getEnderecoImovel();
             if (novoEndereco != null) {
                 if (imovel.getEnderecoImovel() != null) {
-                    Endereco enderecoExistente = imovel.getEnderecoImovel();
-                    enderecoExistente.setRua(novoEndereco.getRua());
-                    enderecoExistente.setNumero(novoEndereco.getNumero());
-                    enderecoExistente.setComplemento(novoEndereco.getComplemento());
-                    enderecoExistente.setBairro(novoEndereco.getBairro());
-                    enderecoExistente.setCidade(novoEndereco.getCidade());
-                    enderecoExistente.setEstado(novoEndereco.getEstado());
-                    enderecoExistente.setCep(novoEndereco.getCep());
+                    Endereco enderecoExistente = getEndereco(imovel, novoEndereco);
                     enderecoService.save(enderecoExistente);
                 } else {
                     Endereco enderecoSalvo = enderecoService.save(novoEndereco);

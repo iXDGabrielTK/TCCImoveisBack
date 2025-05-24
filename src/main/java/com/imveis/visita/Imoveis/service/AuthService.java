@@ -36,7 +36,9 @@ public class AuthService {
 
     public void encodePassword(Usuario usuario) {
         System.out.println(">> CRIPTOGRAFANDO senha: " + usuario.getSenha());
-        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        if (usuario.getSenha() != null && !usuario.getSenha().startsWith("$2a$")) {
+            usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        }
     }
 
     @SuppressWarnings("unused")

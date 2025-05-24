@@ -1,6 +1,8 @@
 package com.imveis.visita.Imoveis.repositories;
 
 import com.imveis.visita.Imoveis.entities.Imovel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,9 +20,22 @@ public interface ImovelRepository extends JpaRepository<Imovel, BigInteger> {
 
     Optional<Imovel> findByEnderecoImovel_RuaAndEnderecoImovel_NumeroAndEnderecoImovel_Bairro(String rua, String numero, String bairro);
 
-    @Query("SELECT i FROM Imovel i WHERE i.apagado = false")
-    @EntityGraph(attributePaths = {"fotosImovel", "enderecoImovel"})
-    List<Imovel> findAllActiveComFotos();
+    // Etapa 1: Buscar apenas os IDs com paginação real
+    @Query("SELECT i.idImovel FROM Imovel i WHERE i.apagado = false")
+    Page<BigInteger> findAllIdsPaginado(Pageable pageable);
+
+    @Query("SELECT i.idImovel FROM Imovel i WHERE i.apagado = false AND i.precoImovel <= :valorMax")
+    Page<BigInteger> findDisponiveisIdsPorValorMax(@Param("valorMax") BigDecimal valorMax, Pageable pageable);
+
+    // Etapa 2: Buscar imóveis completos com fotos e endereço
+    @Query("""
+            SELECT DISTINCT i FROM Imovel i
+            LEFT JOIN FETCH i.fotosImovel
+            LEFT JOIN FETCH i.enderecoImovel
+            WHERE i.idImovel IN :ids
+            """)
+    List<Imovel> findAllByIdInWithFotosAndEndereco(@Param("ids") List<BigInteger> ids);
+
 
     @EntityGraph(attributePaths = {"corretores", "imobiliarias"})
     Optional<Imovel> findByIdImovel(BigInteger idImovel);
@@ -31,14 +46,5 @@ public interface ImovelRepository extends JpaRepository<Imovel, BigInteger> {
 
     @Query("SELECT i FROM Imovel i LEFT JOIN FETCH i.enderecoImovel LEFT JOIN FETCH i.fotosImovel WHERE i.idImovel = :id AND i.apagado = false")
     Optional<Imovel> findByIdWithEnderecoAndFotos(@Param("id") BigInteger id);
-
-    @EntityGraph(attributePaths = {"fotosImovel", "enderecoImovel"})
-    @Query("SELECT i FROM Imovel i WHERE i.apagado = false")
-    List<Imovel> findAllWithFotos();
-
-    @EntityGraph(attributePaths = {"fotosImovel", "enderecoImovel"})
-    @Query("SELECT i FROM Imovel i WHERE i.apagado = false AND i.precoImovel <= :valorMax")
-    List<Imovel> findDisponiveisPorValorMax(@Param("valorMax") BigDecimal valorMax);
-
 
 }

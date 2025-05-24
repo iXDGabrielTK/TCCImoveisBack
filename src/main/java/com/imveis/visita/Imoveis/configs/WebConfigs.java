@@ -20,6 +20,12 @@ public class WebConfigs {
     public PlatformTransactionManager transactionManager() {
         return new JpaTransactionManager();
     }
+
+    /**
+     * Configuração de CORS para permitir requisições de origens específicas.
+     *
+     * @return A configuração de CORS
+     */
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {

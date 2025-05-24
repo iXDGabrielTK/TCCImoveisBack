@@ -140,12 +140,13 @@ public class UsuarioController {
             usuario.setEmail(dto.getEmail());
             usuario.setTelefone(dto.getTelefone());
 
-            if (dto.getSenha() != null && !dto.getSenha().trim().isEmpty()) {
+            boolean senhaFoiAlterada = dto.getSenha() != null && !dto.getSenha().trim().isEmpty();
+
+            if (senhaFoiAlterada) {
                 usuario.setSenha(dto.getSenha());
-                authService.encodePassword(usuario);
             }
 
-            Usuario atualizado = usuarioService.save(usuario);
+            Usuario atualizado = usuarioService.save(usuario, senhaFoiAlterada);
 
             UsuarioResponseDTO responseDTO = new UsuarioResponseDTO(
                     atualizado.getId(),

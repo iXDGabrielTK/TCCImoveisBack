@@ -68,7 +68,7 @@ public class AuthController {
 
             // Comparação e logs
             logger.info("🔐 Senha criptografada no banco: {}", usuario.getSenha());
-            logger.info("🔐 Senha recebida do Postman: {}", loginRequest.getSenha());
+            logger.info("🔐 Senha recebida: {}", loginRequest.getSenha());
 
             // Codifica a senha recebida só para visualização (não para comparação real)
             String senhaCodificadaTemporaria = passwordEncoder.encode(loginRequest.getSenha());

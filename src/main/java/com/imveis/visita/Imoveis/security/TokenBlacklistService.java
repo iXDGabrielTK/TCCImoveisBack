@@ -9,7 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Service to manage blacklisted tokens for logout functionality
+ * Armazena tokens que foram revogados, fazer logout ou revogar token por exemplo
  */
 @Service
 public class TokenBlacklistService {
@@ -17,33 +17,33 @@ public class TokenBlacklistService {
     private final Map<String, Long> blacklistedTokens = new ConcurrentHashMap<>();
 
     public TokenBlacklistService() {
-        // Schedule a cleanup task to run every hour
+        // Agendar a limpeza de tokens expirados a cada hora
         ScheduledExecutorService cleanupService = Executors.newSingleThreadScheduledExecutor();
         cleanupService.scheduleAtFixedRate(this::cleanupExpiredTokens, 1, 1, TimeUnit.HOURS);
     }
 
     /**
-     * Add a token to the blacklist
+     * Adiciona um token à blacklist com o tempo de expiração.
      *
-     * @param token          The token to blacklist
-     * @param expirationTime The expiration time of the token in milliseconds since epoch
+     * @param token         O token a ser adicionado à blacklist
+     * @param expirationTime A hora de expiração do token em milissegundos
      */
     public void blacklistToken(String token, long expirationTime) {
         blacklistedTokens.put(token, expirationTime);
     }
 
     /**
-     * Check if a token is blacklisted
+     * Verifica se um token está na blacklist.
      *
-     * @param token The token to check
-     * @return true if the token is blacklisted, false otherwise
+     * @param token O token a ser verificado
+     * @return Verdadeiro se o token está na blacklist, falso caso contrário
      */
     boolean isBlacklisted(String token) {
         return blacklistedTokens.containsKey(token);
     }
 
     /**
-     * Clean up expired tokens from the blacklist
+     * Limpa os tokens expirados da blacklist.
      */
     private void cleanupExpiredTokens() {
         long now = System.currentTimeMillis();
