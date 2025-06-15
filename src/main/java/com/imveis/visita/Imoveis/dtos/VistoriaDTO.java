@@ -4,13 +4,12 @@ import com.imveis.visita.Imoveis.entities.Vistoria;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigInteger;
 import java.time.LocalDate;
 
 @Getter
 @Setter
 public class VistoriaDTO {
-    private BigInteger idVistoria;
+    private Long idVistoria;
     private String tipoVistoria;
     private String laudoVistoria;
     private LocalDate dataVistoria;

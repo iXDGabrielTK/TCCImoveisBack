@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,12 +38,12 @@ public class VisitanteController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Visitante> getVisitanteById(@PathVariable BigInteger id) {
+    public Optional<Visitante> getVisitanteById(@PathVariable Long id) {
         return visitanteService.findById(id);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteVisitante(@PathVariable BigInteger id) {
+    public void deleteVisitante(@PathVariable Long id) {
         visitanteService.deleteById(id);
     }
 }

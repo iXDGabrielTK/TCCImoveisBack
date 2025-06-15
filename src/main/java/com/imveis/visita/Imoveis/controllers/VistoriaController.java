@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +39,7 @@ public class VistoriaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getVistoriaById(@PathVariable BigInteger id) {
+    public ResponseEntity<?> getVistoriaById(@PathVariable Long id) {
         try {
             Optional<Vistoria> vistoria = vistoriaService.findById(id);
             return vistoria.map(v -> ResponseEntity.ok(new VistoriaDTO(v)))
@@ -79,7 +78,7 @@ public class VistoriaController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateVistoria(@PathVariable BigInteger id, @RequestBody VistoriaRequest vistoriaRequest) {
+    public ResponseEntity<?> updateVistoria(@PathVariable Long id, @RequestBody VistoriaRequest vistoriaRequest) {
         try {
             Vistoria vistoria = vistoriaService.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("Vistoria não encontrada"));
@@ -98,13 +97,13 @@ public class VistoriaController {
     }
 
     @PutMapping("/{id}/cancelar")
-    public ResponseEntity<Void> cancelarVistoria(@PathVariable BigInteger id) {
+    public ResponseEntity<Void> cancelarVistoria(@PathVariable Long id) {
         vistoriaService.cancelarVistoria(id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public void deleteVistoria(@PathVariable BigInteger id){
+    public void deleteVistoria(@PathVariable Long id) {
         vistoriaService.deleteById(id);
     }
 

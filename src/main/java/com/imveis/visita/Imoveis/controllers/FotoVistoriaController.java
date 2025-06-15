@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -34,12 +33,12 @@ public class FotoVistoriaController {
     }
 
     @GetMapping("/{id}")
-    public Optional<FotoVistoria> getFotoVistoriaById(@PathVariable BigInteger id) {
+    public Optional<FotoVistoria> getFotoVistoriaById(@PathVariable Long id) {
         return fotoVistoriaService.findById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Object> createFotosVistoria(@RequestBody String urls, @RequestParam BigInteger vistoriaId) {
+    public ResponseEntity<Object> createFotosVistoria(@RequestBody String urls, @RequestParam Long vistoriaId) {
         Vistoria vistoria = vistoriaService.findById(vistoriaId)
                 .orElseThrow(() -> new IllegalArgumentException("Vistoria não encontrada"));
 
@@ -62,7 +61,7 @@ public class FotoVistoriaController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteFotoVistoria(@PathVariable BigInteger id) {
+    public void deleteFotoVistoria(@PathVariable Long id) {
         fotoVistoriaService.deleteById(id);
     }
 }

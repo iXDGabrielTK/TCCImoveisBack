@@ -6,7 +6,6 @@ import com.imveis.visita.Imoveis.service.FuncionarioService;
 import com.imveis.visita.Imoveis.service.UsuarioService;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,12 +36,12 @@ public class FuncionarioController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Funcionario> getFuncionarioById(@PathVariable BigInteger id) {
+    public Optional<Funcionario> getFuncionarioById(@PathVariable Long id) {
         return funcionarioService.findById(id);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteFuncionario(@PathVariable BigInteger id) {
+    public void deleteFuncionario(@PathVariable Long id) {
         funcionarioService.deleteById(id);
     }
 }

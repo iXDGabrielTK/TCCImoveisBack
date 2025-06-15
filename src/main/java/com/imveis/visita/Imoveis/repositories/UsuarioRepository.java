@@ -7,11 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
-public interface UsuarioRepository extends JpaRepository<Usuario, BigInteger> {
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Query("SELECT u FROM Usuario u WHERE TYPE(u) = :tipo")
     List<Usuario> findByTipo(@Param("tipo") Class<? extends Usuario> tipo);
@@ -22,7 +21,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, BigInteger> {
     @SuppressWarnings("unused")
     Optional<Usuario> findByEmailAndSenha(String email, String senha);
 
-    @NotNull Optional<Usuario> findById(@NotNull BigInteger usuarioId);
+    @NotNull Optional<Usuario> findById(@NotNull Long usuarioId);
 
 
 }

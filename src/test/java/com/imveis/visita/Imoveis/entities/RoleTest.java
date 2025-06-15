@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigInteger;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,8 +23,8 @@ class RoleTest {
         assertEquals("ADMIN", roleWithName.getNome());
 
         // Test all args constructor
-        Role roleWithAll = new Role(BigInteger.ONE, "USER");
-        assertEquals(BigInteger.ONE, roleWithAll.getId());
+        Role roleWithAll = new Role(1L, "USER");
+        assertEquals(1L, roleWithAll.getId());
         assertEquals("USER", roleWithAll.getNome());
     }
 
@@ -33,8 +32,8 @@ class RoleTest {
     void testSettersAndGetters() {
         Role role = new Role();
 
-        role.setId(BigInteger.valueOf(123));
-        assertEquals(BigInteger.valueOf(123), role.getId());
+        role.setId(123L);
+        assertEquals(123L, role.getId());
 
         role.setNome("MODERATOR");
         assertEquals("MODERATOR", role.getNome());
@@ -42,9 +41,9 @@ class RoleTest {
 
     @Test
     void testEqualsAndHashCode() {
-        Role role1 = new Role(BigInteger.ONE, "ADMIN");
-        Role role2 = new Role(BigInteger.ONE, "ADMIN");
-        Role role3 = new Role(BigInteger.valueOf(2), "USER");
+        Role role1 = new Role(1L, "ADMIN");
+        Role role2 = new Role(1L, "ADMIN");
+        Role role3 = new Role(2L, "USER");
 
         // Test equals
         assertEquals(role1, role2);
@@ -57,7 +56,7 @@ class RoleTest {
 
     @Test
     void testToString() {
-        Role role = new Role(BigInteger.ONE, "ADMIN");
+        Role role = new Role(1L, "ADMIN");
         String toString = role.toString();
         assertTrue(toString.contains("ADMIN"));
         assertTrue(toString.contains("1"));
@@ -67,7 +66,7 @@ class RoleTest {
     static class Role {
         @Getter
         @Setter
-        private BigInteger id;
+        private Long id;
         @Getter
         @Setter
         private String nome;
@@ -79,7 +78,7 @@ class RoleTest {
             this.nome = nome;
         }
 
-        public Role(BigInteger id, String nome) {
+        public Role(Long id, String nome) {
             this.id = id;
             this.nome = nome;
         }

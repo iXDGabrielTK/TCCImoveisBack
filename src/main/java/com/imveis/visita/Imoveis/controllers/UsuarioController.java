@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -103,7 +102,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUsuarioById(@PathVariable BigInteger id) {
+    public ResponseEntity<?> getUsuarioById(@PathVariable Long id) {
         try {
             Optional<Usuario> usuarioOpt = usuarioService.findById(id);
             if (usuarioOpt.isPresent()) {
@@ -127,7 +126,7 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> atualizarUsuario(@PathVariable BigInteger id, @RequestBody UsuarioRequestDTO dto) {
+    public ResponseEntity<?> atualizarUsuario(@PathVariable Long id, @RequestBody UsuarioRequestDTO dto) {
         try {
             Optional<Usuario> usuarioOpt = usuarioService.findById(id);
             if (usuarioOpt.isEmpty()) {
@@ -199,7 +198,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletarUsuario(@PathVariable BigInteger id) {
+    public ResponseEntity<?> deletarUsuario(@PathVariable Long id) {
         try {
             usuarioService.deleteById(id);
             return ResponseEntity.ok("Usuário excluído com sucesso!");

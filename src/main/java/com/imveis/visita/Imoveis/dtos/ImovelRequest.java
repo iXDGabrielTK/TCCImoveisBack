@@ -3,7 +3,6 @@ package com.imveis.visita.Imoveis.dtos;
 import com.imveis.visita.Imoveis.entities.Endereco;
 import lombok.Data;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Data
@@ -16,6 +15,6 @@ public class ImovelRequest {
     private String historicoManutencao;
     private List<String> fotosImovel;
     private Endereco enderecoImovel;
-    private List<BigInteger> idsCorretores;
-    private List<BigInteger> idsImobiliarias;
+    private List<Long> idsCorretores;
+    private List<Long> idsImobiliarias;
 }

@@ -2,7 +2,6 @@ package com.imveis.visita.Imoveis.entities;
 
 import org.junit.jupiter.api.Test;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -29,7 +28,7 @@ class VisitantTest {
         Set<Role> roles = new HashSet<>();
         roles.add(new Role("VISITANTE"));
 
-        visitante.setId(BigInteger.ONE);
+        visitante.setId(1L);
         visitante.setNome("Ana Pereira");
         visitante.setEmail("ana.pereira");
         visitante.setSenha("senha789");
@@ -38,7 +37,7 @@ class VisitantTest {
         visitante.setDataAcesso(now);
         visitante.setDataCadastro(yesterday);
 
-        assertEquals(BigInteger.ONE, visitante.getId());
+        assertEquals(1L, visitante.getId());
         assertEquals("Ana Pereira", visitante.getNome());
         assertEquals("ana.pereira", visitante.getEmail());
         assertEquals("senha789", visitante.getSenha());
@@ -60,13 +59,13 @@ class VisitantTest {
         visitante.setDataCadastro(yesterday);
         assertEquals(yesterday, visitante.getDataCadastro());
 
-        visitante.setId(BigInteger.valueOf(123));
+        visitante.setId(123L);
         visitante.setNome("Carlos Oliveira");
         visitante.setEmail("carlos.oliveira");
         visitante.setSenha("senha101112");
         visitante.setTelefone("11912345678");
 
-        assertEquals(BigInteger.valueOf(123), visitante.getId());
+        assertEquals(123L, visitante.getId());
         assertEquals("Carlos Oliveira", visitante.getNome());
         assertEquals("carlos.oliveira", visitante.getEmail());
         assertEquals("senha101112", visitante.getSenha());

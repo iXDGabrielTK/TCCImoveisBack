@@ -5,7 +5,6 @@ import com.imveis.visita.Imoveis.service.EnderecoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +25,7 @@ public class EnderecoController {
     }
 
     @GetMapping("/{id}")
-    public Optional<Endereco> getEnderecoById(@PathVariable BigInteger id){
+    public Optional<Endereco> getEnderecoById(@PathVariable Long id) {
         return enderecoService.findById(id);
     }
 
@@ -39,7 +38,7 @@ public class EnderecoController {
     public Endereco updateEndereco(@RequestBody Endereco endereco){return enderecoService.save(endereco);}
 
     @DeleteMapping("/{id}")
-    public void deleteEndereco(@PathVariable BigInteger id) {
+    public void deleteEndereco(@PathVariable Long id) {
         enderecoService.deleteById(id);
     }
 }

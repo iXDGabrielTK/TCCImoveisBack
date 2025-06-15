@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @RestController
@@ -46,13 +45,13 @@ public class AgendaController {
     }
 
     @PutMapping("/{id}/cancelar")
-    public ResponseEntity<Void> cancelarAgendamento(@PathVariable BigInteger id) {
+    public ResponseEntity<Void> cancelarAgendamento(@PathVariable Long id) {
         agendamentoService.cancelarAgendamento(id);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping(value = "/usuario/{usuarioId}", produces = "application/json")
-    public ResponseEntity<List<Agendamento>> getAgendamentosByUsuario(@PathVariable BigInteger usuarioId) {
+    public ResponseEntity<List<Agendamento>> getAgendamentosByUsuario(@PathVariable Long usuarioId) {
         try {
             List<Agendamento> agendamentos = agendamentoService.findByUsuarioId(usuarioId);
             return ResponseEntity.ok(agendamentos);

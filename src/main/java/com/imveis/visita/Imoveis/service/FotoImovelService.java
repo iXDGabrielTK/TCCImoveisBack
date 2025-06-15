@@ -5,7 +5,6 @@ import com.imveis.visita.Imoveis.repositories.FotoImovelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +22,7 @@ public class FotoImovelService {
         return fotoImovelRepository.findAll();
     }
 
-    public Optional<FotoImovel> findById(BigInteger id) {
+    public Optional<FotoImovel> findById(Long id) {
         return fotoImovelRepository.findById(id);
     }
 
@@ -31,7 +30,7 @@ public class FotoImovelService {
         return fotoImovelRepository.save(fotoImovel);
     }
 
-    public void deleteById(BigInteger id) {
+    public void deleteById(Long id) {
         fotoImovelRepository.deleteById(id);
     }
 

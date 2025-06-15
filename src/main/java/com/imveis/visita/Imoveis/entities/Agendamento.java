@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
 import java.time.LocalDate;
 
 @Entity
@@ -19,7 +18,7 @@ import java.time.LocalDate;
 public class Agendamento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger id;
+    private long id;
 
     @Column(name = "DATA_AGENDAMENTO", nullable = false)
     private LocalDate dataAgendamento;
@@ -39,7 +38,7 @@ public class Agendamento {
     private boolean cancelado = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USUARIO_ID", nullable = true)
+    @JoinColumn(name = "USUARIO_ID")
     @JsonBackReference
     private Usuario usuario;
 }

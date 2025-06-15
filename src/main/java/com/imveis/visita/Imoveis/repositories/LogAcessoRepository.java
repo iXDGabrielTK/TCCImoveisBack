@@ -7,11 +7,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public interface LogAcessoRepository extends JpaRepository<LogAcesso, BigInteger> {
+public interface LogAcessoRepository extends JpaRepository<LogAcesso, Long> {
 
     @Query("SELECT COUNT(l) FROM LogAcesso l WHERE EXTRACT(YEAR FROM l.dataHora) = :ano AND EXTRACT(MONTH FROM l.dataHora) = :mes AND l.acao = 'LOGIN'")
     long countLoginsByMonth(@Param("ano") int ano, @Param("mes") int mes);

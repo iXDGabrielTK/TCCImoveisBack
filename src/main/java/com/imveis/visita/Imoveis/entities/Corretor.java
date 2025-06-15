@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
 
 @Entity
 @Table(name = "corretor")
@@ -16,7 +15,7 @@ public class Corretor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger id;
+    private Long id;
 
     @OneToOne
     @JoinColumn(name = "usuario_id", nullable = false, unique = true)

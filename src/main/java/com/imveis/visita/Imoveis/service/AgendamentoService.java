@@ -9,7 +9,6 @@ import com.imveis.visita.Imoveis.repositories.ImovelRepository;
 import com.imveis.visita.Imoveis.repositories.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Service
@@ -34,7 +33,7 @@ public class AgendamentoService {
         return agendaRepository.save(agendamento);
     }
 
-    private Imovel validarImovel(BigInteger imovelId) {
+    private Imovel validarImovel(Long imovelId) {
         return imovelRepository.findById(imovelId)
                 .orElseThrow(() -> new IllegalArgumentException("Imóvel com ID " + imovelId + " não encontrado."));
     }
@@ -67,7 +66,7 @@ public class AgendamentoService {
         return agendamento;
     }
 
-    public void cancelarAgendamento(BigInteger id) {
+    public void cancelarAgendamento(Long id) {
         Agendamento agendamento = agendaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Nenhum agendamento encontrado com o ID especificado."));
 
@@ -75,7 +74,7 @@ public class AgendamentoService {
         agendaRepository.save(agendamento);
     }
 
-    public List<Agendamento> findByUsuarioId(BigInteger usuarioId) {
+    public List<Agendamento> findByUsuarioId(Long usuarioId) {
         return agendaRepository.findByUsuarioId(usuarioId);
     }
 }

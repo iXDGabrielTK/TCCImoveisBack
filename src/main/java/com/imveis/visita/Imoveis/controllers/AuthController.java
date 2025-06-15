@@ -123,6 +123,10 @@ public class AuthController {
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest refreshTokenRequest) {
         String refreshToken = refreshTokenRequest.getRefreshToken();
 
+        if (!secureJwtUtil.isRefreshToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido para refresh");
+        }
+
         if (refreshToken != null && secureJwtUtil.validateToken(refreshToken)) {
             try {
                 long expiration = secureJwtUtil.extractExpiration(refreshToken);
@@ -178,7 +182,7 @@ public class AuthController {
                     refreshTokenBlacklisted = true;
                 }
             } catch (Exception e) {
-                logger.warn("Erro ao colocar refresh token na blacklist: {}", e.getMessage());
+                logger.warn("Erro ao colocar token na blacklist: {}", e.getMessage());
             }
         }
 

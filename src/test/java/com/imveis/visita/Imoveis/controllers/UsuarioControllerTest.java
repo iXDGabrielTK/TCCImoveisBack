@@ -16,7 +16,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -53,7 +52,7 @@ class UsuarioControllerTest {
     @BeforeEach
     void setUp() {
         funcionario = new Funcionario();
-        funcionario.setId(BigInteger.ONE);
+        funcionario.setId(1L);
         funcionario.setNome("João Silva");
         funcionario.setEmail("joao.silva");
         funcionario.setSenha("senha123");
@@ -62,7 +61,7 @@ class UsuarioControllerTest {
         funcionario.setRoles(new HashSet<>());
 
         Visitante visitante = new Visitante();
-        visitante.setId(BigInteger.valueOf(2));
+        visitante.setId(2L);
         visitante.setNome("Ana Pereira");
         visitante.setEmail("ana.pereira");
         visitante.setSenha("senha456");
@@ -86,7 +85,7 @@ class UsuarioControllerTest {
 
         when(visitanteService.save(any(Visitante.class))).thenAnswer(invocation -> {
             Visitante v = invocation.getArgument(0);
-            v.setId(BigInteger.TWO);
+            v.setId(2L);
             return v;
         });
 
@@ -121,7 +120,7 @@ class UsuarioControllerTest {
 
         when(funcionarioService.save(any(Funcionario.class))).thenAnswer(invocation -> {
             Funcionario f = invocation.getArgument(0);
-            f.setId(BigInteger.TWO);
+            f.setId(2L);
             return f;
         });
         doNothing().when(authService).encodePassword(any(Usuario.class));
@@ -142,24 +141,24 @@ class UsuarioControllerTest {
 
     @Test
     void testGetUsuarioById() throws Exception {
-        when(usuarioService.findById(BigInteger.ONE)).thenReturn(Optional.of(funcionario));
+        when(usuarioService.findById(1L)).thenReturn(Optional.of(funcionario));
 
-        mockMvc.perform(get("/usuarios/{id}", BigInteger.ONE))
+        mockMvc.perform(get("/usuarios/{id}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nome", is("João Silva")));
 
-        verify(usuarioService).findById(BigInteger.ONE);
+        verify(usuarioService).findById(1L);
     }
 
     @Test
     void testGetUsuarioByIdNotFound() throws Exception {
-        when(usuarioService.findById(BigInteger.valueOf(999))).thenReturn(Optional.empty());
+        when(usuarioService.findById(999L)).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/usuarios/{id}", BigInteger.valueOf(999)))
+        mockMvc.perform(get("/usuarios/{id}", 999L))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Usuário não encontrado."));
 
-        verify(usuarioService).findById(BigInteger.valueOf(999));
+        verify(usuarioService).findById(999L);
     }
 
     @Test
@@ -175,27 +174,24 @@ class UsuarioControllerTest {
                 """;
 
         Funcionario atualizado = new Funcionario();
-        atualizado.setId(BigInteger.ONE);
+        atualizado.setId(1L);
         atualizado.setNome("João Atualizado");
         atualizado.setEmail("joao.atualizado");
         atualizado.setTelefone("11999999999");
         atualizado.setCpf("12345678900");
         atualizado.setRoles(new HashSet<>());
 
-
-
-        when(usuarioService.findById(BigInteger.ONE)).thenReturn(Optional.of(funcionario));
-        when(usuarioService.save(any(Usuario.class))).thenReturn(atualizado);
-
-        mockMvc.perform(put("/usuarios/{id}", BigInteger.ONE)
+        when(usuarioService.findById(1L)).thenReturn(Optional.of(funcionario));
+        when(usuarioService.save(any(Usuario.class), eq(true))).thenReturn(atualizado);
+        mockMvc.perform(put("/usuarios/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nome", is("João Atualizado")))
                 .andExpect(jsonPath("$.email", is("joao.atualizado")));
 
-        verify(usuarioService).findById(BigInteger.ONE);
-        verify(usuarioService).save(any(Usuario.class));
+        verify(usuarioService).findById(1L);
+        verify(usuarioService).save(any(Usuario.class), eq(true));
     }
 
     @Test
@@ -212,12 +208,12 @@ class UsuarioControllerTest {
 
     @Test
     void testDeletarUsuario() throws Exception {
-        doNothing().when(usuarioService).deleteById(BigInteger.ONE);
+        doNothing().when(usuarioService).deleteById(1L);
 
-        mockMvc.perform(delete("/usuarios/{id}", BigInteger.ONE))
+        mockMvc.perform(delete("/usuarios/{id}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Usuário excluído com sucesso!"));
 
-        verify(usuarioService).deleteById(BigInteger.ONE);
+        verify(usuarioService).deleteById(1L);
     }
 }

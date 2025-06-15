@@ -3,8 +3,6 @@ package com.imveis.visita.Imoveis.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigInteger;
-
 @Entity
 @Table(name = "roles")
 @Data
@@ -16,7 +14,7 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger id;
+    private Long id;
 
     @Column(name = "nome", nullable = false, unique = true)
     private String nome;

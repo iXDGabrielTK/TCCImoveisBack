@@ -7,12 +7,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface AgendaRepository extends JpaRepository<Agendamento, BigInteger> {
+public interface AgendaRepository extends JpaRepository<Agendamento, Long> {
 
     @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END " +
             "FROM Agendamento a " +
@@ -20,7 +19,7 @@ public interface AgendaRepository extends JpaRepository<Agendamento, BigInteger>
             "AND a.dataAgendamento = :dataAgendamento " +
             "AND a.horarioMarcado = :horarioMarcado")
     boolean existsByImovelIdAndDataAgendamentoAndHorarioMarcado(
-            @Param("imovelId") BigInteger imovelId,
+            @Param("imovelId") Long imovelId,
             @Param("dataAgendamento") LocalDate dataAgendamento,
             @Param("horarioMarcado") boolean horarioMarcado
     );
@@ -31,7 +30,7 @@ public interface AgendaRepository extends JpaRepository<Agendamento, BigInteger>
             "GROUP BY a.imovel.idImovel, a.imovel.descricaoImovel")
     List<RelatorioAgendamentoDTO> buscarRelatorioAgendamentosPorAno(@Param("ano") int ano);
 
-    List<Agendamento> findByUsuarioId(BigInteger usuarioId);
+    List<Agendamento> findByUsuarioId(Long usuarioId);
 
     @Query("SELECT new com.imveis.visita.Imoveis.dtos.RelatorioAgendamentoDTO( " +
             "a.imovel.idImovel, a.imovel.descricaoImovel, COUNT(a)) " +

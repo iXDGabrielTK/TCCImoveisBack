@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
-
 @Entity
 @Table(name = "fotos_vistoria")
 @Data
@@ -18,7 +16,7 @@ public class FotoVistoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "vistoria_id", nullable = false) // FK na tabela fotos_vistoria

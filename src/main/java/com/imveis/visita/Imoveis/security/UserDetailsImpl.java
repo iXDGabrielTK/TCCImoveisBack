@@ -5,7 +5,6 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.math.BigInteger;
 import java.util.Collection;
 
 /**
@@ -15,7 +14,7 @@ import java.util.Collection;
 @Getter
 public class UserDetailsImpl implements UserDetails {
 
-    private final BigInteger id;
+    private final Long id;
     private final String email;
     private final String senha;
     private final Collection<? extends GrantedAuthority> authorities;

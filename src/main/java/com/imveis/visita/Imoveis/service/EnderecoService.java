@@ -5,7 +5,6 @@ import com.imveis.visita.Imoveis.repositories.EnderecoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +22,7 @@ public class EnderecoService {
         return enderecoRepository.findAll();
     }
 
-    public Optional<Endereco> findById(BigInteger id) {
+    public Optional<Endereco> findById(Long id) {
         return enderecoRepository.findById(id);
     }
 
@@ -31,7 +30,7 @@ public class EnderecoService {
         return enderecoRepository.save(endereco);
     }
 
-    public void deleteById(BigInteger id) {
+    public void deleteById(Long id) {
         enderecoRepository.deleteById(id);
     }
 }

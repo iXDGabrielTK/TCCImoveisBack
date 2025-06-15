@@ -255,23 +255,6 @@ public class SecureJwtUtil {
     }
 
     /**
-     * Extrai os papéis do token JWT.
-     *
-     * @param token Token JWT
-     * @return Lista de papéis extraídos
-     */
-    List<String> extractRoles(String token) {
-        Object roles = extractAllClaims(token).get("roles");
-        if (roles instanceof List<?>) {
-            return ((List<?>) roles).stream()
-                    .filter(String.class::isInstance)
-                    .map(String.class::cast)
-                    .collect(Collectors.toList());
-        }
-        return Collections.emptyList();
-    }
-
-    /**
      * Extrai a data de expiração do token JWT.
      *
      * @param token Token JWT

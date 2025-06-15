@@ -16,7 +16,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +44,7 @@ public class PropostaController {
                     .body(new PropostaResponse("Usuário não autenticado. Faça login para enviar uma proposta."));
         }
 
-        BigInteger usuarioId = userDetails.getId();
+        Long usuarioId = userDetails.getId();
         try {
 
             logger.info("🔐 Tentando criar proposta para o usuário: {}", usuarioId);
@@ -62,8 +61,8 @@ public class PropostaController {
     }
 
     @GetMapping("/responsaveis/{idImovel}")
-    public ResponseEntity<Map<String, List<BigInteger>>> listarResponsaveis(@PathVariable BigInteger idImovel) {
-        Map<String, List<BigInteger>> resposta = propostaService.buscarResponsaveisDoImovel(idImovel);
+    public ResponseEntity<Map<String, List<Long>>> listarResponsaveis(@PathVariable Long idImovel) {
+        Map<String, List<Long>> resposta = propostaService.buscarResponsaveisDoImovel(idImovel);
         return ResponseEntity.ok(resposta);
     }
 

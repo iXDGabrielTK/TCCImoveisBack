@@ -7,7 +7,6 @@ import com.imveis.visita.Imoveis.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -31,11 +30,11 @@ public class UsuarioService {
         return usuarioRepository.findAll();
     }
 
-    public Optional<Usuario> findById(BigInteger id) {
+    public Optional<Usuario> findById(Long id) {
         return usuarioRepository.findById(id);
     }
 
-    public Usuario buscarPorId(BigInteger id) {
+    public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + id));
     }
@@ -63,7 +62,7 @@ public class UsuarioService {
     }
 
 
-    public void deleteById(BigInteger id) {
+    public void deleteById(Long id) {
         usuarioRepository.deleteById(id);
     }
 

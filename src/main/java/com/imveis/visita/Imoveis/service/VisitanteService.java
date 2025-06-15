@@ -5,7 +5,6 @@ import com.imveis.visita.Imoveis.repositories.VisitanteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +23,7 @@ public class VisitanteService {
         return visitanteRepository.findAll();
     }
 
-    public Optional<Visitante> findById(BigInteger id) {
+    public Optional<Visitante> findById(Long id) {
         return visitanteRepository.findById(id);
     }
 
@@ -37,7 +36,7 @@ public class VisitanteService {
     }
 
 
-    public void deleteById(BigInteger id) {
+    public void deleteById(Long id) {
         visitanteRepository.deleteById(id);
     }
 }

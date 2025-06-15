@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
 import java.time.LocalDate;
 
 @Entity
@@ -23,7 +22,7 @@ public class Vistoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private BigInteger idVistoria;
+    private Long idVistoria;
 
     @Column(name = "tipo_vistoria")
     private String tipoVistoria;

@@ -40,9 +40,4 @@ public class AuthService {
             usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         }
     }
-
-    @SuppressWarnings("unused")
-    public boolean verificarSenha(String rawPassword, String encodedPassword) {
-        return passwordEncoder.matches(rawPassword, encodedPassword);
-    }
 }

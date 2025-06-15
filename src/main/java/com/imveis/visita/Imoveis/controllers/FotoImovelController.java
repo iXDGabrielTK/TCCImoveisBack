@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,12 +33,12 @@ public class FotoImovelController {
     }
 
     @GetMapping("/{id}")
-    public Optional<FotoImovel> getFotoImovelById(@PathVariable BigInteger id) {
+    public Optional<FotoImovel> getFotoImovelById(@PathVariable Long id) {
         return fotoImovelService.findById(id);
     }
 
     @PostMapping
-    public ResponseEntity<Object> createFotosImovel(@RequestBody List<String> urls, @RequestParam BigInteger imovelId) {
+    public ResponseEntity<Object> createFotosImovel(@RequestBody List<String> urls, @RequestParam Long imovelId) {
         Imovel imovel = imovelService.findById(imovelId)
                 .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado"));
 
@@ -62,7 +61,7 @@ public class FotoImovelController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteFotoImovel(@PathVariable BigInteger id) {
+    public void deleteFotoImovel(@PathVariable Long id) {
         fotoImovelService.deleteById(id);
     }
 }

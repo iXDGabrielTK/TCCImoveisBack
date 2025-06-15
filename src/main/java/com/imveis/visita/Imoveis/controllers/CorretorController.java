@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +32,7 @@ public class CorretorController {
     }
 
     @GetMapping("/usuario/{idUsuario}")
-    public ResponseEntity<?> verificarSeEhCorretor(@PathVariable BigInteger idUsuario) {
+    public ResponseEntity<?> verificarSeEhCorretor(@PathVariable Long idUsuario) {
         Optional<CorretorResponse> corretor = corretorService.buscarPorUsuarioId(idUsuario);
         if (corretor.isPresent()) {
             return ResponseEntity.ok(corretor.get());

@@ -11,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,7 +44,7 @@ class UsuarioServiceTest {
     @BeforeEach
     void setUp() {
         funcionario = new Funcionario();
-        funcionario.setId(BigInteger.ONE);
+        funcionario.setId(1L);
         funcionario.setNome("João Silva");
         funcionario.setEmail("joao.silva");
         funcionario.setSenha("senha123");
@@ -54,7 +53,7 @@ class UsuarioServiceTest {
         funcionario.setRoles(new HashSet<>());
 
         visitante = new Visitante();
-        visitante.setId(BigInteger.valueOf(2));
+        visitante.setId(2L);
         visitante.setNome("Ana Pereira");
         visitante.setEmail("ana.pereira");
         visitante.setSenha("senha456");
@@ -82,13 +81,13 @@ class UsuarioServiceTest {
 
     @Test
     void testFindById() {
-        when(usuarioRepository.findById(BigInteger.ONE)).thenReturn(Optional.of(funcionario));
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(funcionario));
 
-        Optional<Usuario> result = usuarioService.findById(BigInteger.ONE);
+        Optional<Usuario> result = usuarioService.findById(1L);
 
         assertTrue(result.isPresent());
         assertEquals(funcionario, result.get());
-        verify(usuarioRepository, times(1)).findById(BigInteger.ONE);
+        verify(usuarioRepository, times(1)).findById(1L);
     }
 
     @Test
@@ -105,7 +104,7 @@ class UsuarioServiceTest {
         doNothing().when(authService).encodePassword(any(Usuario.class));
         doNothing().when(authService).atribuirRoleParaUsuario(any(Usuario.class), eq("FUNCIONARIO"));
 
-        Usuario result = usuarioService.save(newFuncionario);
+        Usuario result = usuarioService.save(newFuncionario, true);
 
         assertEquals(newFuncionario, result);
         verify(authService, times(1)).encodePassword(newFuncionario);
@@ -125,7 +124,7 @@ class UsuarioServiceTest {
         when(visitanteService.save(any(Visitante.class))).thenReturn(newVisitante);
         doNothing().when(authService).encodePassword(any(Usuario.class));
 
-        Usuario result = usuarioService.save(newVisitante);
+        Usuario result = usuarioService.save(newVisitante, true);
 
         assertEquals(newVisitante, result);
         assertNotNull(newVisitante.getDataCadastro());
@@ -135,11 +134,11 @@ class UsuarioServiceTest {
 
     @Test
     void testDeleteById() {
-        doNothing().when(usuarioRepository).deleteById(BigInteger.ONE);
+        doNothing().when(usuarioRepository).deleteById(1L);
 
-        usuarioService.deleteById(BigInteger.ONE);
+        usuarioService.deleteById(1L);
 
-        verify(usuarioRepository, times(1)).deleteById(BigInteger.ONE);
+        verify(usuarioRepository, times(1)).deleteById(1L);
     }
 
     @Test

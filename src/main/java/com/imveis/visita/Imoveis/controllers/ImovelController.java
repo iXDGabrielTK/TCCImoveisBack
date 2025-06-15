@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +57,7 @@ public class ImovelController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ImovelDTO> getImovelById(@PathVariable BigInteger id) {
+    public ResponseEntity<ImovelDTO> getImovelById(@PathVariable Long id) {
         return imovelService.findDTOById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -94,7 +93,7 @@ public class ImovelController {
             }
 
             if (imovelRequest.getIdsCorretores() != null) {
-                Set<Corretor> corretores = new HashSet<>(corretorRepository.findAllById((BigInteger) imovelRequest.getIdsCorretores()));
+                Set<Corretor> corretores = new HashSet<>(corretorRepository.findAllById(imovelRequest.getIdsCorretores()));
                 imovel.setCorretores(corretores);
             }
 
@@ -119,7 +118,7 @@ public class ImovelController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateImovel(@PathVariable BigInteger id, @RequestBody ImovelRequest imovelRequest) {
+    public ResponseEntity<?> updateImovel(@PathVariable Long id, @RequestBody ImovelRequest imovelRequest) {
         try {
             Optional<Imovel> imovelOptional = imovelService.findById(id);
             if (imovelOptional.isEmpty()) {
@@ -167,13 +166,13 @@ public class ImovelController {
     }
 
     @PutMapping("/{id}/cancelar")
-    public ResponseEntity<Void> cancelarImovel(@PathVariable BigInteger id) {
+    public ResponseEntity<Void> cancelarImovel(@PathVariable Long id) {
         imovelService.cancelarImovel(id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
-    public void deleteImovel(@PathVariable BigInteger id) {
+    public void deleteImovel(@PathVariable Long id) {
         imovelService.deleteById(id);
     }
 }

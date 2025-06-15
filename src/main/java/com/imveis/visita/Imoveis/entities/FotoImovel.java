@@ -3,9 +3,6 @@ package com.imveis.visita.Imoveis.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigInteger;
-
-
 @Entity
 @Table(name = "fotos_imovel")
 @Data
@@ -17,7 +14,7 @@ public class FotoImovel {
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger idFotosImovel;
+    private Long idFotosImovel;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "imovel_id")

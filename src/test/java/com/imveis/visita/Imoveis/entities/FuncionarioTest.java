@@ -2,7 +2,6 @@ package com.imveis.visita.Imoveis.entities;
 
 import org.junit.jupiter.api.Test;
 
-import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,10 +22,10 @@ class FuncionarioTest {
         assertNull(funcionario.getCpf());
 
         Set<Role> roles = new HashSet<>();
-        roles.add(new Role(BigInteger.ONE, "ADMIN"));
+        roles.add(new Role(1L, "ADMIN"));
 
         Funcionario funcionarioWithAll = new Funcionario();
-        funcionarioWithAll.setId(BigInteger.ONE);
+        funcionarioWithAll.setId(1L);
         funcionarioWithAll.setNome("João Silva");
         funcionarioWithAll.setEmail("joao.silva");
         funcionarioWithAll.setSenha("senha123");
@@ -34,7 +33,7 @@ class FuncionarioTest {
         funcionarioWithAll.setRoles(roles);
         funcionarioWithAll.setCpf("12345678900");
 
-        assertEquals(BigInteger.ONE, funcionarioWithAll.getId());
+        assertEquals(1L, funcionarioWithAll.getId());
         assertEquals("João Silva", funcionarioWithAll.getNome());
         assertEquals("joao.silva", funcionarioWithAll.getEmail());
         assertEquals("senha123", funcionarioWithAll.getSenha());
@@ -46,17 +45,17 @@ class FuncionarioTest {
     @Test
     void testEqualsAndHashCode() {
         Funcionario f1 = new Funcionario();
-        f1.setId(BigInteger.ONE);
+        f1.setId(1L);
         f1.setNome("João Silva");
         f1.setCpf("12345678900");
 
         Funcionario f2 = new Funcionario();
-        f2.setId(BigInteger.ONE);
+        f2.setId(1L);
         f2.setNome("João Silva");
         f2.setCpf("12345678900");
 
         Funcionario f3 = new Funcionario();
-        f3.setId(BigInteger.TWO);
+        f3.setId(2L);
         f3.setNome("Maria");
         f3.setCpf("00000000000");
 
@@ -69,7 +68,7 @@ class FuncionarioTest {
     @Test
     void testToString() {
         Funcionario funcionario = new Funcionario();
-        funcionario.setId(BigInteger.ONE);
+        funcionario.setId(1L);
         funcionario.setNome("João Silva");
         funcionario.setCpf("12345678900");
 

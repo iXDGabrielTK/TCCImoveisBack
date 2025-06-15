@@ -12,7 +12,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,7 +30,7 @@ public class ImovelService {
 
     public Page<ImovelDTO> findAllPaginado(int page, int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("idImovel").descending());
-        Page<BigInteger> pageIds = imovelRepository.findAllIdsPaginado(pageable);
+        Page<Long> pageIds = imovelRepository.findAllIdsPaginado(pageable);
 
         if (pageIds.isEmpty()) {
             return Page.empty(pageable);
@@ -45,7 +44,7 @@ public class ImovelService {
 
     public Page<ImovelDTO> findDisponiveisPorValorPaginado(double valorMax, int page, int size) {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("idImovel").descending());
-        Page<BigInteger> pageIds = imovelRepository.findDisponiveisIdsPorValorMax(BigDecimal.valueOf(valorMax), pageable);
+        Page<Long> pageIds = imovelRepository.findDisponiveisIdsPorValorMax(BigDecimal.valueOf(valorMax), pageable);
 
         if (pageIds.isEmpty()) {
             return Page.empty(pageable);
@@ -57,12 +56,12 @@ public class ImovelService {
         return new PageImpl<>(dtos, pageable, pageIds.getTotalElements());
     }
 
-    public Optional<Imovel> findById(BigInteger id) {
+    public Optional<Imovel> findById(Long id) {
         return imovelRepository.findByIdWithEnderecoAndFotos(id);
     }
 
 
-    public Optional<ImovelDTO> findDTOById(BigInteger id) {
+    public Optional<ImovelDTO> findDTOById(Long id) {
         // Aqui você converte manualmente o Imovel para ImovelDTO
         // se tiver construtor
         return imovelRepository.findByIdWithEnderecoAndFotos(id)
@@ -85,14 +84,14 @@ public class ImovelService {
         return imovelRepository.save(imovel);
     }
 
-    public void cancelarImovel(BigInteger id) {
+    public void cancelarImovel(Long id) {
         Imovel imovel = imovelRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Nenhum imóvel encontrado com o ID especificado."));
         imovel.setApagado(true);
         imovelRepository.save(imovel);
     }
 
-    public void deleteById(BigInteger id) {
+    public void deleteById(Long id) {
         imovelRepository.deleteById(id);
     }
 

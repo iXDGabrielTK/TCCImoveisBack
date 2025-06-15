@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -40,7 +39,7 @@ public class PropostaService {
         this.notificacaoPropostaRepository = notificacaoPropostaRepository;
     }
 
-    public Optional<Usuario> findById(BigInteger id) {
+    public Optional<Usuario> findById(Long id) {
         return usuarioRepository.findById(id);
     }
 
@@ -64,17 +63,17 @@ public class PropostaService {
 
         propostaRepository.save(proposta);
 
-        Map<String, List<BigInteger>> responsaveis = buscarResponsaveisDoImovel(imovel.getIdImovel());
-        List<BigInteger> idsUsuariosNotificados = new ArrayList<>();
+        Map<String, List<Long>> responsaveis = buscarResponsaveisDoImovel(imovel.getIdImovel());
+        List<Long> idsUsuariosNotificados = new ArrayList<>();
         idsUsuariosNotificados.addAll(responsaveis.get("corretores"));
         idsUsuariosNotificados.addAll(responsaveis.get("imobiliarias"));
 
-        for (BigInteger id : idsUsuariosNotificados){
+        for (Long id : idsUsuariosNotificados) {
             usuarioRepository.findById(id).ifPresent(destinatario -> {
                 NotificacaoProposta notificacao = new NotificacaoProposta();
                 notificacao.setProposta(proposta);
                 notificacao.setDestinatario(destinatario);
-                notificacao.setDataEnvio(LocalDateTime.now());
+                notificacao.setDataCriacao(LocalDateTime.now());
                 notificacao.setLida(false);
                 notificacaoPropostaRepository.save(notificacao);
             });
@@ -83,23 +82,22 @@ public class PropostaService {
         return new PropostaResponse(proposta);
     }
 
-    public Map<String, List<BigInteger>> buscarResponsaveisDoImovel(BigInteger idImovel) {
+    public Map<String, List<Long>> buscarResponsaveisDoImovel(Long idImovel) {
         Imovel imovel = imovelRepository.findByIdImovel(idImovel)
                 .orElseThrow(() -> new EntityNotFoundException("Imóvel não encontrado"));
 
-        List<BigInteger> idsCorretores = imovel.getCorretores()
+        List<Long> idsCorretores = imovel.getCorretores()
                 .stream()
                 .map(Corretor::getId)
-                .map(id -> BigInteger.valueOf(id.longValue()))
+                .map(id -> Long.valueOf(id.longValue()))
                 .toList();
 
-        List<BigInteger> idsImobiliarias = imovel.getImobiliarias()
+        List<Long> idsImobiliarias = imovel.getImobiliarias()
                 .stream()
                 .map(Imobiliaria::getId)
-                .map(BigInteger::valueOf) // conversão Long -> BigInteger
                 .toList();
 
-        Map<String, List<BigInteger>> resultado = new HashMap<>();
+        Map<String, List<Long>> resultado = new HashMap<>();
         resultado.put("corretores", idsCorretores);
         resultado.put("imobiliarias", idsImobiliarias);
 

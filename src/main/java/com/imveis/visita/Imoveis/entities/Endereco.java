@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigInteger;
-
 @Entity
 @Table (name = "endereco")
 @Data
@@ -19,7 +17,7 @@ public class Endereco {
     @Id
     @Column(name = "ID")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger idEndereco;
+    private Long idEndereco;
 
     @Column(name = "RUA", nullable = false)
     private String rua;

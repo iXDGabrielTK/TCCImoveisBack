@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.Hibernate;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class ImovelDTO {
-    private BigInteger idImovel;
+    private Long idImovel;
     private String tipoImovel;
     private String descricaoImovel;
     private Boolean statusImovel;

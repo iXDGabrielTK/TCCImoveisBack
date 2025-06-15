@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @RestController
@@ -32,7 +31,7 @@ public class RelatorioController {
 
     @PreAuthorize("hasRole('FUNCIONARIO')")
     @GetMapping("/vistorias")
-    public ResponseEntity<?> gerarRelatorioVistorias(@RequestParam BigInteger idImovel) {
+    public ResponseEntity<?> gerarRelatorioVistorias(@RequestParam Long idImovel) {
         try {
             List<RelatorioVistoriaDTO> relatorio = relatorioVistoriaService.buscarRelatorioVistorias(idImovel);
             return ResponseEntity.ok(relatorio);

@@ -4,7 +4,6 @@ import com.imveis.visita.Imoveis.entities.Corretor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -13,7 +12,7 @@ public interface CorretorRepository extends JpaRepository<Corretor, Long> {
 
     Optional<Corretor> findByCreci(String creci);
 
-    Optional<Corretor> findByUsuarioId(BigInteger usuarioId);
+    Optional<Corretor> findByUsuarioId(Long usuarioId);
 
-    Collection<? extends Corretor> findAllById(BigInteger id);
+    Collection<? extends Corretor> findAllById(Long id);
 }

@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Set;
-
 
 @Entity
 @Table(name = "imovel")
@@ -20,7 +18,7 @@ public class Imovel {
     @Column(name = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigInteger idImovel;
+    private Long idImovel;
 
     @Column(name = "TIPO_IMOVEL")
     private String tipoImovel;

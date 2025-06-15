@@ -9,7 +9,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +21,7 @@ public class CorretorService {
     private final AuthService authService; // Para atribuir ROLE_CORRETOR
 
     @Transactional
-    public CorretorResponse candidatarUsuarioParaCorretor(BigInteger usuarioId, String creci) {
+    public CorretorResponse candidatarUsuarioParaCorretor(Long usuarioId, String creci) {
         if (corretorRepository.findByCreci(creci).isPresent()) {
             throw new IllegalArgumentException("CRECI já está cadastrado.");
         }
@@ -44,7 +43,7 @@ public class CorretorService {
         return toResponse(salvo);
     }
 
-    public Optional<CorretorResponse> buscarPorUsuarioId(BigInteger usuarioId) {
+    public Optional<CorretorResponse> buscarPorUsuarioId(Long usuarioId) {
         return corretorRepository.findByUsuarioId(usuarioId)
                 .map(corretor -> {
                     CorretorResponse response = new CorretorResponse();
