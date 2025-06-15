@@ -3,6 +3,7 @@ package com.imveis.visita.Imoveis.entities;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -26,5 +27,9 @@ public class Visitante extends Usuario {
 
     @Column(name = "DATA_CADASTRO", nullable = false)
     private LocalDateTime dataCadastro;
+
+    @Column(name = "CRECI", length = 15, unique = true)
+    @Pattern(regexp = "CRECI-[A-Z]{2} \\d{1,6}(-[A-Z])?")
+    private String Creci;
 
 }

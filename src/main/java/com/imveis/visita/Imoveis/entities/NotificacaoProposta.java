@@ -1,30 +1,29 @@
 package com.imveis.visita.Imoveis.entities;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
-
-@Entity
-@Table(name = "notificacoes")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
 @Setter
-public class NotificacaoProposta {
+@Getter
+@Entity
+@DiscriminatorValue("PROPOSTA")
+public class NotificacaoProposta extends Notificacao {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "proposta_id", referencedColumnName = "id")
     private Proposta proposta;
 
-    @ManyToOne
-    private Usuario destinatario;
+    @Override
+    public String getResumo() {
+        return proposta.getUsuario().getNome()
+                + " enviou uma proposta de R$ "
+                + proposta.getValorFinanciamento()
+                + " para o imóvel ID "
+                + proposta.getImovel().getIdImovel();
+    }
 
-    private boolean lida = false;
-
-    private LocalDateTime dataEnvio = LocalDateTime.now();
 }

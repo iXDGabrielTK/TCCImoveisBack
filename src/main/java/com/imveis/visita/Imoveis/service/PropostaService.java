@@ -4,6 +4,7 @@ import com.imveis.visita.Imoveis.controllers.AuthController;
 import com.imveis.visita.Imoveis.dtos.PropostaRequest;
 import com.imveis.visita.Imoveis.dtos.PropostaResponse;
 import com.imveis.visita.Imoveis.entities.*;
+import com.imveis.visita.Imoveis.exceptions.BusinessException;
 import com.imveis.visita.Imoveis.repositories.ImovelRepository;
 import com.imveis.visita.Imoveis.repositories.NotificacaoPropostaRepository;
 import com.imveis.visita.Imoveis.repositories.PropostaRepository;
@@ -15,8 +16,10 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class PropostaService {
@@ -30,13 +33,13 @@ public class PropostaService {
 
     private final ImovelRepository imovelRepository;
 
-    private final NotificacaoPropostaRepository notificacaoPropostaRepository;
+    private final NotificacaoService notificacaoService;
 
-    public PropostaService(PropostaRepository propostaRepository, UsuarioRepository usuarioRepository, ImovelRepository imovelRepository, NotificacaoPropostaRepository notificacaoPropostaRepository) {
+    public PropostaService(PropostaRepository propostaRepository, UsuarioRepository usuarioRepository, ImovelRepository imovelRepository, NotificacaoPropostaRepository notificacaoPropostaRepository, NotificacaoService notificacaoService) {
         this.propostaRepository = propostaRepository;
         this.usuarioRepository = usuarioRepository;
         this.imovelRepository = imovelRepository;
-        this.notificacaoPropostaRepository = notificacaoPropostaRepository;
+        this.notificacaoService = notificacaoService;
     }
 
     public Optional<Usuario> findById(Long id) {
@@ -45,10 +48,9 @@ public class PropostaService {
 
     public PropostaResponse criarProposta(PropostaRequest request, Usuario usuario) {
         BigDecimal valorFinanciado = request.getValorImovel().subtract(request.getEntrada());
-        logger.info("Chegou aqui");
 
         Imovel imovel = imovelRepository.findById(request.getIdImovel())
-                .orElseThrow(() -> new RuntimeException("Imóvel não encontrado"));
+                .orElseThrow(() -> new BusinessException("Imóvel não encontrado"));
 
         Proposta proposta = new Proposta();
         proposta.setUsuario(usuario);
@@ -59,28 +61,26 @@ public class PropostaService {
         proposta.setValorFinanciamento(valorFinanciado);
         proposta.setDataProposta(LocalDate.now());
 
-        logger.info("Chegou até aqui");
-
         propostaRepository.save(proposta);
 
+        // 🔔 Notifica todos os responsáveis (corretores e imobiliárias)
         Map<String, List<Long>> responsaveis = buscarResponsaveisDoImovel(imovel.getIdImovel());
-        List<Long> idsUsuariosNotificados = new ArrayList<>();
-        idsUsuariosNotificados.addAll(responsaveis.get("corretores"));
-        idsUsuariosNotificados.addAll(responsaveis.get("imobiliarias"));
 
-        for (Long id : idsUsuariosNotificados) {
-            usuarioRepository.findById(id).ifPresent(destinatario -> {
-                NotificacaoProposta notificacao = new NotificacaoProposta();
-                notificacao.setProposta(proposta);
-                notificacao.setDestinatario(destinatario);
-                notificacao.setDataCriacao(LocalDateTime.now());
-                notificacao.setLida(false);
-                notificacaoPropostaRepository.save(notificacao);
-            });
-        }
+        responsaveis.getOrDefault("corretores", List.of()).forEach(id ->
+                usuarioRepository.findById(id).ifPresent(destinatario ->
+                        notificacaoService.criarNotificacaoProposta(proposta, destinatario)
+                )
+        );
+
+        responsaveis.getOrDefault("imobiliarias", List.of()).forEach(id ->
+                usuarioRepository.findById(id).ifPresent(destinatario ->
+                        notificacaoService.criarNotificacaoProposta(proposta, destinatario)
+                )
+        );
 
         return new PropostaResponse(proposta);
     }
+
 
     public Map<String, List<Long>> buscarResponsaveisDoImovel(Long idImovel) {
         Imovel imovel = imovelRepository.findByIdImovel(idImovel)

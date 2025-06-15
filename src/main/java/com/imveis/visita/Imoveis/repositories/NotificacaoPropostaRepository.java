@@ -5,10 +5,9 @@ import com.imveis.visita.Imoveis.entities.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Repository
-public interface NotificacaoPropostaRepository extends JpaRepository<NotificacaoProposta, BigInteger> {
+public interface NotificacaoPropostaRepository extends JpaRepository<NotificacaoProposta, Long> {
     List<NotificacaoProposta> findByDestinatario(Usuario usuario);
 }

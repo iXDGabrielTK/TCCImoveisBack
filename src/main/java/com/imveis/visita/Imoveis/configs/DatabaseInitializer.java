@@ -14,9 +14,9 @@ public class DatabaseInitializer {
 
     @PostConstruct
     public void initDatabase() {
-        createRoleIfNotExists("ADMIN");
         createRoleIfNotExists("FUNCIONARIO");
         createRoleIfNotExists("VISITANTE");
+        createRoleIfNotExists("CORRETOR");
     }
 
     private void createRoleIfNotExists(String roleName) {
