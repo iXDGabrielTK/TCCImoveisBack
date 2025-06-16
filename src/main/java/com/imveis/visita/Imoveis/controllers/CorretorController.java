@@ -2,9 +2,13 @@ package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.dtos.CorretorRequest;
 import com.imveis.visita.Imoveis.dtos.CorretorResponse;
+import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.service.CorretorService;
+import com.imveis.visita.Imoveis.service.NotificacaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,19 +20,17 @@ import java.util.Optional;
 public class CorretorController {
 
     private final CorretorService corretorService;
+    private final NotificacaoService notificacaoService;
 
-    @PostMapping("/candidatura")
-    public ResponseEntity<?> candidatar(@RequestBody CorretorRequest request) {
-        try {
-            CorretorResponse response = corretorService.candidatarUsuarioParaCorretor(
-                    request.getUsuarioId(), request.getCreci()
-            );
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException ex) {
-            return ResponseEntity.badRequest().body("Dados inválidos: " + ex.getMessage());
-        } catch(Exception e){
-            return ResponseEntity.status(500).body("Erro interno ao processar candidatura: " + e.getMessage());
+    @PostMapping("/solicitar")
+    @PreAuthorize("hasRole('VISITANTE')")
+    public ResponseEntity<String> solicitarCorretor(@RequestBody CorretorRequest request, @AuthenticationPrincipal Usuario visitante) {
+        if (request.getCreci() == null || request.getCreci().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("CRECI não pode ser vazio.");
         }
+
+        notificacaoService.notificarCorretor(visitante.getNome(), request.getCreci().trim());
+        return ResponseEntity.ok("Solicitação enviada para análise dos funcionários.");
     }
 
     @GetMapping("/usuario/{idUsuario}")

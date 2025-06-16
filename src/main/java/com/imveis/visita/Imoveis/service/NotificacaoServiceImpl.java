@@ -28,21 +28,22 @@ public class NotificacaoServiceImpl implements NotificacaoService {
     }
 
     @Override
-    public void notificarCorretor(String nome, String creci, Usuario destinatario) {
+    public void notificarCorretor(String nome, String creci) {
         NotificacaoCorretor notif = new NotificacaoCorretor();
         notif.setNomeSolicitante(nome);
         notif.setCreciSolicitado(creci);
-        notif.setDestinatario(destinatario);
+        notif.setVisivelParaTodosFuncionarios(true);
+        notif.setLida(false);
+        notif.setDataCriacao(LocalDateTime.now());
         notificacaoRepository.save(notif);
     }
 
     @Override
-    public void notificarImobiliaria(String nomeCorretor, String nomeImobiliaria, String cnpj, Usuario destinatario) {
+    public void notificarImobiliaria(String nomeCorretor, String nomeImobiliaria, String cnpj) {
         NotificacaoImobiliaria n = new NotificacaoImobiliaria();
         n.setNomeCorretor(nomeCorretor);
         n.setNomeImobiliaria(nomeImobiliaria);
         n.setCnpj(cnpj);
-        n.setDestinatario(destinatario);
         notificacaoRepository.save(n);
     }
 

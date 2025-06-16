@@ -3,10 +3,13 @@ package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.dtos.ImobiliariaRequest;
 import com.imveis.visita.Imoveis.entities.Imobiliaria;
+import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.repositories.ImobiliariaRepository;
+import com.imveis.visita.Imoveis.service.NotificacaoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,27 +20,27 @@ import java.util.List;
 public class ImobiliariaController {
 
     private final ImobiliariaRepository imobiliariaRepository;
+    private final NotificacaoService notificacaoService;
 
-    @PostMapping
-    public ResponseEntity<?> cadastrar(@RequestBody ImobiliariaRequest request) {
-        try {
-
-
-            Imobiliaria imobiliaria = new Imobiliaria();
-            imobiliaria.setNome(request.getNome());
-            imobiliaria.setRazaoSocial(request.getRazaoSocial());
-            imobiliaria.setCnpj(request.getCnpj());
-            imobiliaria.setEmail(request.getEmail());
-            imobiliaria.setCep(request.getCep());
-
-            return ResponseEntity.ok(imobiliariaRepository.save(imobiliaria));
-
-        }catch (DataIntegrityViolationException e) {
-            return ResponseEntity.badRequest().body("Erro de integridade: CNPJ já cadastrado ou dados inválidos.");
-        }catch (Exception e) {
-            return ResponseEntity.status(500).body("Erro ao cadastrar imobiliária:" + e.getMessage());
+    @PostMapping("/candidatura")
+    @PreAuthorize("hasRole('CORRETOR')")
+    public ResponseEntity<String> solicitarImobiliaria(
+            @RequestBody ImobiliariaRequest request,
+            @AuthenticationPrincipal Usuario corretor
+    ) {
+        if (request.getCnpj() == null || request.getCnpj().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("CNPJ não pode ser vazio.");
         }
+
+        notificacaoService.notificarImobiliaria(
+                corretor.getNome(),
+                request.getNome(),
+                request.getCnpj()
+        );
+
+        return ResponseEntity.ok("Solicitação enviada para análise dos funcionários.");
     }
+
 
     @GetMapping
     public List<Imobiliaria> listar(){

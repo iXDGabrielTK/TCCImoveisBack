@@ -7,14 +7,14 @@ import com.imveis.visita.Imoveis.entities.Usuario;
 import java.util.List;
 
 public interface NotificacaoService {
-    void notificarCorretor(String nome, String creci, Usuario destinatario);
 
-    void notificarImobiliaria(String nomeCorretor, String nomeImobiliaria, String cnpj, Usuario destinatario);
+    void notificarCorretor(String nome, String creci);
+
+    void notificarImobiliaria(String nomeCorretor, String nomeImobiliaria, String cnpj);
 
     List<NotificacaoDTO> listarNaoLidas(Long usuarioId);
 
     void marcarComoLida(Long id);
-
 
     void aprovarSolicitacaoCorretor(Long id);
 

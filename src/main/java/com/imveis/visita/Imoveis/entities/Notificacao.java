@@ -26,6 +26,7 @@ public abstract class Notificacao {
     protected boolean lida = false;
     @Column(updatable = false)
     protected LocalDateTime dataCriacao = LocalDateTime.now();
+
     private boolean visivelParaTodosFuncionarios;
 
     public abstract String getResumo();
