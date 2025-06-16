@@ -39,11 +39,13 @@ public class NotificacaoServiceImpl implements NotificacaoService {
     }
 
     @Override
-    public void notificarImobiliaria(String nomeCorretor, String nomeImobiliaria, String cnpj) {
+    public void notificarImobiliaria(Long id, String nomeCorretor, String nomeImobiliaria, String cnpj) {
         NotificacaoImobiliaria n = new NotificacaoImobiliaria();
         n.setNomeCorretor(nomeCorretor);
         n.setNomeImobiliaria(nomeImobiliaria);
         n.setCnpj(cnpj);
+        n.setDataCriacao(LocalDateTime.now());
+        n.setLida(false);
         notificacaoRepository.save(n);
     }
 
@@ -154,7 +156,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         notificacao.setDataResposta(LocalDateTime.now());
         notificacaoRepository.save(notificacao);
 
-        criarRespostaSolicitacao(notificacao.getRemetente(), false, "IMOBILIARIA");
+        criarRespostaSolicitacao(notificacao.getRemetente(), false, "CORRETOR");
     }
 
     @Override
@@ -169,7 +171,6 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         notificacao.setRespondida(true);
         notificacao.setAprovada(true);
         notificacaoRepository.save(notificacao);
-
     }
 
     @Override
@@ -184,6 +185,8 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         notificacao.setRespondida(true);
         notificacao.setAprovada(false);
         notificacaoRepository.save(notificacao);
+
+        criarRespostaSolicitacao(notificacao.getRemetente(), false, "IMOBILIARIA");
     }
 
 

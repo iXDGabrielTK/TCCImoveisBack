@@ -10,7 +10,7 @@ public interface NotificacaoService {
 
     void notificarCorretor(String nome, String creci);
 
-    void notificarImobiliaria(String nomeCorretor, String nomeImobiliaria, String cnpj);
+    void notificarImobiliaria(Long id, String nomeCorretor, String nomeImobiliaria, String cnpj);
 
     List<NotificacaoDTO> listarNaoLidas(Long usuarioId);
 

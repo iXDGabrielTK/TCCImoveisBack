@@ -33,6 +33,7 @@ public class ImobiliariaController {
         }
 
         notificacaoService.notificarImobiliaria(
+                corretor.getId(),
                 corretor.getNome(),
                 request.getNome(),
                 request.getCnpj()
@@ -40,7 +41,6 @@ public class ImobiliariaController {
 
         return ResponseEntity.ok("Solicitação enviada para análise dos funcionários.");
     }
-
 
     @GetMapping
     public List<Imobiliaria> listar(){

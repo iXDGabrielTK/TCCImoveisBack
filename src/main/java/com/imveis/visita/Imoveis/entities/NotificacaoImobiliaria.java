@@ -3,6 +3,7 @@ package com.imveis.visita.Imoveis.entities;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,6 +26,9 @@ public class NotificacaoImobiliaria extends Notificacao {
     private Boolean aprovada;
     private Boolean respondida;
     private LocalDateTime dataResposta;
+
+    @ManyToOne
+    private Visitante remetente;
 
     @Override
     public String getResumo() {
