@@ -27,7 +27,23 @@ public interface VistoriaRepository extends JpaRepository<Vistoria, Long> {
     @Query("SELECT v FROM Vistoria v WHERE v.idVistoria = :id AND v.apagado = false")
     Optional<Vistoria> findByIdActive(@Param("id") Long id);
 
+    // VistoriaRepository.java
+// ...
+    @Query("SELECT DISTINCT v FROM Vistoria v " +
+            "JOIN FETCH v.imovel i " +
+            "LEFT JOIN FETCH i.fotosImovel " + // Carrega fotos do Imovel
+            "LEFT JOIN FETCH v.ambientes a " + // Carrega ambientes da Vistoria
+            "LEFT JOIN FETCH a.fotos " + // Carrega fotos dos Ambientes
+            "WHERE v.apagado = false")
+    List<Vistoria> findAllActiveWithAllDetails();
 
+    @Query("SELECT DISTINCT v FROM Vistoria v " +
+            "JOIN FETCH v.imovel i " +
+            "LEFT JOIN FETCH i.fotosImovel " + // Carrega fotos do Imovel
+            "LEFT JOIN FETCH v.ambientes a " + // Carrega ambientes da Vistoria
+            "LEFT JOIN FETCH a.fotos " + // Carrega fotos dos Ambientes
+            "WHERE v.idVistoria = :id AND v.apagado = false")
+    Optional<Vistoria> findByIdActiveWithAllDetails(@Param("id") Long id);
+// ...
 
 }
-

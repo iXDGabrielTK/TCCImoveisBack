@@ -13,7 +13,7 @@ public class EnderecoDTO {
     private String estado;
     private String cep;
 
-    EnderecoDTO(Endereco endereco) {
+    public EnderecoDTO(Endereco endereco) {
         this.rua = endereco.getRua();
         this.bairro = endereco.getBairro();
         this.cidade = endereco.getCidade();

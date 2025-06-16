@@ -13,6 +13,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = {"fotosImovel", "corretores", "imobiliarias", "vistorias"})
 public class Imovel {
 
     @Column(name = "id")

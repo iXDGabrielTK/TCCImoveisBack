@@ -1,10 +1,7 @@
 package com.imveis.visita.Imoveis.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "fotos_vistoria")
@@ -12,16 +9,18 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = {"ambiente"}) // Adicionado para excluir a relação
 public class FotoVistoria {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "vistoria_id", nullable = false) // FK na tabela fotos_vistoria
-    private Vistoria vistoria;
-
     @Column(name = "url_foto_vistoria", nullable = false, length = 1000)
     private String urlFotoVistoria;
+
+    @ManyToOne
+    @JoinColumn(name = "ambiente_id", nullable = false)
+    private AmbienteVistoria ambiente;
+
 }

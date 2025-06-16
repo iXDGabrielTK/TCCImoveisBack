@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,7 +16,9 @@ public class VistoriaRequest {
     private String laudoVistoria;
     private LocalDate dataVistoria;
     private Long usuarioId;
-    private String rua;
     private String numero;
-    private String bairro;
+    private EnderecoDTO endereco;
+    private Long imovelId;
+    private List<AmbienteVistoriaRequest> ambientes;
+
 }

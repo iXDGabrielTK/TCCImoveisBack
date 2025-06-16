@@ -3,12 +3,10 @@ package com.imveis.visita.Imoveis.entities;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Table(name = "vistoria")
@@ -17,6 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "idVistoria")
+@EqualsAndHashCode(exclude = {"imovel", "funcionario", "ambientes"}) // Adicionado para excluir relações
 public class Vistoria {
 
     @Id
@@ -39,9 +38,11 @@ public class Vistoria {
 
     @ManyToOne
     @JoinColumn(name = "funcionario_id", nullable = false)
-    private Funcionario funcionario;
+    private Funcionario funcionario; // EXCLUÍDO (referência para o Funcionario)
 
     @Column(name = "apagado", nullable = false)
     private boolean apagado = false;
 
+    @OneToMany(mappedBy = "vistoria", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<AmbienteVistoria> ambientes; // EXCLUÍDO (coleção de ambientes)
 }
