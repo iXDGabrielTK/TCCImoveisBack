@@ -1,3 +1,4 @@
+// ImovelDTO.java (ATUALIZADO)
 package com.imveis.visita.Imoveis.dtos;
 
 import com.imveis.visita.Imoveis.entities.Imobiliaria;
@@ -6,9 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.Hibernate;
 
-import java.util.Arrays;
 import java.util.List;
-
+import java.util.stream.Collectors; // Import adicionado
 
 @Data
 @NoArgsConstructor
@@ -17,9 +17,9 @@ public class ImovelDTO {
     private String tipoImovel;
     private String descricaoImovel;
     private Boolean statusImovel;
-    private Float tamanhoImovel;
-    private Float precoImovel;
-    private List<String> fotosImovel;
+    private Float tamanhoImovel; // Considere Double
+    private Float precoImovel;   // Considere Double
+    private List<FotoImovelDTO> fotosImovel; // <--- AGORA É LISTA DE FOTOIMOVELDTO
     private EnderecoDTO enderecoImovel;
     private String historicoManutencao;
     private List<String> nomesCorretores;
@@ -38,13 +38,13 @@ public class ImovelDTO {
                 : null;
         this.fotosImovel = imovel.getFotosImovel() != null
                 ? imovel.getFotosImovel().stream()
-                .flatMap(foto -> Arrays.stream(foto.getUrlFotoImovel().split(",")))
-                .map(String::trim)
-                .toList()
+                // Mapeia para FotoImovelDTO, garantindo que o 'id' seja o idFotosImovel da entidade
+                .map(foto -> new FotoImovelDTO(foto.getIdFotosImovel(), foto.getUrlFotoImovel())) // <--- CHAVE!
+                .collect(Collectors.toList())
                 : List.of();
         this.nomesCorretores = imovel.getCorretores() != null && Hibernate.isInitialized(imovel.getCorretores())
                 ? imovel.getCorretores().stream()
-                .map(corretor -> corretor.getUsuario().getNome()) // 👈 acesso correto
+                .map(corretor -> corretor.getUsuario().getNome())
                 .toList()
                 : List.of();
 

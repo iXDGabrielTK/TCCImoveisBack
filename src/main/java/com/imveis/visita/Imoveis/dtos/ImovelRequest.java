@@ -13,7 +13,7 @@ public class ImovelRequest {
     private Float tamanhoImovel;
     private Float precoImovel;
     private String historicoManutencao;
-    private List<String> fotosImovel;
+    private List<FotoImovelDTO> fotosImovel; // <--- CORRIGIDO: Agora usa FotoImovelDTO
     private Endereco enderecoImovel;
     private List<Long> idsCorretores;
     private List<Long> idsImobiliarias;

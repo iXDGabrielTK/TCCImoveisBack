@@ -1,21 +1,29 @@
 package com.imveis.visita.Imoveis.controllers;
 
+import com.imveis.visita.Imoveis.dtos.FotoImovelDTO;
 import com.imveis.visita.Imoveis.dtos.ImovelDTO;
 import com.imveis.visita.Imoveis.dtos.ImovelRequest;
 import com.imveis.visita.Imoveis.entities.*;
+import com.imveis.visita.Imoveis.infra.s3.S3StorageService;
 import com.imveis.visita.Imoveis.repositories.CorretorRepository;
 import com.imveis.visita.Imoveis.repositories.ImobiliariaRepository;
+import com.imveis.visita.Imoveis.repositories.FotoImovelRepository;
 import com.imveis.visita.Imoveis.service.EnderecoService;
 import com.imveis.visita.Imoveis.service.ImovelService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException; // Adicionar import
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+import software.amazon.awssdk.services.s3.model.S3Exception; // Adicionar import
 
 @SuppressWarnings("CallToPrintStackTrace")
 @RestController
@@ -23,25 +31,27 @@ import java.util.Set;
 public class ImovelController {
 
     private final ImovelService imovelService;
-
-    private final FotoImovelController fotoImovelController;
-
+    private final FotoImovelController fotoImovelController; // Pode remover esta injeção se FotoImovelController não tiver mais lógica de upload
     private final EnderecoService enderecoService;
-
     private final CorretorRepository corretorRepository;
-
     private final ImobiliariaRepository imobiliariaRepository;
+    private final FotoImovelRepository fotoImovelRepository;
+    private final S3StorageService s3StorageService; // Injetar S3StorageService
 
     public ImovelController(ImovelService imovelService,
-                            FotoImovelController fotoImovelController,
+                            FotoImovelController fotoImovelController, // Pode remover se não usar mais
                             EnderecoService enderecoService,
                             CorretorRepository corretorRepository,
-                            ImobiliariaRepository imobiliariaRepository) {
+                            ImobiliariaRepository imobiliariaRepository,
+                            FotoImovelRepository fotoImovelRepository,
+                            S3StorageService s3StorageService) { // Adicionar S3StorageService ao construtor
         this.imovelService = imovelService;
-        this.fotoImovelController = fotoImovelController;
+        this.fotoImovelController = fotoImovelController; // Pode remover se não usar mais
         this.enderecoService = enderecoService;
         this.corretorRepository = corretorRepository;
         this.imobiliariaRepository = imobiliariaRepository;
+        this.fotoImovelRepository = fotoImovelRepository;
+        this.s3StorageService = s3StorageService; // Atribuir
     }
 
     private static @NotNull Endereco getEndereco(Imovel imovel, Endereco novoEndereco) {
@@ -74,8 +84,11 @@ public class ImovelController {
         }
     }
 
-    @PostMapping
-    public ResponseEntity<Imovel> criarImovel(@RequestBody ImovelRequest imovelRequest) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Imovel> criarImovel(
+            @RequestPart("dados") ImovelRequest imovelRequest,
+            @RequestPart(value = "fotos", required = false) List<MultipartFile> fotos) {
+
         try {
             Imovel imovel = new Imovel();
             imovel.setTipoImovel(imovelRequest.getTipoImovel());
@@ -86,12 +99,12 @@ public class ImovelController {
             imovel.setHistoricoManutencao(imovelRequest.getHistoricoManutencao());
             imovel.setEnderecoImovel(imovelRequest.getEnderecoImovel());
 
+            // 1. Salva o imóvel a primeira vez para obter o ID
             imovel = imovelService.save(imovel);
 
-            if (imovelRequest.getFotosImovel() != null && !imovelRequest.getFotosImovel().isEmpty()) {
-                fotoImovelController.createFotosImovel(imovelRequest.getFotosImovel(), imovel.getIdImovel());
-            }
+            processAndAddPhotos(imovel, fotos);
 
+            // 3. Lógica para corretores e imobiliárias
             if (imovelRequest.getIdsCorretores() != null) {
                 Set<Corretor> corretores = new HashSet<>(corretorRepository.findAllById(imovelRequest.getIdsCorretores()));
                 imovel.setCorretores(corretores);
@@ -102,9 +115,11 @@ public class ImovelController {
                 imovel.setImobiliarias(imobiliarias);
             }
 
+            // 4. Salva o imóvel UMA ÚNICA VEZ no final, após todas as coleções serem modificadas
+            imovel = imovelService.save(imovel);
 
             return new ResponseEntity<>(imovel, HttpStatus.CREATED);
-        } catch (Exception e) {
+        } catch (Exception e) { // Captura as exceções de IO e S3 também
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -117,8 +132,12 @@ public class ImovelController {
         return ResponseEntity.ok(imovelService.findDisponiveisPorValorPaginado(valorMax, page, size));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateImovel(@PathVariable Long id, @RequestBody ImovelRequest imovelRequest) {
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateImovel(
+            @PathVariable Long id,
+            @RequestPart("dados") ImovelRequest imovelRequest,
+            @RequestPart(value = "fotos", required = false) List<MultipartFile> novasFotos) {
+
         try {
             Optional<Imovel> imovelOptional = imovelService.findById(id);
             if (imovelOptional.isEmpty()) {
@@ -127,6 +146,7 @@ public class ImovelController {
 
             Imovel imovel = imovelOptional.get();
 
+            // Atualiza os campos do imóvel e endereço...
             imovel.setTipoImovel(imovelRequest.getTipoImovel());
             imovel.setDescricaoImovel(imovelRequest.getDescricaoImovel());
             imovel.setStatusImovel(imovelRequest.getStatusImovel());
@@ -145,21 +165,21 @@ public class ImovelController {
                 }
             }
 
-            List<FotoImovel> novasFotos = imovelRequest.getFotosImovel().stream()
-                    .filter(url -> url != null && !url.trim().isEmpty() && url.startsWith("http"))
-                    .map(url -> FotoImovel.builder()
-                            .imovel(imovel)
-                            .urlFotoImovel(url)
-                            .build())
-                    .toList();
+            Set<Long> idsFotosParaManter = imovelRequest.getFotosImovel().stream()
+                    .map(FotoImovelDTO::getId)
+                    .filter(java.util.Objects::nonNull)
+                    .collect(Collectors.toSet());
 
-            imovel.getFotosImovel().clear();
-            imovel.getFotosImovel().addAll(novasFotos);
+            // Remove as fotos da coleção do imóvel que NÃO ESTÃO na lista de "para manter"
+            // Use getIdFotosImovel() da entidade para comparar
+            imovel.getFotosImovel().removeIf(foto -> foto.getIdFotosImovel() != null && !idsFotosParaManter.contains(foto.getIdFotosImovel()));
 
+            processAndAddPhotos(imovel, novasFotos);
             Imovel updatedImovel = imovelService.save(imovel);
 
             return ResponseEntity.ok(updatedImovel);
-        } catch (Exception e) {
+
+        } catch (Exception e) { // Captura as exceções de IO e S3 também
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar o imóvel.");
         }
@@ -174,5 +194,29 @@ public class ImovelController {
     @DeleteMapping("/{id}")
     public void deleteImovel(@PathVariable Long id) {
         imovelService.deleteById(id);
+    }
+
+    /**
+     * Lida com o upload de novas fotos para o S3 e as adiciona à coleção do Imovel.
+     * Assume que o imóvel já tem um ID.
+     *
+     * @param imovel O objeto Imovel ao qual as fotos serão associadas.
+     * @param novasFotos A lista de MultipartFiles a serem carregados.
+     * @throws IOException Se houver erro de I/O durante o upload.
+     * @throws S3Exception Se houver erro na interação com o S3.
+     */
+    private void processAndAddPhotos(Imovel imovel, List<MultipartFile> novasFotos) throws IOException, S3Exception {
+        if (novasFotos != null && !novasFotos.isEmpty()) {
+            String folderPath = "imoveis-fotos/" + imovel.getIdImovel(); // <--- Corrigido para "imoveis-fotos/"
+            List<String> urlsNovasFotos = new java.util.ArrayList<>();
+
+            for (MultipartFile file : novasFotos) {
+                String url = s3StorageService.uploadFile(file, folderPath);
+                urlsNovasFotos.add(url);
+            }
+
+            urlsNovasFotos.forEach(url -> imovel.getFotosImovel().add(
+                    FotoImovel.builder().imovel(imovel).urlFotoImovel(url).build()));
+        }
     }
 }

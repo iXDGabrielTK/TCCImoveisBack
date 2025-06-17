@@ -1,5 +1,6 @@
 package com.imveis.visita.Imoveis.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +20,7 @@ public class FotoImovel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "imovel_id")
     @ToString.Exclude
+    @JsonIgnore
     private Imovel imovel;
 
     @Column(name = "url_foto_imovel", nullable = false, length = 1000)

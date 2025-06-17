@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -13,7 +15,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"fotosImovel", "corretores", "imobiliarias", "vistorias"})
+@EqualsAndHashCode(exclude = {"fotosImovel", "corretores", "imobiliarias", "vistorias", "agendamentos"})
 public class Imovel {
 
     @Column(name = "id")
@@ -41,38 +43,41 @@ public class Imovel {
     private Endereco enderecoImovel;
 
     @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL)
-    private List<Vistoria> vistorias;
+    @Builder.Default
+    private List<Vistoria> vistorias = new ArrayList<>();
 
     @Column(name = "HISTORICO_MANUTENCAO")
     private String historicoManutencao;
 
     @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @ToString.Exclude
-    private List<FotoImovel> fotosImovel;
+    @Builder.Default
+    private List<FotoImovel> fotosImovel = new ArrayList<>();
 
     @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL)
-    private List<Agendamento> agendamentos;
+    @Builder.Default
+    private List<Agendamento> agendamentos = new ArrayList<>();
 
     @Column(name = "APAGADO", nullable = false)
     private Boolean apagado = false;
 
-   @ManyToMany
+   @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "imovel_corretor",
             joinColumns = @JoinColumn(name = "id_imovel"),
             inverseJoinColumns = @JoinColumn(name = "id_corretor")
     )
-   private Set<Corretor> corretores;
+   @Builder.Default
+   private Set<Corretor> corretores = new HashSet<>();
 
-
-
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonManagedReference(value = "imovel-imobiliaria")
     @JoinTable(
             name = "imovel_imobiliaria",
             joinColumns = @JoinColumn(name = "id_imovel"),
             inverseJoinColumns = @JoinColumn(name = "id_imobiliaria")
     )
-    private List<Imobiliaria> imobiliarias;
+    @Builder.Default
+    private List<Imobiliaria> imobiliarias = new ArrayList<>();
 
 }
