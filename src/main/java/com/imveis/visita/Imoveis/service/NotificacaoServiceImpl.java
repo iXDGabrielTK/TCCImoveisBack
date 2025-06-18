@@ -6,45 +6,69 @@ import com.imveis.visita.Imoveis.dtos.NotificacaoImobiliariaDTO;
 import com.imveis.visita.Imoveis.dtos.NotificacaoPropostaDTO;
 import com.imveis.visita.Imoveis.entities.*;
 import com.imveis.visita.Imoveis.exceptions.BusinessException;
+import com.imveis.visita.Imoveis.repositories.CorretorRepository;
+import com.imveis.visita.Imoveis.repositories.ImobiliariaRepository;
 import com.imveis.visita.Imoveis.repositories.NotificacaoRepository;
 import com.imveis.visita.Imoveis.repositories.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class NotificacaoServiceImpl implements NotificacaoService {
 
-    private final NotificacaoRepository notificacaoRepository;
-    private final AuthService authService;
-    private final UsuarioRepository usuarioRepository;
+    private static final Logger logger = LoggerFactory.getLogger(NotificacaoServiceImpl.class);
 
-    public NotificacaoServiceImpl(NotificacaoRepository repo, AuthService authService, UsuarioRepository usuarioRepository) {
+    private final NotificacaoRepository notificacaoRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final ImobiliariaRepository imobiliariaRepository;
+    private final CorretorService corretorService;
+    private final CorretorRepository corretorRepository;
+
+    public NotificacaoServiceImpl(NotificacaoRepository repo, UsuarioRepository usuarioRepository, ImobiliariaRepository imobiliariaRepository, CorretorService corretorService, CorretorRepository corretorRepository) {
         this.notificacaoRepository = repo;
-        this.authService = authService;
         this.usuarioRepository = usuarioRepository;
+        this.imobiliariaRepository = imobiliariaRepository;
+        this.corretorService = corretorService;
+        this.corretorRepository = corretorRepository;
     }
 
     @Override
-    public void notificarCorretor(String nome, String creci) {
+    public void notificarCorretor(Long idUsuario, String creci) {
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
+
+        if (!(usuario instanceof Visitante visitante)) {
+            throw new BusinessException("Somente visitantes podem solicitar corretor");
+        }
+
         NotificacaoCorretor notif = new NotificacaoCorretor();
-        notif.setNomeSolicitante(nome);
+        notif.setNomeSolicitante(visitante.getNome());
         notif.setCreciSolicitado(creci);
         notif.setVisivelParaTodosFuncionarios(true);
         notif.setLida(false);
         notif.setDataCriacao(LocalDateTime.now());
+        notif.setRemetente(visitante);
         notificacaoRepository.save(notif);
     }
 
     @Override
     public void notificarImobiliaria(Long id, String nomeCorretor, String nomeImobiliaria, String cnpj) {
+        Corretor corretor = corretorRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("Corretor não encontrado"));
+
         NotificacaoImobiliaria n = new NotificacaoImobiliaria();
         n.setNomeCorretor(nomeCorretor);
         n.setNomeImobiliaria(nomeImobiliaria);
         n.setCnpj(cnpj);
+        n.setVisivelParaTodosFuncionarios(true);
         n.setDataCriacao(LocalDateTime.now());
+        n.setRemetente(corretor);
         n.setLida(false);
         notificacaoRepository.save(n);
     }
@@ -60,11 +84,67 @@ public class NotificacaoServiceImpl implements NotificacaoService {
     }
 
     @Override
-    public List<NotificacaoDTO> listarNaoLidas(Long usuarioId) {
-        return notificacaoRepository.findByDestinatarioIdAndLidaFalse(usuarioId).stream()
+    public void arquivar(Long id) {
+        Notificacao notificacao = notificacaoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Notificação não encontrada"));
+
+        notificacao.setArquivada(true);
+        notificacaoRepository.save(notificacao);
+    }
+
+    @Override
+    public List<NotificacaoDTO> listarVisiveisParaUsuario(Long usuarioId) {
+        List<Notificacao> notificacoes = notificacaoRepository.findVisiveisParaUsuario(usuarioId);
+        logger.info("[listarVisiveisParaUsuario] Usuário {} - IDs retornados: {}", usuarioId, notificacoes.stream().map(Notificacao::getId).toList());
+        return notificacoes.stream()
                 .map(this::toDTO)
                 .toList();
     }
+
+    @Override
+    public List<NotificacaoDTO> listarSomentePrivadas(Long usuarioId) {
+        List<Notificacao> notificacoes = notificacaoRepository.findByDestinatarioIdAndLidaFalse(usuarioId);
+        logger.info("[listarSomentePrivadas] Usuário {} - IDs retornados: {}", usuarioId, notificacoes.stream().map(Notificacao::getId).toList());
+        return notificacoes.stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    @Override
+    public List<NotificacaoDTO> listarNaoLidas(Long usuarioId) {
+        List<Notificacao> notificacoes = notificacaoRepository.findVisiveisParaUsuario(usuarioId).stream()
+                .filter(n -> !n.isLida())
+                .toList();
+        logger.info("[listarNaoLidas] Usuário {} - IDs retornados: {}", usuarioId, notificacoes.stream().map(Notificacao::getId).toList());
+        return notificacoes.stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    @Override
+    public List<NotificacaoDTO> listarNaoLidasVisiveis(Long userId) {
+        List<Notificacao> privadas = notificacaoRepository.findByDestinatarioIdAndLidaFalse(userId);
+        List<Notificacao> publicas = notificacaoRepository.findByVisivelParaTodosFuncionariosTrueAndLidaFalse();
+
+        logger.info("[listarNaoLidasVisiveis] Privadas para o usuário {}: {}", userId, privadas.stream().map(Notificacao::getId).toList());
+        logger.info("[listarNaoLidasVisiveis] Públicas: {}", publicas.stream().map(Notificacao::getId).toList());
+
+        List<Notificacao> todas = new ArrayList<>();
+        todas.addAll(privadas);
+        todas.addAll(publicas);
+
+        logger.info("[listarNaoLidasVisiveis] Total de notificações (antes do distinct): {}", todas.size());
+
+        List<NotificacaoDTO> dtos = todas.stream()
+                .distinct()
+                .map(this::toDTO)
+                .toList();
+
+        logger.info("[listarNaoLidasVisiveis] Total de notificações (após distinct): {}", dtos.size());
+
+        return dtos;
+    }
+
 
     private NotificacaoDTO toDTO(Notificacao n) {
         if (n instanceof NotificacaoCorretor nc) {
@@ -72,10 +152,12 @@ public class NotificacaoServiceImpl implements NotificacaoService {
             dto.setId(nc.getId());
             dto.setLida(nc.isLida());
             dto.setResumo(nc.getResumo());
-            dto.setTipo("CORRETOR");
+            dto.setTipo("Corretor");
             dto.setDataCriacao(nc.getDataCriacao());
             dto.setNomeSolicitante(nc.getNomeSolicitante());
             dto.setCreciSolicitado(nc.getCreciSolicitado());
+            dto.setNomeUsuario(nc.getRemetente() != null ? nc.getRemetente().getNome() : null);
+            dto.setEmailUsuario(nc.getRemetente() != null ? nc.getRemetente().getEmail() : null);
             return dto;
         }
         if (n instanceof NotificacaoImobiliaria ni) {
@@ -83,7 +165,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
             dto.setId(ni.getId());
             dto.setLida(ni.isLida());
             dto.setResumo(ni.getResumo());
-            dto.setTipo("IMOBILIARIA");
+            dto.setTipo("Imobiliaria");
             dto.setDataCriacao(ni.getDataCriacao());
             dto.setNomeCorretor(ni.getNomeCorretor());
             dto.setNomeImobiliaria(ni.getNomeImobiliaria());
@@ -96,7 +178,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
             dto.setId(np.getId());
             dto.setLida(np.isLida());
             dto.setResumo(np.getResumo());
-            dto.setTipo("PROPOSTA");
+            dto.setTipo("Proposta");
             dto.setDataCriacao(np.getDataCriacao());
             dto.setIdProposta(p.getId());
             dto.setIdImovel(p.getImovel().getIdImovel());
@@ -127,20 +209,16 @@ public class NotificacaoServiceImpl implements NotificacaoService {
             throw new BusinessException("Solicitação já foi processada.");
         }
 
-        Visitante visitante = notificacao.getRemetente();
-        visitante.setCreci(notificacao.getCreciSolicitado());
-
-        authService.atribuirRoleParaUsuario(visitante, "ROLE_CORRETOR");
-        usuarioRepository.save(visitante);
+        Usuario usuario = notificacao.getRemetente();
+        Corretor corretor = corretorService.criarCorretorAPartirDeUsuario(usuario, notificacao.getCreciSolicitado());
 
         notificacao.setRespondida(true);
         notificacao.setAprovada(true);
         notificacao.setDataResposta(LocalDateTime.now());
         notificacaoRepository.save(notificacao);
 
-        criarRespostaSolicitacao(visitante, true, "CORRETOR");
+        criarRespostaSolicitacao(corretor, true, "CORRETOR");
     }
-
 
     @Override
     public void recusarSolicitacaoCorretor(Long id) {
@@ -159,7 +237,6 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         criarRespostaSolicitacao(notificacao.getRemetente(), false, "CORRETOR");
     }
 
-    @Override
     public void aprovarSolicitacaoImobiliaria(Long id) {
         NotificacaoImobiliaria notificacao = (NotificacaoImobiliaria) notificacaoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Notificação não encontrada"));
@@ -171,6 +248,16 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         notificacao.setRespondida(true);
         notificacao.setAprovada(true);
         notificacaoRepository.save(notificacao);
+
+        Imobiliaria imobiliaria = imobiliariaRepository.findByCnpj(notificacao.getCnpj())
+                .orElseThrow(() -> new BusinessException("Imobiliária não encontrada com o CNPJ informado."));
+
+        if (imobiliaria.isAprovada()) {
+            throw new BusinessException("Essa imobiliária já foi aprovada.");
+        }
+
+        imobiliaria.setAprovada(true);
+        imobiliariaRepository.save(imobiliaria);
     }
 
     @Override
@@ -197,4 +284,3 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         notificacaoRepository.save(notif);
     }
 }
-

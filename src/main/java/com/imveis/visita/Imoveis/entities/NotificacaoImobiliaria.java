@@ -18,7 +18,7 @@ public class NotificacaoImobiliaria extends Notificacao {
     @Column(length = 100)
     private String nomeCorretor;
 
-    @Column(length = 255)
+    @Column()
     private String nomeImobiliaria;
 
     @Column(length = 18)
@@ -28,7 +28,7 @@ public class NotificacaoImobiliaria extends Notificacao {
     private LocalDateTime dataResposta;
 
     @ManyToOne
-    private Visitante remetente;
+    private Corretor remetente;
 
     @Override
     public String getResumo() {

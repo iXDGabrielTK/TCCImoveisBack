@@ -1,5 +1,6 @@
 package com.imveis.visita.Imoveis.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -9,10 +10,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
+
 public abstract class NotificacaoDTO {
     protected long id;
     protected boolean lida;
     protected String tipo;
     protected String resumo;
     protected LocalDateTime dataCriacao;
+
+    @JsonProperty("dataHora")
+    public LocalDateTime getDataHora() {
+        return dataCriacao;
+    }
 }

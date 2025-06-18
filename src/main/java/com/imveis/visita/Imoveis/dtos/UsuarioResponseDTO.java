@@ -14,4 +14,5 @@ public class UsuarioResponseDTO {
     private String telefone;
     private String tipo;
     private String cpf;
+    private String creci;
 }

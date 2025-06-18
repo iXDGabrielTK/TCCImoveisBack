@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface NotificacaoService {
 
-    void notificarCorretor(String nome, String creci);
+    void notificarCorretor(Long idUsuario, String creci);
 
     void notificarImobiliaria(Long id, String nomeCorretor, String nomeImobiliaria, String cnpj);
 
@@ -26,4 +26,11 @@ public interface NotificacaoService {
 
     void criarNotificacaoProposta(Proposta proposta, Usuario destinatario);
 
+    List<NotificacaoDTO> listarVisiveisParaUsuario(Long id);
+
+    List<NotificacaoDTO> listarSomentePrivadas(Long id);
+
+    List<NotificacaoDTO> listarNaoLidasVisiveis(Long userId);
+
+    void arquivar(Long id);
 }

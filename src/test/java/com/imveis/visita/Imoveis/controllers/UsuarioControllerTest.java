@@ -1,5 +1,6 @@
 package com.imveis.visita.Imoveis.controllers;
 
+import com.imveis.visita.Imoveis.entities.Corretor;
 import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.entities.Visitante;
@@ -48,6 +49,7 @@ class UsuarioControllerTest {
     private AuthService authService;
 
     private Funcionario funcionario;
+    private Corretor corretor;
 
     @BeforeEach
     void setUp() {
@@ -59,6 +61,15 @@ class UsuarioControllerTest {
         funcionario.setTelefone("11987654321");
         funcionario.setCpf("12345678900");
         funcionario.setRoles(new HashSet<>());
+
+        corretor = new Corretor();
+        corretor.setId(3L);
+        corretor.setNome("Pedro Corretor");
+        corretor.setEmail("pedro.corretor");
+        corretor.setSenha("senhaCorretor");
+        corretor.setTelefone("11988887777");
+        corretor.setCreci("CRECI-SP 123456");
+        corretor.setRoles(new HashSet<>());
 
         Visitante visitante = new Visitante();
         visitante.setId(2L);
@@ -169,7 +180,7 @@ class UsuarioControllerTest {
                   "email": "joao.atualizado",
                   "senha": "",
                   "telefone": "11999999999",
-                  "tipo": "funcionario"
+                  "tipo": "FUNCIONARIO"
                 }
                 """;
 
@@ -182,7 +193,7 @@ class UsuarioControllerTest {
         atualizado.setRoles(new HashSet<>());
 
         when(usuarioService.findById(1L)).thenReturn(Optional.of(funcionario));
-        when(usuarioService.save(any(Usuario.class), eq(true))).thenReturn(atualizado);
+        when(usuarioService.save(any(Usuario.class), anyBoolean())).thenReturn(atualizado);
         mockMvc.perform(put("/usuarios/{id}", 1L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -191,7 +202,42 @@ class UsuarioControllerTest {
                 .andExpect(jsonPath("$.email", is("joao.atualizado")));
 
         verify(usuarioService).findById(1L);
-        verify(usuarioService).save(any(Usuario.class), eq(true));
+        verify(usuarioService).save(any(Usuario.class), anyBoolean());
+    }
+
+    @Test
+    void testAtualizarCorretor() throws Exception {
+        var json = """
+                {
+                  "nome": "Pedro Atualizado",
+                  "email": "pedro.atualizado",
+                  "senha": "",
+                  "telefone": "11988887777",
+                  "tipo": "CORRETOR",
+                  "creci": "CRECI-SP 123456"
+                }
+                """;
+
+        Corretor atualizado = new Corretor();
+        atualizado.setId(3L);
+        atualizado.setNome("Pedro Atualizado");
+        atualizado.setEmail("pedro.atualizado");
+        atualizado.setTelefone("11988887777");
+        atualizado.setCreci("CRECI-SP 123456");
+        atualizado.setRoles(new HashSet<>());
+
+        when(usuarioService.findById(3L)).thenReturn(Optional.of(corretor));
+        when(usuarioService.save(any(Usuario.class), anyBoolean())).thenReturn(atualizado);
+        mockMvc.perform(put("/usuarios/{id}", 3L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nome", is("Pedro Atualizado")))
+                .andExpect(jsonPath("$.email", is("pedro.atualizado")));
+        // .andExpect(jsonPath("$.creci", is("CRECI-SP 123456")));
+
+        verify(usuarioService).findById(3L);
+        verify(usuarioService).save(any(Usuario.class), anyBoolean());
     }
 
     @Test

@@ -22,7 +22,6 @@ public class FuncionarioController {
         this.usuarioService = usuarioService;
     }
 
-
     @GetMapping
     public List<Funcionario> getAllFuncionarios() {
         return funcionarioService.findAll();

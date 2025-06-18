@@ -16,8 +16,9 @@ import java.util.Set;
         property = "tipo"
 )
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = Visitante.class, name = "visitante"),
-        @JsonSubTypes.Type(value = Funcionario.class, name = "funcionario")
+        @JsonSubTypes.Type(value = Visitante.class, name = "VISITANTE"),
+        @JsonSubTypes.Type(value = Funcionario.class, name = "FUNCIONARIO"),
+        @JsonSubTypes.Type(value = Corretor.class, name = "CORRETOR")
 })
 @Entity
 @Table(name = "usuario")
@@ -63,4 +64,3 @@ public abstract class Usuario {
     }
 
 }
-

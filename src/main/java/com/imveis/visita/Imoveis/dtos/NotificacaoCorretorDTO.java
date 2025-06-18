@@ -12,4 +12,7 @@ import lombok.Setter;
 public class NotificacaoCorretorDTO extends NotificacaoDTO {
     private String nomeSolicitante;
     private String creciSolicitado;
+    private String nomeUsuario;
+    private String emailUsuario;
+
 }

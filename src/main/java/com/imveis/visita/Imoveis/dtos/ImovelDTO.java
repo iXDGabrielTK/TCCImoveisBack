@@ -3,12 +3,13 @@ package com.imveis.visita.Imoveis.dtos;
 
 import com.imveis.visita.Imoveis.entities.Imobiliaria;
 import com.imveis.visita.Imoveis.entities.Imovel;
+import com.imveis.visita.Imoveis.entities.Usuario;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.Hibernate;
 
 import java.util.List;
-import java.util.stream.Collectors; // Import adicionado
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -44,7 +45,7 @@ public class ImovelDTO {
                 : List.of();
         this.nomesCorretores = imovel.getCorretores() != null && Hibernate.isInitialized(imovel.getCorretores())
                 ? imovel.getCorretores().stream()
-                .map(corretor -> corretor.getUsuario().getNome())
+                .map(Usuario::getNome)
                 .toList()
                 : List.of();
 

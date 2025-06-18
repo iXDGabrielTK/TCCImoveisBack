@@ -4,7 +4,6 @@ import com.imveis.visita.Imoveis.dtos.CorretorResponse;
 import com.imveis.visita.Imoveis.entities.Corretor;
 import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.repositories.CorretorRepository;
-import com.imveis.visita.Imoveis.repositories.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,34 +16,35 @@ import java.util.Optional;
 public class CorretorService {
 
     private final CorretorRepository corretorRepository;
-    private final UsuarioRepository usuarioRepository;
-    private final AuthService authService; // Para atribuir ROLE_CORRETOR
+    private final AuthService authService;
 
     @Transactional
-    public CorretorResponse candidatarUsuarioParaCorretor(Long usuarioId, String creci) {
+    public Corretor criarCorretorAPartirDeUsuario(Usuario usuario, String creci) {
         if (corretorRepository.findByCreci(creci).isPresent()) {
             throw new IllegalArgumentException("CRECI já está cadastrado.");
         }
 
-        if (corretorRepository.findByUsuarioId(usuarioId).isPresent()) {
+        if (corretorRepository.findById(usuario.getId()).isPresent()) {
             throw new IllegalArgumentException("Usuário já é corretor.");
         }
 
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado."));
-
         Corretor corretor = new Corretor();
-        corretor.setUsuario(usuario);
+        corretor.setId(usuario.getId());
+        corretor.setNome(usuario.getNome());
+        corretor.setEmail(usuario.getEmail());
+        corretor.setSenha(usuario.getSenha());
+        corretor.setTelefone(usuario.getTelefone());
         corretor.setCreci(creci);
 
         Corretor salvo = corretorRepository.save(corretor);
-        authService.atribuirRoleParaUsuario(usuario, "ROLE_CORRETOR");
 
-        return toResponse(salvo);
+        authService.atribuirRoleParaUsuario(salvo, "ROLE_CORRETOR");
+
+        return salvo;
     }
 
     public Optional<CorretorResponse> buscarPorUsuarioId(Long usuarioId) {
-        return corretorRepository.findByUsuarioId(usuarioId)
+        return corretorRepository.findById(usuarioId)
                 .map(corretor -> {
                     CorretorResponse response = new CorretorResponse();
                     response.setId(corretor.getId());

@@ -2,6 +2,7 @@ package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.dtos.UsuarioRequestDTO;
 import com.imveis.visita.Imoveis.dtos.UsuarioResponseDTO;
+import com.imveis.visita.Imoveis.entities.Corretor;
 import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.entities.Visitante;
@@ -61,6 +62,7 @@ public class UsuarioController {
                         visitante.getEmail(),
                         visitante.getTelefone(),
                         "visitante",
+                        null,
                         null
                 );
                 return ResponseEntity.ok(responseDTO);
@@ -87,7 +89,8 @@ public class UsuarioController {
                         funcionario.getEmail(),
                         funcionario.getTelefone(),
                         "funcionario",
-                        funcionario.getCpf()
+                        funcionario.getCpf(),
+                        null
                 );
                 return ResponseEntity.ok(responseDTO);
 
@@ -113,7 +116,8 @@ public class UsuarioController {
                         usuario.getEmail(),
                         usuario.getTelefone(),
                         usuario.getTipo(),
-                        (usuario instanceof Funcionario f) ? f.getCpf() : null
+                        (usuario instanceof Funcionario f) ? f.getCpf() : null,
+                        (usuario instanceof Corretor c) ? c.getCreci() : null
                 );
                 return ResponseEntity.ok(dto);
             } else {
@@ -153,7 +157,8 @@ public class UsuarioController {
                     atualizado.getEmail(),
                     atualizado.getTelefone(),
                     atualizado.getTipo(),
-                    (atualizado instanceof Funcionario f) ? f.getCpf() : null
+                    (atualizado instanceof Funcionario f) ? f.getCpf() : null,
+                    (atualizado instanceof Corretor c) ? c.getCreci() : null
             );
 
             return ResponseEntity.ok(responseDTO);
@@ -186,7 +191,8 @@ public class UsuarioController {
                             usuario.getEmail(),
                             usuario.getTelefone(),
                             usuario.getTipo(),
-                            (usuario instanceof Funcionario f) ? f.getCpf() : null
+                            (usuario instanceof Funcionario f) ? f.getCpf() : null,
+                            (usuario instanceof Corretor c) ? c.getCreci() : null
                     ))
                     .collect(Collectors.toList());
 

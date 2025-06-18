@@ -34,6 +34,13 @@ public class Imobiliaria {
     @Column(name = "CEP", nullable = false)
     private String cep;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean aprovada;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "corretor_id", nullable = false)
+    private Corretor corretor;
+
     @ManyToMany(mappedBy = "imobiliarias")
     @JsonBackReference(value = "imovel-imobiliaria")
     private List<Imovel> imoveis;

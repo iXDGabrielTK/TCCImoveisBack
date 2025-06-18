@@ -19,9 +19,12 @@ public abstract class Notificacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "destinatario_id")
     protected Usuario destinatario;
+
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean arquivada = false;
 
     protected boolean lida = false;
     @Column(updatable = false)

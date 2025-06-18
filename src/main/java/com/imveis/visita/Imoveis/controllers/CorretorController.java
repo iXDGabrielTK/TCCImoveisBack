@@ -2,7 +2,7 @@ package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.dtos.CorretorRequest;
 import com.imveis.visita.Imoveis.dtos.CorretorResponse;
-import com.imveis.visita.Imoveis.entities.Usuario;
+import com.imveis.visita.Imoveis.security.UserDetailsImpl;
 import com.imveis.visita.Imoveis.service.CorretorService;
 import com.imveis.visita.Imoveis.service.NotificacaoService;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +24,12 @@ public class CorretorController {
 
     @PostMapping("/solicitar")
     @PreAuthorize("hasRole('VISITANTE')")
-    public ResponseEntity<String> solicitarCorretor(@RequestBody CorretorRequest request, @AuthenticationPrincipal Usuario visitante) {
+    public ResponseEntity<String> solicitarCorretor(@RequestBody CorretorRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         if (request.getCreci() == null || request.getCreci().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("CRECI não pode ser vazio.");
         }
 
-        notificacaoService.notificarCorretor(visitante.getNome(), request.getCreci().trim());
+        notificacaoService.notificarCorretor(userDetails.getId(), request.getCreci().trim());
         return ResponseEntity.ok("Solicitação enviada para análise dos funcionários.");
     }
 
@@ -41,6 +41,13 @@ public class CorretorController {
         } else {
             return ResponseEntity.ok().build();
         }
+    }
+
+    @PutMapping("/{id}/arquivar")
+    @PreAuthorize("hasAnyRole('FUNCIONARIO', 'CORRETOR')")
+    public ResponseEntity<?> arquivar(@PathVariable Long id) {
+        notificacaoService.arquivar(id);
+        return ResponseEntity.ok().build();
     }
 
 

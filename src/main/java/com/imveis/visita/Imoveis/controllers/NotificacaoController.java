@@ -1,7 +1,7 @@
 package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.dtos.NotificacaoDTO;
-import com.imveis.visita.Imoveis.entities.Usuario;
+import com.imveis.visita.Imoveis.security.UserDetailsImpl;
 import com.imveis.visita.Imoveis.service.NotificacaoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -49,14 +49,35 @@ public class NotificacaoController {
     }
 
     @GetMapping
-    public List<NotificacaoDTO> listarNaoLidas(@AuthenticationPrincipal Usuario user) {
-        return notificacaoService.listarNaoLidas(user.getId());
+    public ResponseEntity<List<NotificacaoDTO>> listarTodas(@AuthenticationPrincipal UserDetailsImpl user) {
+        List<NotificacaoDTO> notificacoes = notificacaoService.listarVisiveisParaUsuario(user.getId());
+        return ResponseEntity.ok(notificacoes);
     }
+
+    @GetMapping("/privadas")
+    public ResponseEntity<List<NotificacaoDTO>> listarPrivadas(@AuthenticationPrincipal UserDetailsImpl user) {
+        List<NotificacaoDTO> notificacoes = notificacaoService.listarSomentePrivadas(user.getId());
+        return ResponseEntity.ok(notificacoes);
+    }
+
+    @GetMapping("/nao-lidas")
+    public ResponseEntity<List<NotificacaoDTO>> listarNaoLidas(@AuthenticationPrincipal UserDetailsImpl user) {
+        List<NotificacaoDTO> notificacoes = notificacaoService.listarNaoLidas(user.getId());
+        return ResponseEntity.ok(notificacoes);
+    }
+
+    @GetMapping("/todas-nao-lidas")
+    public ResponseEntity<List<NotificacaoDTO>> listarTodasNaoLidas(@AuthenticationPrincipal UserDetailsImpl user) {
+        List<NotificacaoDTO> notificacoes = notificacaoService.listarNaoLidasVisiveis(user.getId());
+        return ResponseEntity.ok(notificacoes);
+    }
+
 
     @PatchMapping("/{id}/lida")
     public ResponseEntity<Void> marcarComoLida(@PathVariable Long id) {
         notificacaoService.marcarComoLida(id);
         return ResponseEntity.noContent().build();
     }
+
 }
 

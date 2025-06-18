@@ -23,5 +23,4 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @NotNull Optional<Usuario> findById(@NotNull Long usuarioId);
 
-
 }

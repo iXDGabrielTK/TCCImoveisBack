@@ -193,7 +193,7 @@ public class SecureJwtUtil {
             return true;
         } catch (JwtException e) {
             logger.warn("Token inválido: {}", e.getMessage());
-            throw e;
+            return false;
         }
     }
 
@@ -274,6 +274,27 @@ public class SecureJwtUtil {
     public boolean isRefreshToken(String token) {
         Claims claims = extractAllClaims(token);
         return "refresh".equals(claims.get("tokenType", String.class));
+    }
+
+    /**
+     * Extrai as funções (roles) do token JWT.
+     *
+     * @param token Token JWT
+     * @return Lista de funções extraídas
+     */
+    List<String> extractRoles(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        Object roles = claims.get("roles");
+        if (roles instanceof List<?>) {
+            return ((List<?>) roles).stream()
+                    .map(Object::toString)
+                    .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
     }
 
     /**
