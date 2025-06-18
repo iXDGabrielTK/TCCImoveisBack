@@ -1,13 +1,11 @@
+-- Tabela Usuario
 CREATE TABLE usuario (
                          ID SERIAL PRIMARY KEY,
                          NOME VARCHAR(100) NOT NULL,
                          LOGIN VARCHAR(50) UNIQUE NOT NULL,
                          SENHA VARCHAR(100) NOT NULL,
                          TELEFONE VARCHAR(20),
-                         IMOBILIARIA_ID INT UNIQUE, -- Adicione esta coluna
                          TIPO_USUARIO VARCHAR(31) -- Corrigido o tipo do campo
-                         CONSTRAINT fk_imobiliaria FOREIGN KEY (IMOBILIARIA_ID) REFERENCES imobiliaria(ID)
-
 );
 
 -- Tabela Endereco

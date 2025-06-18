@@ -18,9 +18,7 @@ import java.util.Set;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = Visitante.class, name = "VISITANTE"),
         @JsonSubTypes.Type(value = Funcionario.class, name = "FUNCIONARIO"),
-        @JsonSubTypes.Type(value = Corretor.class, name = "CORRETOR"),
-        @JsonSubTypes.Type(value = UsuarioImobiliaria.class, name = "IMOBILIARIA_USER") // Adicione esta linha
-
+        @JsonSubTypes.Type(value = Corretor.class, name = "CORRETOR")
 })
 @Entity
 @Table(name = "usuario")

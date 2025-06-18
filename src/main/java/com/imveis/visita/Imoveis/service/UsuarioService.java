@@ -3,7 +3,6 @@ package com.imveis.visita.Imoveis.service;
 import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.entities.Visitante;
-import com.imveis.visita.Imoveis.entities.UsuarioImobiliaria; // Importe a nova classe
 import com.imveis.visita.Imoveis.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,20 +48,15 @@ public class UsuarioService {
                 visitante.setDataCadastro(LocalDateTime.now());
             }
             return visitanteService.save(visitante);
-        } else if (usuario instanceof UsuarioImobiliaria usuarioImobiliaria) { // Adicione este bloco
-            Usuario savedUsuarioImobiliaria = usuarioRepository.save(usuarioImobiliaria);
-            authService.atribuirRoleParaUsuario(savedUsuarioImobiliaria, "IMOBILIARIA_USER");
-            return savedUsuarioImobiliaria;
         }
 
         Usuario savedUsuario = usuarioRepository.save(usuario);
 
         if (savedUsuario instanceof Funcionario) {
             authService.atribuirRoleParaUsuario(savedUsuario, "FUNCIONARIO");
-        } else if (savedUsuario instanceof Visitante) { // Certifique-se que Visitante também recebe sua role aqui se o save acima não o fizer
+        } else {
             authService.atribuirRoleParaUsuario(savedUsuario, "VISITANTE");
         }
-
 
         return savedUsuario;
     }

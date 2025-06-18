@@ -14,12 +14,10 @@ import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class NotificacaoServiceImpl implements NotificacaoService {
@@ -31,15 +29,13 @@ public class NotificacaoServiceImpl implements NotificacaoService {
     private final ImobiliariaRepository imobiliariaRepository;
     private final CorretorService corretorService;
     private final CorretorRepository corretorRepository;
-    private final UsuarioService usuarioService;
 
-    public NotificacaoServiceImpl(NotificacaoRepository repo, UsuarioRepository usuarioRepository, ImobiliariaRepository imobiliariaRepository, CorretorService corretorService, CorretorRepository corretorRepository, UsuarioService usuarioService) {
+    public NotificacaoServiceImpl(NotificacaoRepository repo, UsuarioRepository usuarioRepository, ImobiliariaRepository imobiliariaRepository, CorretorService corretorService, CorretorRepository corretorRepository) {
         this.notificacaoRepository = repo;
         this.usuarioRepository = usuarioRepository;
         this.imobiliariaRepository = imobiliariaRepository;
         this.corretorService = corretorService;
         this.corretorRepository = corretorRepository;
-        this.usuarioService = usuarioService;
     }
 
     @Override
@@ -241,8 +237,6 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         criarRespostaSolicitacao(notificacao.getRemetente(), false, "CORRETOR");
     }
 
-    @Override
-    @Transactional // Garante que todas as operações ocorram em uma única transação
     public void aprovarSolicitacaoImobiliaria(Long id) {
         NotificacaoImobiliaria notificacao = (NotificacaoImobiliaria) notificacaoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Notificação não encontrada"));
@@ -251,6 +245,10 @@ public class NotificacaoServiceImpl implements NotificacaoService {
             throw new BusinessException("Solicitação já foi processada.");
         }
 
+        notificacao.setRespondida(true);
+        notificacao.setAprovada(true);
+        notificacaoRepository.save(notificacao);
+
         Imobiliaria imobiliaria = imobiliariaRepository.findByCnpj(notificacao.getCnpj())
                 .orElseThrow(() -> new BusinessException("Imobiliária não encontrada com o CNPJ informado."));
 
@@ -258,39 +256,9 @@ public class NotificacaoServiceImpl implements NotificacaoService {
             throw new BusinessException("Essa imobiliária já foi aprovada.");
         }
 
-        // Marcar a imobiliária como aprovada
         imobiliaria.setAprovada(true);
         imobiliariaRepository.save(imobiliaria);
-
-        // --- NOVO PASSO: Criar o usuário para a imobiliária ---
-        // Verificar se já existe um usuário associado a esta imobiliária (previne duplicidade)
-        // Isso assume que o relacionamento OneToOne no UsuarioImobiliaria foi populado
-        // ou você pode adicionar um findByImobiliariaId no UsuarioRepository se preferir.
-        Optional<Usuario> usuarioExistenteOpt = usuarioRepository.findByEmail(imobiliaria.getEmail());
-        if (usuarioExistenteOpt.isPresent() && usuarioExistenteOpt.get() instanceof UsuarioImobiliaria usuarioImobiliariaExistente && usuarioImobiliariaExistente.getImobiliaria().getId().equals(imobiliaria.getId())) {
-            // Já existe um usuário para esta imobiliária. Apenas notificar que já está aprovada.
-            criarRespostaSolicitacao(usuarioImobiliariaExistente, true, "IMOBILIARIA");
-            logger.warn("Usuário para imobiliária {} (CNPJ: {}) já existe e está associado. Pulando criação.", imobiliaria.getNome(), imobiliaria.getCnpj());
-        } else {
-            UsuarioImobiliaria novoUsuarioImobiliaria = new UsuarioImobiliaria();
-            novoUsuarioImobiliaria.setEmail(imobiliaria.getEmail()); // Usar o email da imobiliária como login
-            novoUsuarioImobiliaria.setNome(imobiliaria.getRazaoSocial()); // Ou nome fantasia
-            novoUsuarioImobiliaria.setSenha("senhaTemporaria123!"); // Senha temporária, exigir troca no primeiro login
-            novoUsuarioImobiliaria.setImobiliaria(imobiliaria); // Associar a imobiliária ao novo usuário
-
-            // Salvar o novo usuário e atribuir a ROLE
-            usuarioService.save(novoUsuarioImobiliaria, true); // O 'true' garante que a senha seja criptografada
-            criarRespostaSolicitacao(novoUsuarioImobiliaria, true, "IMOBILIARIA");
-        }
-        // --- FIM NOVO PASSO ---
-
-        // Marcar a notificação como respondida e aprovada
-        notificacao.setRespondida(true);
-        notificacao.setAprovada(true);
-        notificacao.setDataResposta(LocalDateTime.now());
-        notificacaoRepository.save(notificacao);
     }
-
 
     @Override
     public void recusarSolicitacaoImobiliaria(Long id) {
