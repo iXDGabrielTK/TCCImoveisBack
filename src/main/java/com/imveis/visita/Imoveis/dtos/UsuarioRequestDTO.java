@@ -16,4 +16,5 @@ public class UsuarioRequestDTO {
     private String senha;
     private String tipo;
     private String cpf;
+    private Long idImobiliaria; // ADICIONE ESTA LINHA
 }

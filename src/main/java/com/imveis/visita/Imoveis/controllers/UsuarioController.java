@@ -6,10 +6,14 @@ import com.imveis.visita.Imoveis.entities.Corretor;
 import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.entities.Visitante;
+import com.imveis.visita.Imoveis.entities.UsuarioImobiliaria; // Importe a nova entidade
+import com.imveis.visita.Imoveis.entities.Imobiliaria; // Importe Imobiliaria
 import com.imveis.visita.Imoveis.service.AuthService;
 import com.imveis.visita.Imoveis.service.FuncionarioService;
 import com.imveis.visita.Imoveis.service.UsuarioService;
 import com.imveis.visita.Imoveis.service.VisitanteService;
+import com.imveis.visita.Imoveis.repositories.ImobiliariaRepository; // Importe ImobiliariaRepository
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,17 +32,22 @@ public class UsuarioController {
     private final FuncionarioService funcionarioService;
     private final UsuarioService usuarioService;
     private final AuthService authService;
+    private final ImobiliariaRepository imobiliariaRepository; // Injetar ImobiliariaRepository
+
 
     @Autowired
     public UsuarioController(
             VisitanteService visitanteService,
             FuncionarioService funcionarioService,
-            UsuarioService usuarioService, AuthService authService
+            UsuarioService usuarioService,
+            AuthService authService,
+            ImobiliariaRepository imobiliariaRepository
     ) {
         this.visitanteService = visitanteService;
         this.funcionarioService = funcionarioService;
         this.usuarioService = usuarioService;
         this.authService = authService;
+        this.imobiliariaRepository = imobiliariaRepository;
     }
 
     @PostMapping
@@ -93,8 +102,42 @@ public class UsuarioController {
                         null
                 );
                 return ResponseEntity.ok(responseDTO);
+            } else if ("imobiliaria_user".equalsIgnoreCase(tipo)) { // VERIFIQUE ESTA LINHA E O CONTEÚDO DO BLOCO
+                if (dto.getEmail() == null || dto.getEmail().isBlank() || dto.getSenha() == null || dto.getSenha().isBlank()) {
+                    return ResponseEntity.badRequest().body("Email e senha são obrigatórios para um usuário imobiliária.");
+                }
+                if (dto.getIdImobiliaria() == null) {
+                    return ResponseEntity.badRequest().body("ID da Imobiliária é obrigatório para criar um UsuarioImobiliaria.");
+                }
 
-            } else {
+                // Tenta encontrar a imobiliária existente
+                Imobiliaria imobiliaria = imobiliariaRepository.findById(dto.getIdImobiliaria())
+                        .orElseThrow(() -> new IllegalArgumentException("Imobiliária não encontrada com o ID fornecido."));
+
+                UsuarioImobiliaria usuarioImobiliaria = new UsuarioImobiliaria();
+                usuarioImobiliaria.setNome(dto.getNome() != null ? dto.getNome() : imobiliaria.getRazaoSocial());
+                usuarioImobiliaria.setEmail(dto.getEmail());
+                usuarioImobiliaria.setTelefone(dto.getTelefone());
+                usuarioImobiliaria.setSenha(dto.getSenha());
+                usuarioImobiliaria.setImobiliaria(imobiliaria);
+
+                authService.encodePassword(usuarioImobiliaria);
+                usuarioImobiliaria = (UsuarioImobiliaria) usuarioService.save(usuarioImobiliaria, false);
+
+                authService.atribuirRoleParaUsuario(usuarioImobiliaria, "IMOBILIARIA_USER");
+
+                UsuarioResponseDTO responseDTO = new UsuarioResponseDTO(
+                        usuarioImobiliaria.getId(),
+                        usuarioImobiliaria.getNome(),
+                        usuarioImobiliaria.getEmail(),
+                        usuarioImobiliaria.getTelefone(),
+                        "IMOBILIARIA_USER",
+                        null,
+                        null
+                );
+                return ResponseEntity.ok(responseDTO);
+
+            } else { // ESTE É O BLOCO QUE ESTÁ SENDO EXECUTADO AGORA
                 return ResponseEntity.badRequest().body("Tipo de usuário inválido.");
             }
 
@@ -176,7 +219,12 @@ public class UsuarioController {
                 usuarios = usuarioService.findByTipo(Visitante.class);
             } else if ("funcionario".equalsIgnoreCase(tipo)) {
                 usuarios = usuarioService.findByTipo(Funcionario.class);
-            } else {
+            } else if ("corretor".equalsIgnoreCase(tipo)) { // Adicione CORRETOR aqui
+                usuarios = usuarioService.findByTipo(Corretor.class);
+            } else if ("imobiliaria_user".equalsIgnoreCase(tipo)) { // E IMOBILIARIA_USER
+                usuarios = usuarioService.findByTipo(UsuarioImobiliaria.class);
+            }
+            else {
                 return ResponseEntity.badRequest().body("Tipo inválido.");
             }
 

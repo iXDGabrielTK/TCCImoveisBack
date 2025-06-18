@@ -17,6 +17,7 @@ public class DatabaseInitializer {
         createRoleIfNotExists("FUNCIONARIO");
         createRoleIfNotExists("VISITANTE");
         createRoleIfNotExists("CORRETOR");
+        createRoleIfNotExists("IMOBILIARIA_USER");
     }
 
     private void createRoleIfNotExists(String roleName) {
