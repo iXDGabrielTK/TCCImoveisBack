@@ -26,7 +26,7 @@ public class NotificacaoCorretor extends Notificacao {
     private LocalDateTime dataResposta;
 
     @ManyToOne
-    private Visitante remetente;
+    private Usuario remetente;
 
     @Override
     public String getResumo() {
