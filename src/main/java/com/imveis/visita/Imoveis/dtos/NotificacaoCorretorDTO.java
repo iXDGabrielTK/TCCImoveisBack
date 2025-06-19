@@ -14,5 +14,7 @@ public class NotificacaoCorretorDTO extends NotificacaoDTO {
     private String creciSolicitado;
     private String nomeUsuario;
     private String emailUsuario;
+    private boolean respondida;
+    private boolean arquivada;
 
 }

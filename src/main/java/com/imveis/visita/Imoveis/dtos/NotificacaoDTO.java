@@ -12,11 +12,13 @@ import java.time.LocalDateTime;
 @Setter
 
 public abstract class NotificacaoDTO {
-    protected long id;
-    protected boolean lida;
-    protected String tipo;
-    protected String resumo;
-    protected LocalDateTime dataCriacao;
+    private Long id;
+    private boolean lida;
+    private boolean arquivada;
+    private boolean respondida;
+    private String resumo;
+    private String tipo;
+    private LocalDateTime dataCriacao;
 
     @JsonProperty("dataHora")
     public LocalDateTime getDataHora() {

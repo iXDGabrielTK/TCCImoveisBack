@@ -9,5 +9,7 @@ public class NotificacaoImobiliariaDTO extends NotificacaoDTO {
     private String nomeCorretor;
     private String nomeImobiliaria;
     private String cnpj;
+    private boolean respondida;
+    private boolean arquivada;
 
 }

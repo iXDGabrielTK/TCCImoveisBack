@@ -94,12 +94,31 @@ public class NotificacaoServiceImpl implements NotificacaoService {
 
     @Override
     public List<NotificacaoDTO> listarVisiveisParaUsuario(Long usuarioId) {
-        List<Notificacao> notificacoes = notificacaoRepository.findVisiveisParaUsuario(usuarioId);
-        logger.info("[listarVisiveisParaUsuario] Usuário {} - IDs retornados: {}", usuarioId, notificacoes.stream().map(Notificacao::getId).toList());
-        return notificacoes.stream()
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+
+        List<Notificacao> todas = notificacaoRepository.findAllByOrderByDataCriacaoDesc();
+        List<Notificacao> notificacoesVisiveis = new ArrayList<>();
+
+        for (Notificacao n : todas) {
+            boolean visivel = n.getDestinatario() != null && n.getDestinatario().getId().equals(usuarioId);
+
+            if (n.isVisivelParaTodosFuncionarios() && usuario instanceof Funcionario) {
+                visivel = true;
+            }
+
+            if (visivel) {
+                notificacoesVisiveis.add(n);
+            }
+        }
+
+        logger.info("[listarVisiveisParaUsuario] Usuário {} - IDs retornados: {}", usuarioId, notificacoesVisiveis.stream().map(Notificacao::getId).toList());
+
+        return notificacoesVisiveis.stream()
                 .map(this::toDTO)
                 .toList();
     }
+
 
     @Override
     public List<NotificacaoDTO> listarSomentePrivadas(Long usuarioId) {
@@ -112,19 +131,27 @@ public class NotificacaoServiceImpl implements NotificacaoService {
 
     @Override
     public List<NotificacaoDTO> listarNaoLidas(Long usuarioId) {
-        List<Notificacao> notificacoes = notificacaoRepository.findVisiveisParaUsuario(usuarioId).stream()
+        List<NotificacaoDTO> todasVisiveis = listarVisiveisParaUsuario(usuarioId);
+        List<NotificacaoDTO> naoLidas = todasVisiveis.stream()
                 .filter(n -> !n.isLida())
                 .toList();
-        logger.info("[listarNaoLidas] Usuário {} - IDs retornados: {}", usuarioId, notificacoes.stream().map(Notificacao::getId).toList());
-        return notificacoes.stream()
-                .map(this::toDTO)
-                .toList();
+
+        logger.info("[listarNaoLidas] Usuário {} - IDs retornados: {}", usuarioId, naoLidas.stream().map(NotificacaoDTO::getId).toList());
+
+        return naoLidas;
     }
 
     @Override
     public List<NotificacaoDTO> listarNaoLidasVisiveis(Long userId) {
+        Usuario usuario = usuarioRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+
         List<Notificacao> privadas = notificacaoRepository.findByDestinatarioIdAndLidaFalse(userId);
-        List<Notificacao> publicas = notificacaoRepository.findByVisivelParaTodosFuncionariosTrueAndLidaFalse();
+        List<Notificacao> publicas = new ArrayList<>();
+
+        if (usuario instanceof Funcionario) {
+            publicas = notificacaoRepository.findByVisivelParaTodosFuncionariosTrueAndLidaFalse();
+        }
 
         logger.info("[listarNaoLidasVisiveis] Privadas para o usuário {}: {}", userId, privadas.stream().map(Notificacao::getId).toList());
         logger.info("[listarNaoLidasVisiveis] Públicas: {}", publicas.stream().map(Notificacao::getId).toList());
@@ -132,8 +159,6 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         List<Notificacao> todas = new ArrayList<>();
         todas.addAll(privadas);
         todas.addAll(publicas);
-
-        logger.info("[listarNaoLidasVisiveis] Total de notificações (antes do distinct): {}", todas.size());
 
         List<NotificacaoDTO> dtos = todas.stream()
                 .distinct()
@@ -144,7 +169,6 @@ public class NotificacaoServiceImpl implements NotificacaoService {
 
         return dtos;
     }
-
 
     private NotificacaoDTO toDTO(Notificacao n) {
         if (n instanceof NotificacaoCorretor nc) {
@@ -158,6 +182,8 @@ public class NotificacaoServiceImpl implements NotificacaoService {
             dto.setCreciSolicitado(nc.getCreciSolicitado());
             dto.setNomeUsuario(nc.getRemetente() != null ? nc.getRemetente().getNome() : null);
             dto.setEmailUsuario(nc.getRemetente() != null ? nc.getRemetente().getEmail() : null);
+            dto.setRespondida(nc.getRespondida());
+            dto.setArquivada(nc.isArquivada());
             return dto;
         }
         if (n instanceof NotificacaoImobiliaria ni) {
@@ -170,6 +196,8 @@ public class NotificacaoServiceImpl implements NotificacaoService {
             dto.setNomeCorretor(ni.getNomeCorretor());
             dto.setNomeImobiliaria(ni.getNomeImobiliaria());
             dto.setCnpj(ni.getCnpj());
+            dto.setRespondida(ni.getRespondida());
+            dto.setArquivada(ni.isArquivada());
             return dto;
         }
         if (n instanceof NotificacaoProposta np) {
@@ -184,6 +212,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
             dto.setIdImovel(p.getImovel().getIdImovel());
             dto.setValorProposta(p.getValorFinanciamento());
             dto.setNomeProponente(p.getUsuario().getNome());
+            dto.setArquivada(np.isArquivada());
             return dto;
         }
 
@@ -214,6 +243,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
 
         notificacao.setRespondida(true);
         notificacao.setAprovada(true);
+        notificacao.setLida(true);
         notificacao.setDataResposta(LocalDateTime.now());
         notificacaoRepository.save(notificacao);
 
@@ -231,12 +261,14 @@ public class NotificacaoServiceImpl implements NotificacaoService {
 
         notificacao.setRespondida(true);
         notificacao.setAprovada(false);
+        notificacao.setLida(true);
         notificacao.setDataResposta(LocalDateTime.now());
         notificacaoRepository.save(notificacao);
 
         criarRespostaSolicitacao(notificacao.getRemetente(), false, "CORRETOR");
     }
 
+    @Override
     public void aprovarSolicitacaoImobiliaria(Long id) {
         NotificacaoImobiliaria notificacao = (NotificacaoImobiliaria) notificacaoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Notificação não encontrada"));
@@ -247,6 +279,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
 
         notificacao.setRespondida(true);
         notificacao.setAprovada(true);
+        notificacao.setLida(true);
         notificacaoRepository.save(notificacao);
 
         Imobiliaria imobiliaria = imobiliariaRepository.findByCnpj(notificacao.getCnpj())
@@ -271,6 +304,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
 
         notificacao.setRespondida(true);
         notificacao.setAprovada(false);
+        notificacao.setLida(true);
         notificacaoRepository.save(notificacao);
 
         criarRespostaSolicitacao(notificacao.getRemetente(), false, "IMOBILIARIA");
