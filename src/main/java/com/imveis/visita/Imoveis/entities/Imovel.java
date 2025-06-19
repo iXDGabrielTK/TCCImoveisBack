@@ -52,7 +52,7 @@ public class Imovel {
     @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @ToString.Exclude
     @Builder.Default
-    private List<FotoImovel> fotosImovel = new ArrayList<>();
+    private Set<FotoImovel> fotosImovel = new HashSet<>();
 
     @OneToMany(mappedBy = "imovel", cascade = CascadeType.ALL)
     @Builder.Default

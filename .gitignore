@@ -80,3 +80,4 @@ replay_pid*
 # 📘 BlueJ
 # ========================================
 *.ctxt
+*.properties
