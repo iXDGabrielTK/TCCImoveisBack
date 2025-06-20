@@ -46,4 +46,8 @@ public interface ImovelRepository extends JpaRepository<Imovel, Long> {
     @Query("SELECT i FROM Imovel i LEFT JOIN FETCH i.enderecoImovel LEFT JOIN FETCH i.fotosImovel WHERE i.idImovel = :id AND i.apagado = false")
     Optional<Imovel> findByIdWithEnderecoAndFotos(@Param("id") Long id);
 
+
+    // Exemplo de consulta para buscar imóveis por ID da imobiliária
+    @Query("SELECT i FROM Imovel i JOIN i.imobiliarias imob WHERE imob.id = :imobiliariaId AND i.apagado = false")
+    Page<Imovel> findByImobiliariaId(@Param("imobiliariaId") Long imobiliariaId, Pageable pageable);
 }

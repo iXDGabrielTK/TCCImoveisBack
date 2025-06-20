@@ -3,6 +3,7 @@ package com.imveis.visita.Imoveis.controllers;
 import com.imveis.visita.Imoveis.dtos.RelatorioAgendamentoDTO;
 import com.imveis.visita.Imoveis.dtos.RelatorioUsuarioDTO;
 import com.imveis.visita.Imoveis.dtos.RelatorioVistoriaDTO;
+import com.imveis.visita.Imoveis.dtos.VistoriaDTO;
 import com.imveis.visita.Imoveis.service.RelatorioAgendamentoService;
 import com.imveis.visita.Imoveis.service.RelatorioUsuarioService;
 import com.imveis.visita.Imoveis.service.RelatorioVistoriaService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable; // Importe PathVariable
 
 import java.util.List;
 
@@ -30,16 +32,24 @@ public class RelatorioController {
     private RelatorioAgendamentoService relatorioAgendamentoService;
 
     @PreAuthorize("hasRole('FUNCIONARIO')")
-    @GetMapping("/vistorias")
-    public ResponseEntity<?> gerarRelatorioVistorias(@RequestParam Long idImovel) {
+    @GetMapping("/vistorias/{idVistoria}") // Endpoint para buscar UMA vistoria detalhada por ID da vistoria
+    public ResponseEntity<?> gerarRelatorioVistoriaDetalhada(@PathVariable Long idVistoria) {
         try {
-            List<RelatorioVistoriaDTO> relatorio = relatorioVistoriaService.buscarRelatorioVistorias(idImovel);
+            VistoriaDTO relatorio = relatorioVistoriaService.buscarVistoriaDetalhadaPorId(idVistoria);
             return ResponseEntity.ok(relatorio);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
+    @PreAuthorize("hasRole('FUNCIONARIO')")
+    @GetMapping("/vistorias/lista-para-selecao") // Novo endpoint para listar vistorias para o select
+    public ResponseEntity<List<RelatorioVistoriaDTO>> listarVistoriasParaSelecao() {
+        List<RelatorioVistoriaDTO> vistorias = relatorioVistoriaService.buscarTodasVistoriasParaSelecao();
+        return ResponseEntity.ok(vistorias);
+    }
+
+    // Mantenha os outros endpoints que já existiam, se ainda forem necessários
     @PreAuthorize("hasRole('FUNCIONARIO')")
     @GetMapping("/usuarios")
     public ResponseEntity<?> gerarRelatorioUsuarios(

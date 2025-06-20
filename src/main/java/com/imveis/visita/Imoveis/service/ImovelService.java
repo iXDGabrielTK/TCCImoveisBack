@@ -62,8 +62,6 @@ public class ImovelService {
 
 
     public Optional<ImovelDTO> findDTOById(Long id) {
-        // Aqui você converte manualmente o Imovel para ImovelDTO
-        // se tiver construtor
         return imovelRepository.findByIdWithEnderecoAndFotos(id)
                 .map(ImovelDTO::new);
     }
@@ -99,8 +97,10 @@ public class ImovelService {
         imovelRepository.deleteById(id);
     }
 
-    public Optional<Imovel> findByEndereco(String rua, String numero, String bairro) {
-        return imovelRepository.findByEnderecoImovel_RuaAndEnderecoImovel_NumeroAndEnderecoImovel_Bairro(rua, numero, bairro);
+    public Page<ImovelDTO> findByImobiliariaPaginado(Long imobiliariaId, int page, int size) {
+        PageRequest pageable = PageRequest.of(page, size, Sort.by("idImovel").descending());
+        Page<Imovel> imoveisPage = imovelRepository.findByImobiliariaId(imobiliariaId, pageable);
+        return imoveisPage.map(ImovelDTO::new);
     }
 
 }

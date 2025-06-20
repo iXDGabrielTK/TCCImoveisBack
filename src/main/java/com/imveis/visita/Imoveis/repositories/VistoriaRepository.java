@@ -13,37 +13,28 @@ import java.util.Optional;
 @Repository
 public interface VistoriaRepository extends JpaRepository<Vistoria, Long> {
 
-    @Query("SELECT new com.imveis.visita.Imoveis.dtos.RelatorioVistoriaDTO( " +
-            "v.idVistoria, v.imovel.idImovel, v.imovel.descricaoImovel, v.dataVistoria, v.laudoVistoria) " +
-            "FROM Vistoria v " +
-            "WHERE v.imovel.idImovel = :idImovel " +
-            "ORDER BY v.dataVistoria DESC")
-    List<RelatorioVistoriaDTO> buscarRelatorioVistorias(@Param("idImovel") Long idImovel);
 
-
-    @Query("SELECT v FROM Vistoria v WHERE v.apagado = false")
-    List<Vistoria> findAllActive();
-
-    @Query("SELECT v FROM Vistoria v WHERE v.idVistoria = :id AND v.apagado = false")
-    Optional<Vistoria> findByIdActive(@Param("id") Long id);
-
-    // VistoriaRepository.java
-// ...
     @Query("SELECT DISTINCT v FROM Vistoria v " +
             "JOIN FETCH v.imovel i " +
-            "LEFT JOIN FETCH i.fotosImovel " + // Carrega fotos do Imovel
-            "LEFT JOIN FETCH v.ambientes a " + // Carrega ambientes da Vistoria
-            "LEFT JOIN FETCH a.fotos " + // Carrega fotos dos Ambientes
+            "LEFT JOIN FETCH i.fotosImovel " +
+            "LEFT JOIN FETCH v.ambientes a " +
+            "LEFT JOIN FETCH a.fotos " +
             "WHERE v.apagado = false")
     List<Vistoria> findAllActiveWithAllDetails();
 
     @Query("SELECT DISTINCT v FROM Vistoria v " +
             "JOIN FETCH v.imovel i " +
-            "LEFT JOIN FETCH i.fotosImovel " + // Carrega fotos do Imovel
-            "LEFT JOIN FETCH v.ambientes a " + // Carrega ambientes da Vistoria
-            "LEFT JOIN FETCH a.fotos " + // Carrega fotos dos Ambientes
+            "LEFT JOIN FETCH i.fotosImovel " +
+            "LEFT JOIN FETCH v.ambientes a " +
+            "LEFT JOIN FETCH a.fotos " +
             "WHERE v.idVistoria = :id AND v.apagado = false")
     Optional<Vistoria> findByIdActiveWithAllDetails(@Param("id") Long id);
-// ...
 
+    @Query("SELECT new com.imveis.visita.Imoveis.dtos.RelatorioVistoriaDTO(" +
+            "v.idVistoria, v.imovel.idImovel, COALESCE(v.imovel.descricaoImovel, 'N/A'), v.dataVistoria, v.laudoVistoria) " +
+            "FROM Vistoria v " +
+            "LEFT JOIN v.imovel imovel " +
+            "WHERE v.apagado = false " +
+            "ORDER BY v.dataVistoria DESC")
+    List<RelatorioVistoriaDTO> findAllActiveVistoriasForSelection();
 }

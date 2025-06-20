@@ -9,6 +9,7 @@ import com.imveis.visita.Imoveis.repositories.UsuarioRepository;
 import com.imveis.visita.Imoveis.security.SecureJwtUtil;
 import com.imveis.visita.Imoveis.security.TokenBlacklistService;
 import com.imveis.visita.Imoveis.security.UserDetailsServiceImpl;
+import com.imveis.visita.Imoveis.service.LogAcessoService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -40,16 +41,18 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final TokenBlacklistService blacklistService;
     private final UsuarioRepository usuarioRepository;
+    private final LogAcessoService logAcessoService;
 
     public AuthController(PasswordEncoder passwordEncoder, SecureJwtUtil secureJwtUtil, UserDetailsServiceImpl userDetailsService,
                           AuthenticationManager authenticationManager, TokenBlacklistService blacklistService,
-                          UsuarioRepository usuarioRepository) {
+                          UsuarioRepository usuarioRepository, LogAcessoService logAcessoService) {
         this.passwordEncoder = passwordEncoder;
         this.secureJwtUtil = secureJwtUtil;
         this.userDetailsService = userDetailsService;
         this.blacklistService = blacklistService;
         this.usuarioRepository = usuarioRepository;
         this.authenticationManager = authenticationManager;
+        this.logAcessoService = logAcessoService;
     }
 
     @PostMapping("/login")
@@ -101,6 +104,7 @@ public class AuthController {
             String accessToken = secureJwtUtil.generateAccessToken(userDetails);
             String refreshToken = secureJwtUtil.generateRefreshToken(userDetails);
 
+            logAcessoService.registrarLog(usuario, "LOGIN");
             logger.info("✅ Usuário autenticado com sucesso: {}", loginRequest.getEmail());
 
             return ResponseEntity.ok(new LoginResponse(
