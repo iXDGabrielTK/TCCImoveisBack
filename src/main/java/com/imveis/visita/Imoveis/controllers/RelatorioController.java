@@ -1,10 +1,7 @@
 package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.dtos.*;
-import com.imveis.visita.Imoveis.service.RelatorioAgendamentoService;
-import com.imveis.visita.Imoveis.service.RelatorioPropostaService;
-import com.imveis.visita.Imoveis.service.RelatorioUsuarioService;
-import com.imveis.visita.Imoveis.service.RelatorioVistoriaService;
+import com.imveis.visita.Imoveis.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,14 +19,14 @@ public class RelatorioController {
 
     @Autowired
     private RelatorioVistoriaService relatorioVistoriaService;
-
     @Autowired
     private RelatorioUsuarioService relatorioUsuarioService;
-
     @Autowired
     private RelatorioAgendamentoService relatorioAgendamentoService;
     @Autowired
     private RelatorioPropostaService relatorioPropostaService;
+    @Autowired // Injete o novo serviço
+    private RelatorioFavoritoService relatorioFavoritoService;
 
     @PreAuthorize("hasRole('FUNCIONARIO')")
     @GetMapping("/vistorias/{idVistoria}") // Endpoint para buscar UMA vistoria detalhada por ID da vistoria
@@ -106,6 +103,28 @@ public class RelatorioController {
 
             if (ano != null) {
                 List<RelatorioPropostaDTO> relatorio = relatorioPropostaService.buscarRelatorioPropostasPorAno(ano);
+                return ResponseEntity.ok(relatorio);
+            }
+
+            return ResponseEntity.badRequest().body("Por favor, forneça o parâmetro 'mesAno' ou 'ano'.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasRole('FUNCIONARIO')")
+    @GetMapping("/favoritos")
+    public ResponseEntity<?> gerarRelatorioFavoritos(
+            @RequestParam(required = false) String mesAno,
+            @RequestParam(required = false) Integer ano) {
+        try {
+            if (mesAno != null && !mesAno.isEmpty()) {
+                List<RelatorioFavoritoDTO> relatorio = relatorioFavoritoService.buscarRelatorioFavoritos(mesAno);
+                return ResponseEntity.ok(relatorio);
+            }
+
+            if (ano != null) {
+                List<RelatorioFavoritoDTO> relatorio = relatorioFavoritoService.buscarRelatorioFavoritosPorAno(ano);
                 return ResponseEntity.ok(relatorio);
             }
 

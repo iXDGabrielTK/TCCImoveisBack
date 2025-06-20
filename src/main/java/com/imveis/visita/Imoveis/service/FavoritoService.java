@@ -82,6 +82,8 @@ public class FavoritoService {
             dto.setFotosImovel(fotosDTO);
             return dto;
         }).toList();
+
+
     }
 
 }
