@@ -8,6 +8,8 @@ import com.imveis.visita.Imoveis.repositories.ImovelRepository;
 import com.imveis.visita.Imoveis.repositories.PropostaRepository;
 import com.imveis.visita.Imoveis.repositories.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
