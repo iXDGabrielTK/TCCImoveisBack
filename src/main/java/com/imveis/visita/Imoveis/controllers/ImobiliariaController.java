@@ -2,9 +2,9 @@
 package com.imveis.visita.Imoveis.controllers;
 
 import com.imveis.visita.Imoveis.dtos.ImobiliariaRequest;
+import com.imveis.visita.Imoveis.dtos.ImobiliariaResponse;
 import com.imveis.visita.Imoveis.entities.Corretor;
 import com.imveis.visita.Imoveis.entities.Imobiliaria;
-import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.exceptions.BusinessException;
 import com.imveis.visita.Imoveis.repositories.CorretorRepository;
 import com.imveis.visita.Imoveis.repositories.ImobiliariaRepository;
@@ -63,13 +63,19 @@ public class ImobiliariaController {
 
     @GetMapping("/imobiliarias-aprovadas")
     @PreAuthorize("hasRole('CORRETOR')")
-    public List<Imobiliaria> buscarImobiliariasDoCorretorAprovadas(@AuthenticationPrincipal Usuario usuario) {
+    public ResponseEntity<List<ImobiliariaResponse>> buscarImobiliariasDoCorretorAprovadas(
+            @AuthenticationPrincipal UserDetailsImpl usuario
+    ) {
         Corretor corretor = corretorRepository.findById(usuario.getId())
                 .orElseThrow(() -> new BusinessException("Corretor não encontrado"));
 
-        return imobiliariaRepository.findByCorretorAndAprovadaTrue(corretor);
-    }
+        List<ImobiliariaResponse> dtos = imobiliariaRepository.findByCorretorAndAprovadaTrue(corretor)
+                .stream()
+                .map(i -> new ImobiliariaResponse(i.getId(), i.getNome(), i.getCnpj()))
+                .toList();
 
+        return ResponseEntity.ok(dtos);
+    }
 
     @GetMapping
     public List<Imobiliaria> listar(){

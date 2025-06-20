@@ -62,8 +62,8 @@ public class Imovel {
     private Boolean apagado = false;
 
 
-    @ManyToOne
-    @JoinColumn(name = "imobiliaria_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "imobiliaria_id", nullable = false)
     private Imobiliaria imobiliaria;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
