@@ -16,4 +16,5 @@ public interface ImobiliariaRepository extends JpaRepository<Imobiliaria, Long> 
 
     @Query("SELECT i FROM Imobiliaria i WHERE i.corretor = :corretor AND i.aprovada = true")
     List<Imobiliaria> findByCorretorAndAprovadaTrue(@Param("corretor") Corretor corretor);
+
 }

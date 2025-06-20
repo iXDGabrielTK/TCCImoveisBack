@@ -2,7 +2,6 @@ package com.imveis.visita.Imoveis.service;
 
 import com.imveis.visita.Imoveis.dtos.NotificacaoDTO;
 import com.imveis.visita.Imoveis.entities.Proposta;
-import com.imveis.visita.Imoveis.entities.Usuario;
 
 import java.util.List;
 
@@ -24,7 +23,7 @@ public interface NotificacaoService {
 
     void recusarSolicitacaoImobiliaria(Long id);
 
-    void criarNotificacaoProposta(Proposta proposta, Usuario destinatario);
+    void criarNotificacaoProposta(Proposta proposta);
 
     List<NotificacaoDTO> listarVisiveisParaUsuario(Long id);
 

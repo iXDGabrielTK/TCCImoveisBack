@@ -20,6 +20,7 @@ import java.util.Optional;
 @Service
 public class PropostaService {
 
+    private static final Logger logger = LoggerFactory.getLogger(PropostaService.class);
 
 
     private final PropostaRepository propostaRepository;
@@ -44,7 +45,11 @@ public class PropostaService {
     public PropostaResponse criarProposta(PropostaRequest request, Usuario usuario) {
         BigDecimal valorFinanciado = request.getValorImovel().subtract(request.getEntrada());
 
-        Imovel imovel = imovelRepository.findById(request.getIdImovel())
+        if (usuario.getId() == null || request.getImovelId() == null) {
+            throw new IllegalArgumentException("ID do usuário e do imóvel não podem ser nulos.");
+        }
+
+        Imovel imovel = imovelRepository.findByIdImovel(request.getImovelId())
                 .orElseThrow(() -> new BusinessException("Imóvel não encontrado"));
 
         Proposta proposta = new Proposta();
@@ -59,19 +64,8 @@ public class PropostaService {
 
         propostaRepository.save(proposta);
 
-        Map<String, List<Long>> responsaveis = buscarResponsaveisDoImovel(imovel.getIdImovel());
-
-        responsaveis.getOrDefault("corretores", List.of()).forEach(id ->
-                usuarioRepository.findById(id).ifPresent(destinatario ->
-                        notificacaoService.criarNotificacaoProposta(proposta, destinatario)
-                )
-        );
-
-        responsaveis.getOrDefault("imobiliarias", List.of()).forEach(id ->
-                usuarioRepository.findById(id).ifPresent(destinatario ->
-                        notificacaoService.criarNotificacaoProposta(proposta, destinatario)
-                )
-        );
+        logger.info("Proposta criada com sucesso: {}", proposta);
+        notificacaoService.criarNotificacaoProposta(proposta);
 
         return new PropostaResponse(proposta);
     }

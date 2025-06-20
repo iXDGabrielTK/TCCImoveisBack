@@ -97,10 +97,4 @@ public class ImovelService {
         imovelRepository.deleteById(id);
     }
 
-    public Page<ImovelDTO> findByImobiliariaPaginado(Long imobiliariaId, int page, int size) {
-        PageRequest pageable = PageRequest.of(page, size, Sort.by("idImovel").descending());
-        Page<Imovel> imoveisPage = imovelRepository.findByImobiliariaId(imobiliariaId, pageable);
-        return imoveisPage.map(ImovelDTO::new);
-    }
-
 }

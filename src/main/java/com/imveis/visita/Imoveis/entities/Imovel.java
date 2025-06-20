@@ -61,7 +61,12 @@ public class Imovel {
     @Column(name = "APAGADO", nullable = false)
     private Boolean apagado = false;
 
-   @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+
+    @ManyToOne
+    @JoinColumn(name = "imobiliaria_id")
+    private Imobiliaria imobiliaria;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "imovel_corretor",
             joinColumns = @JoinColumn(name = "id_imovel"),

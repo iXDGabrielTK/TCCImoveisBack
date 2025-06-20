@@ -1,9 +1,6 @@
 package com.imveis.visita.Imoveis.service;
 
-import com.imveis.visita.Imoveis.dtos.NotificacaoCorretorDTO;
-import com.imveis.visita.Imoveis.dtos.NotificacaoDTO;
-import com.imveis.visita.Imoveis.dtos.NotificacaoImobiliariaDTO;
-import com.imveis.visita.Imoveis.dtos.NotificacaoPropostaDTO;
+import com.imveis.visita.Imoveis.dtos.*;
 import com.imveis.visita.Imoveis.entities.*;
 import com.imveis.visita.Imoveis.exceptions.BusinessException;
 import com.imveis.visita.Imoveis.repositories.CorretorRepository;
@@ -74,12 +71,16 @@ public class NotificacaoServiceImpl implements NotificacaoService {
     }
 
     @Override
-    public void criarNotificacaoProposta(Proposta proposta, Usuario destinatario) {
+    public void criarNotificacaoProposta(Proposta proposta) {
+        Imovel imovel = proposta.getImovel();
+        Corretor corretor = imovel.getImobiliaria().getCorretor();
         NotificacaoProposta notificacao = new NotificacaoProposta();
         notificacao.setProposta(proposta);
-        notificacao.setDestinatario(destinatario);
-        notificacao.setDataCriacao(LocalDateTime.now());
+        notificacao.setDestinatario(corretor);
         notificacao.setLida(false);
+        notificacao.setArquivada(false);
+        notificacao.setDataCriacao(LocalDateTime.now());
+        notificacao.setVisivelParaTodosFuncionarios(false);
         notificacaoRepository.save(notificacao);
     }
 
@@ -118,7 +119,6 @@ public class NotificacaoServiceImpl implements NotificacaoService {
                 .map(this::toDTO)
                 .toList();
     }
-
 
     @Override
     public List<NotificacaoDTO> listarSomentePrivadas(Long usuarioId) {
@@ -196,23 +196,35 @@ public class NotificacaoServiceImpl implements NotificacaoService {
             dto.setNomeCorretor(ni.getNomeCorretor());
             dto.setNomeImobiliaria(ni.getNomeImobiliaria());
             dto.setCnpj(ni.getCnpj());
-            dto.setRespondida(ni.getRespondida());
             dto.setArquivada(ni.isArquivada());
             return dto;
         }
         if (n instanceof NotificacaoProposta np) {
-            Proposta p = np.getProposta();
+            NotificacaoProposta npFetched = notificacaoRepository.findNotificacaoPropostaWithAll(np.getId());
+            Proposta p = npFetched.getProposta();
             NotificacaoPropostaDTO dto = new NotificacaoPropostaDTO();
-            dto.setId(np.getId());
-            dto.setLida(np.isLida());
-            dto.setResumo(np.getResumo());
+            dto.setId(npFetched.getId());
+            dto.setLida(npFetched.isLida());
+            dto.setResumo(npFetched.getResumo());
             dto.setTipo("Proposta");
-            dto.setDataCriacao(np.getDataCriacao());
+            dto.setDataCriacao(npFetched.getDataCriacao());
             dto.setIdProposta(p.getId());
             dto.setIdImovel(p.getImovel().getIdImovel());
             dto.setValorProposta(p.getValorFinanciamento());
             dto.setNomeProponente(p.getUsuario().getNome());
-            dto.setArquivada(np.isArquivada());
+            dto.setEmailProponente(p.getUsuario().getEmail());
+            dto.setTelefoneProponente(p.getUsuario().getTelefone());
+            dto.setArquivada(npFetched.isArquivada());
+            return dto;
+        }
+        if (n instanceof NotificacaoRespostaSolicitacao nr) {
+            NotificacaoRespostaSolicitacaoDTO dto = new NotificacaoRespostaSolicitacaoDTO();
+            dto.setId(nr.getId());
+            dto.setLida(nr.isLida());
+            dto.setResumo(nr.getResumo());
+            dto.setTipo("RespostaSolicitacao");
+            dto.setDataCriacao(nr.getDataCriacao());
+            dto.setArquivada(nr.isArquivada());
             return dto;
         }
 

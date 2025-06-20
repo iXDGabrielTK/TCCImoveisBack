@@ -16,14 +16,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
-import java.io.IOException; // Adicionar import
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import software.amazon.awssdk.services.s3.model.S3Exception; // Adicionar import
 
 @SuppressWarnings("CallToPrintStackTrace")
 @RestController
@@ -93,11 +93,16 @@ public class ImovelController {
             imovel.setHistoricoManutencao(imovelRequest.getHistoricoManutencao());
             imovel.setEnderecoImovel(imovelRequest.getEnderecoImovel());
 
+            if (imovelRequest.getImobiliariaId() != null) {
+                Imobiliaria imobiliaria = imobiliariaRepository.findById(imovelRequest.getImobiliariaId())
+                        .orElseThrow(() -> new IllegalArgumentException("Imobiliária não encontrada com o ID fornecido."));
+                imovel.setImobiliaria(imobiliaria);
+            }
+
             imovel = imovelService.save(imovel);
 
             processAndAddPhotos(imovel, fotos);
 
-            // 3. Lógica para corretores e imobiliárias
             if (imovelRequest.getIdsCorretores() != null) {
                 Set<Corretor> corretores = new HashSet<>(corretorRepository.findAllById(imovelRequest.getIdsCorretores()));
                 imovel.setCorretores(corretores);
@@ -111,7 +116,7 @@ public class ImovelController {
             imovel = imovelService.save(imovel);
 
             return new ResponseEntity<>(imovel, HttpStatus.CREATED);
-        } catch (Exception e) { // Captura as exceções de IO e S3 também
+        } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

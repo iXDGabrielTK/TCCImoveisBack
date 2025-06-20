@@ -36,7 +36,7 @@ public interface ImovelRepository extends JpaRepository<Imovel, Long> {
     List<Imovel> findAllByIdInWithFotosAndEndereco(@Param("ids") List<Long> ids);
 
 
-    @EntityGraph(attributePaths = {"corretores", "imobiliarias"})
+    @EntityGraph(attributePaths = {"corretores", "imobiliarias", "imobiliaria"})
     Optional<Imovel> findByIdImovel(Long idImovel);
 
     @EntityGraph(attributePaths = {"fotosImovel"})

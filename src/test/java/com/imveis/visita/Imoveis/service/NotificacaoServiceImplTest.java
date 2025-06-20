@@ -43,7 +43,7 @@ class NotificacaoServiceImplTest {
         ArgumentCaptor<NotificacaoProposta> captor = ArgumentCaptor.forClass(NotificacaoProposta.class);
 
         // Act
-        notificacaoService.criarNotificacaoProposta(propostaMock, usuarioMock);
+        notificacaoService.criarNotificacaoProposta(propostaMock);
 
         // Assert
         verify(notificacaoRepository).save(captor.capture());

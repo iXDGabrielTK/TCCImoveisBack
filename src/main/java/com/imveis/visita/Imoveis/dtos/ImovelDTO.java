@@ -25,6 +25,8 @@ public class ImovelDTO {
     private String historicoManutencao;
     private List<String> nomesCorretores;
     private List<String> nomesImobiliarias;
+    private Long imobiliariaId;
+    private String nomeImobiliaria;
 
     public ImovelDTO(Imovel imovel) {
         this.idImovel = imovel.getIdImovel();
