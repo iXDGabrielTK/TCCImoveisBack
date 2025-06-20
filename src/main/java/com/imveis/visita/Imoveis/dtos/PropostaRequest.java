@@ -11,4 +11,5 @@ public class PropostaRequest {
     private BigDecimal entrada;
     private BigDecimal valorImovel;
     private Long idImovel;
+    private Integer prazo;
 }

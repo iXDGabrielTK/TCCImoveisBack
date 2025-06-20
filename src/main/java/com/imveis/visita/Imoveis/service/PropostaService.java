@@ -1,17 +1,13 @@
 package com.imveis.visita.Imoveis.service;
 
-import com.imveis.visita.Imoveis.controllers.AuthController;
 import com.imveis.visita.Imoveis.dtos.PropostaRequest;
 import com.imveis.visita.Imoveis.dtos.PropostaResponse;
 import com.imveis.visita.Imoveis.entities.*;
 import com.imveis.visita.Imoveis.exceptions.BusinessException;
 import com.imveis.visita.Imoveis.repositories.ImovelRepository;
-import com.imveis.visita.Imoveis.repositories.NotificacaoPropostaRepository;
 import com.imveis.visita.Imoveis.repositories.PropostaRepository;
 import com.imveis.visita.Imoveis.repositories.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,7 +20,6 @@ import java.util.Optional;
 @Service
 public class PropostaService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
 
     private final PropostaRepository propostaRepository;
@@ -35,7 +30,7 @@ public class PropostaService {
 
     private final NotificacaoService notificacaoService;
 
-    public PropostaService(PropostaRepository propostaRepository, UsuarioRepository usuarioRepository, ImovelRepository imovelRepository, NotificacaoPropostaRepository notificacaoPropostaRepository, NotificacaoService notificacaoService) {
+    public PropostaService(PropostaRepository propostaRepository, UsuarioRepository usuarioRepository, ImovelRepository imovelRepository, NotificacaoService notificacaoService) {
         this.propostaRepository = propostaRepository;
         this.usuarioRepository = usuarioRepository;
         this.imovelRepository = imovelRepository;
@@ -60,10 +55,10 @@ public class PropostaService {
         proposta.setValorImovel(request.getValorImovel());
         proposta.setValorFinanciamento(valorFinanciado);
         proposta.setDataProposta(LocalDate.now());
+        proposta.setPrazo(request.getPrazo());
 
         propostaRepository.save(proposta);
 
-        // 🔔 Notifica todos os responsáveis (corretores e imobiliárias)
         Map<String, List<Long>> responsaveis = buscarResponsaveisDoImovel(imovel.getIdImovel());
 
         responsaveis.getOrDefault("corretores", List.of()).forEach(id ->

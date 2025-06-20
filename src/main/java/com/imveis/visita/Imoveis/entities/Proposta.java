@@ -36,4 +36,7 @@ public class Proposta {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "imovel_id")
     private Imovel imovel;
+
+    @Column(name = "prazo")
+    private Integer prazo;
 }

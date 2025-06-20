@@ -1,10 +1,8 @@
 package com.imveis.visita.Imoveis.controllers;
 
-import com.imveis.visita.Imoveis.dtos.RelatorioAgendamentoDTO;
-import com.imveis.visita.Imoveis.dtos.RelatorioUsuarioDTO;
-import com.imveis.visita.Imoveis.dtos.RelatorioVistoriaDTO;
-import com.imveis.visita.Imoveis.dtos.VistoriaDTO;
+import com.imveis.visita.Imoveis.dtos.*;
 import com.imveis.visita.Imoveis.service.RelatorioAgendamentoService;
+import com.imveis.visita.Imoveis.service.RelatorioPropostaService;
 import com.imveis.visita.Imoveis.service.RelatorioUsuarioService;
 import com.imveis.visita.Imoveis.service.RelatorioVistoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +28,8 @@ public class RelatorioController {
 
     @Autowired
     private RelatorioAgendamentoService relatorioAgendamentoService;
+    @Autowired
+    private RelatorioPropostaService relatorioPropostaService;
 
     @PreAuthorize("hasRole('FUNCIONARIO')")
     @GetMapping("/vistorias/{idVistoria}") // Endpoint para buscar UMA vistoria detalhada por ID da vistoria
@@ -49,7 +49,6 @@ public class RelatorioController {
         return ResponseEntity.ok(vistorias);
     }
 
-    // Mantenha os outros endpoints que já existiam, se ainda forem necessários
     @PreAuthorize("hasRole('FUNCIONARIO')")
     @GetMapping("/usuarios")
     public ResponseEntity<?> gerarRelatorioUsuarios(
@@ -85,6 +84,28 @@ public class RelatorioController {
 
             if (ano != null) {
                 List<RelatorioAgendamentoDTO> relatorio = relatorioAgendamentoService.buscarRelatorioAgendamentosPorAno(ano);
+                return ResponseEntity.ok(relatorio);
+            }
+
+            return ResponseEntity.badRequest().body("Por favor, forneça o parâmetro 'mesAno' ou 'ano'.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasRole('FUNCIONARIO')")
+    @GetMapping("/propostas") // Novo endpoint para relatório de propostas
+    public ResponseEntity<?> gerarRelatorioPropostas(
+            @RequestParam(required = false) String mesAno,
+            @RequestParam(required = false) Integer ano) {
+        try {
+            if (mesAno != null) {
+                List<RelatorioPropostaDTO> relatorio = relatorioPropostaService.buscarRelatorioPropostas(mesAno);
+                return ResponseEntity.ok(relatorio);
+            }
+
+            if (ano != null) {
+                List<RelatorioPropostaDTO> relatorio = relatorioPropostaService.buscarRelatorioPropostasPorAno(ano);
                 return ResponseEntity.ok(relatorio);
             }
 
