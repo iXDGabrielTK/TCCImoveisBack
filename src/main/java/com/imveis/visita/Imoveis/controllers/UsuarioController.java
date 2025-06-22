@@ -7,7 +7,6 @@ import com.imveis.visita.Imoveis.entities.Funcionario;
 import com.imveis.visita.Imoveis.entities.Usuario;
 import com.imveis.visita.Imoveis.entities.Visitante;
 import com.imveis.visita.Imoveis.service.AuthService;
-import com.imveis.visita.Imoveis.service.FuncionarioService;
 import com.imveis.visita.Imoveis.service.UsuarioService;
 import com.imveis.visita.Imoveis.service.VisitanteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,18 +24,15 @@ import java.util.stream.Collectors;
 public class UsuarioController {
 
     private final VisitanteService visitanteService;
-    private final FuncionarioService funcionarioService;
     private final UsuarioService usuarioService;
     private final AuthService authService;
 
     @Autowired
     public UsuarioController(
             VisitanteService visitanteService,
-            FuncionarioService funcionarioService,
             UsuarioService usuarioService, AuthService authService
     ) {
         this.visitanteService = visitanteService;
-        this.funcionarioService = funcionarioService;
         this.usuarioService = usuarioService;
         this.authService = authService;
     }
@@ -66,34 +62,6 @@ public class UsuarioController {
                         null
                 );
                 return ResponseEntity.ok(responseDTO);
-
-            } else if ("funcionario".equalsIgnoreCase(tipo)) {
-
-                if (dto.getCpf() == null || dto.getCpf().isBlank()) {
-                    return ResponseEntity.badRequest().body("CPF é obrigatório para funcionários.");
-                }
-
-                Funcionario funcionario = new Funcionario();
-                funcionario.setNome(dto.getNome());
-                funcionario.setEmail(dto.getEmail());
-                funcionario.setTelefone(dto.getTelefone());
-                funcionario.setSenha(dto.getSenha());
-                funcionario.setCpf(dto.getCpf());
-                authService.encodePassword(funcionario);
-                funcionario = funcionarioService.save(funcionario);
-                authService.atribuirRoleParaUsuario(funcionario, "FUNCIONARIO");
-
-                UsuarioResponseDTO responseDTO = new UsuarioResponseDTO(
-                        funcionario.getId(),
-                        funcionario.getNome(),
-                        funcionario.getEmail(),
-                        funcionario.getTelefone(),
-                        "funcionario",
-                        funcionario.getCpf(),
-                        null
-                );
-                return ResponseEntity.ok(responseDTO);
-
             } else {
                 return ResponseEntity.badRequest().body("Tipo de usuário inválido.");
             }
