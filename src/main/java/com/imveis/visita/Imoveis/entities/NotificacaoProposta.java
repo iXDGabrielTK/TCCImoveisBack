@@ -19,11 +19,15 @@ public class NotificacaoProposta extends Notificacao {
 
     @Override
     public String getResumo() {
-        return proposta.getUsuario().getNome()
+        return proposta.getUsuario().getEmail()
                 + " enviou uma proposta de R$ "
                 + proposta.getValorFinanciamento()
                 + " para o imóvel ID "
-                + proposta.getImovel().getIdImovel();
+                + proposta.getImovel().getEnderecoImovel().getCidade()
+                + ", "
+                + proposta.getImovel().getEnderecoImovel().getRua()
+                + " - Nº "
+                + proposta.getImovel().getEnderecoImovel().getNumero();
     }
 
 }

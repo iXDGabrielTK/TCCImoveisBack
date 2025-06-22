@@ -72,6 +72,11 @@ public class NotificacaoController {
         return ResponseEntity.ok(notificacoes);
     }
 
+    @PatchMapping("/{id}/arquivar")
+    public ResponseEntity<Void> arquivar(@PathVariable Long id) {
+        notificacaoService.arquivar(id);
+        return ResponseEntity.noContent().build();
+    }
 
     @PatchMapping("/{id}/lida")
     public ResponseEntity<Void> marcarComoLida(@PathVariable Long id) {
