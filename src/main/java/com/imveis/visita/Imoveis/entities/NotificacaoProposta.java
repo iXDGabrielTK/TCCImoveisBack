@@ -22,7 +22,7 @@ public class NotificacaoProposta extends Notificacao {
         return proposta.getUsuario().getEmail()
                 + " enviou uma proposta de R$ "
                 + proposta.getValorFinanciamento()
-                + " para o imóvel ID "
+                + " para o imóvel de "
                 + proposta.getImovel().getEnderecoImovel().getCidade()
                 + ", "
                 + proposta.getImovel().getEnderecoImovel().getRua()
