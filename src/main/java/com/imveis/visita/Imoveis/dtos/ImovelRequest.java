@@ -1,6 +1,7 @@
 package com.imveis.visita.Imoveis.dtos;
 
 import com.imveis.visita.Imoveis.entities.Endereco;
+import jakarta.annotation.Nullable;
 import lombok.Data;
 
 import java.util.List;
@@ -15,7 +16,6 @@ public class ImovelRequest {
     private String historicoManutencao;
     private List<FotoImovelDTO> fotosImovel;
     private Endereco enderecoImovel;
-    private List<Long> idsCorretores;
-    private List<Long> idsImobiliarias;
+    @Nullable
     private Long imobiliariaId;
 }

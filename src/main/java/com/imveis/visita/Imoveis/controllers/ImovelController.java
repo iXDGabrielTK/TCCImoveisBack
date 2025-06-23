@@ -3,9 +3,11 @@ package com.imveis.visita.Imoveis.controllers;
 import com.imveis.visita.Imoveis.dtos.FotoImovelDTO;
 import com.imveis.visita.Imoveis.dtos.ImovelDTO;
 import com.imveis.visita.Imoveis.dtos.ImovelRequest;
-import com.imveis.visita.Imoveis.entities.*;
+import com.imveis.visita.Imoveis.entities.Endereco;
+import com.imveis.visita.Imoveis.entities.FotoImovel;
+import com.imveis.visita.Imoveis.entities.Imobiliaria;
+import com.imveis.visita.Imoveis.entities.Imovel;
 import com.imveis.visita.Imoveis.infra.s3.S3StorageService;
-import com.imveis.visita.Imoveis.repositories.CorretorRepository;
 import com.imveis.visita.Imoveis.repositories.ImobiliariaRepository;
 import com.imveis.visita.Imoveis.service.EnderecoService;
 import com.imveis.visita.Imoveis.service.ImovelService;
@@ -19,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -32,18 +33,15 @@ public class ImovelController {
 
     private final ImovelService imovelService;
     private final EnderecoService enderecoService;
-    private final CorretorRepository corretorRepository;
     private final ImobiliariaRepository imobiliariaRepository;
     private final S3StorageService s3StorageService;
 
     public ImovelController(ImovelService imovelService,
                             EnderecoService enderecoService,
-                            CorretorRepository corretorRepository,
                             ImobiliariaRepository imobiliariaRepository,
                             S3StorageService s3StorageService) {
         this.imovelService = imovelService;
         this.enderecoService = enderecoService;
-        this.corretorRepository = corretorRepository;
         this.imobiliariaRepository = imobiliariaRepository;
         this.s3StorageService = s3StorageService; // Atribuir
     }
@@ -103,16 +101,6 @@ public class ImovelController {
 
             processAndAddPhotos(imovel, fotos);
 
-            if (imovelRequest.getIdsCorretores() != null) {
-                Set<Corretor> corretores = new HashSet<>(corretorRepository.findAllById(imovelRequest.getIdsCorretores()));
-                imovel.setCorretores(corretores);
-            }
-
-            if (imovelRequest.getIdsImobiliarias() != null) {
-                List<Imobiliaria> imobiliarias = imobiliariaRepository.findAllById(imovelRequest.getIdsImobiliarias());
-                imovel.setImobiliarias(imobiliarias);
-            }
-
             imovel = imovelService.save(imovel);
 
             return new ResponseEntity<>(imovel, HttpStatus.CREATED);
@@ -134,7 +122,6 @@ public class ImovelController {
             @PathVariable Long id,
             @RequestPart("dados") ImovelRequest imovelRequest,
             @RequestPart(value = "fotos", required = false) List<MultipartFile> novasFotos) {
-
         try {
             Optional<Imovel> imovelOptional = imovelService.findById(id);
             if (imovelOptional.isEmpty()) {
@@ -142,6 +129,8 @@ public class ImovelController {
             }
 
             Imovel imovel = imovelOptional.get();
+
+            Imobiliaria imobiliaria = imovel.getImobiliaria();
 
             imovel.setTipoImovel(imovelRequest.getTipoImovel());
             imovel.setDescricaoImovel(imovelRequest.getDescricaoImovel());
@@ -169,9 +158,12 @@ public class ImovelController {
             imovel.getFotosImovel().removeIf(foto -> foto.getIdFotosImovel() != null && !idsFotosParaManter.contains(foto.getIdFotosImovel()));
 
             processAndAddPhotos(imovel, novasFotos);
+
+            imovel.setImobiliaria(imobiliaria);
+
             Imovel updatedImovel = imovelService.save(imovel);
 
-            return ResponseEntity.ok(updatedImovel);
+            return ResponseEntity.ok(new ImovelDTO(updatedImovel));
 
         } catch (Exception e) {
             e.printStackTrace();
