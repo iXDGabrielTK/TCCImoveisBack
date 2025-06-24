@@ -11,11 +11,11 @@ import com.imveis.visita.Imoveis.infra.s3.S3StorageService;
 import com.imveis.visita.Imoveis.repositories.ImobiliariaRepository;
 import com.imveis.visita.Imoveis.service.EnderecoService;
 import com.imveis.visita.Imoveis.service.ImovelService;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.S3Exception;
@@ -44,18 +44,6 @@ public class ImovelController {
         this.enderecoService = enderecoService;
         this.imobiliariaRepository = imobiliariaRepository;
         this.s3StorageService = s3StorageService; // Atribuir
-    }
-
-    private static @NotNull Endereco getEndereco(Imovel imovel, Endereco novoEndereco) {
-        Endereco enderecoExistente = imovel.getEnderecoImovel();
-        enderecoExistente.setRua(novoEndereco.getRua());
-        enderecoExistente.setNumero(novoEndereco.getNumero());
-        enderecoExistente.setComplemento(novoEndereco.getComplemento());
-        enderecoExistente.setBairro(novoEndereco.getBairro());
-        enderecoExistente.setCidade(novoEndereco.getCidade());
-        enderecoExistente.setEstado(novoEndereco.getEstado());
-        enderecoExistente.setCep(novoEndereco.getCep());
-        return enderecoExistente;
     }
 
     @GetMapping("/{id}")
@@ -118,6 +106,7 @@ public class ImovelController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Transactional
     public ResponseEntity<?> updateImovel(
             @PathVariable Long id,
             @RequestPart("dados") ImovelRequest imovelRequest,
@@ -141,20 +130,33 @@ public class ImovelController {
 
             Endereco novoEndereco = imovelRequest.getEnderecoImovel();
             if (novoEndereco != null) {
-                if (imovel.getEnderecoImovel() != null) {
-                    Endereco enderecoExistente = getEndereco(imovel, novoEndereco);
+                if (novoEndereco.getIdEndereco() != null) {
+                    Endereco enderecoExistente = enderecoService.findById(novoEndereco.getIdEndereco())
+                            .orElseThrow(() -> new IllegalArgumentException("Endereço existente não encontrado."));
+                    enderecoExistente.setRua(novoEndereco.getRua());
+                    enderecoExistente.setNumero(novoEndereco.getNumero());
+                    enderecoExistente.setComplemento(novoEndereco.getComplemento());
+                    enderecoExistente.setBairro(novoEndereco.getBairro());
+                    enderecoExistente.setCidade(novoEndereco.getCidade());
+                    enderecoExistente.setEstado(novoEndereco.getEstado());
+                    enderecoExistente.setCep(novoEndereco.getCep());
                     enderecoService.save(enderecoExistente);
+                    imovel.setEnderecoImovel(enderecoExistente);
                 } else {
                     Endereco enderecoSalvo = enderecoService.save(novoEndereco);
                     imovel.setEnderecoImovel(enderecoSalvo);
                 }
             }
 
+            // Lógica de remoção de fotos existentes
             Set<Long> idsFotosParaManter = imovelRequest.getFotosImovel().stream()
                     .map(FotoImovelDTO::getId)
-                    .filter(java.util.Objects::nonNull)
+                    .filter(java.util.Objects::nonNull) // Garante que IDs nulos não causem problemas (já estava!)
                     .collect(Collectors.toSet());
 
+// Remova as fotos da coleção do imóvel que NÃO estão na lista 'idsFotosParaManter'
+// O orphanRemoval=true na entidade FotoImovel vai lidar com a exclusão no banco
+// A condição 'foto.getIdFotosImovel() != null' é crucial aqui para evitar NPE em fotos sem ID
             imovel.getFotosImovel().removeIf(foto -> foto.getIdFotosImovel() != null && !idsFotosParaManter.contains(foto.getIdFotosImovel()));
 
             processAndAddPhotos(imovel, novasFotos);

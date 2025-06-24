@@ -22,4 +22,5 @@ public class RelatorioPropostaDTO {
     private Integer prazo;
     private LocalDate dataProposta;
     private String statusProposta;
+    private Boolean notificacaoLida;
 }
