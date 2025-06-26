@@ -41,7 +41,7 @@ public class Imobiliaria {
     @JoinColumn(name = "corretor_id", nullable = false)
     private Corretor corretor;
 
-    @ManyToMany(mappedBy = "imobiliarias")
+    @OneToMany(mappedBy = "imobiliaria")
     @JsonBackReference(value = "imovel-imobiliaria")
     private List<Imovel> imoveis;
 

@@ -1,6 +1,5 @@
 package com.imveis.visita.Imoveis.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,7 +14,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = {"fotosImovel", "corretores", "imobiliarias", "vistorias", "agendamentos"})
+@EqualsAndHashCode(exclude = {"fotosImovel", "corretores", "vistorias", "agendamentos"})
 public class Imovel {
 
     @Column(name = "id")
@@ -72,17 +71,6 @@ public class Imovel {
             joinColumns = @JoinColumn(name = "id_imovel"),
             inverseJoinColumns = @JoinColumn(name = "id_corretor")
     )
-   @Builder.Default
-   private Set<Corretor> corretores = new HashSet<>();
-
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JsonManagedReference(value = "imovel-imobiliaria")
-    @JoinTable(
-            name = "imovel_imobiliaria",
-            joinColumns = @JoinColumn(name = "id_imovel"),
-            inverseJoinColumns = @JoinColumn(name = "id_imobiliaria")
-    )
     @Builder.Default
-    private List<Imobiliaria> imobiliarias = new ArrayList<>();
-
+    private Set<Corretor> corretores = new HashSet<>();
 }

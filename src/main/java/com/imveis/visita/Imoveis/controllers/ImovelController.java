@@ -65,7 +65,8 @@ public class ImovelController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Imovel> criarImovel(
+    @Transactional
+    public ResponseEntity<ImovelDTO> criarImovel(
             @RequestPart("dados") ImovelRequest imovelRequest,
             @RequestPart(value = "fotos", required = false) List<MultipartFile> fotos) {
 
@@ -79,10 +80,11 @@ public class ImovelController {
             imovel.setHistoricoManutencao(imovelRequest.getHistoricoManutencao());
             imovel.setEnderecoImovel(imovelRequest.getEnderecoImovel());
 
+            Imobiliaria selectedImobiliaria = null;
             if (imovelRequest.getImobiliariaId() != null) {
-                Imobiliaria imobiliaria = imobiliariaRepository.findById(imovelRequest.getImobiliariaId())
+                selectedImobiliaria = imobiliariaRepository.findById(imovelRequest.getImobiliariaId())
                         .orElseThrow(() -> new IllegalArgumentException("Imobiliária não encontrada com o ID fornecido."));
-                imovel.setImobiliaria(imobiliaria);
+                imovel.setImobiliaria(selectedImobiliaria);
             }
 
             imovel = imovelService.save(imovel);
@@ -91,7 +93,8 @@ public class ImovelController {
 
             imovel = imovelService.save(imovel);
 
-            return new ResponseEntity<>(imovel, HttpStatus.CREATED);
+            return new ResponseEntity<>(new ImovelDTO(imovel), HttpStatus.CREATED);
+
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

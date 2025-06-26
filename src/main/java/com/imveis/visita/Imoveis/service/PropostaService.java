@@ -1,3 +1,4 @@
+// PropostaService.java
 package com.imveis.visita.Imoveis.service;
 
 import com.imveis.visita.Imoveis.dtos.PropostaRequest;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,10 +85,12 @@ public class PropostaService {
                 .map(id -> Long.valueOf(id.longValue()))
                 .toList();
 
-        List<Long> idsImobiliarias = imovel.getImobiliarias()
-                .stream()
-                .map(Imobiliaria::getId)
-                .toList();
+        List<Long> idsImobiliarias;
+        if (imovel.getImobiliaria() != null) {
+            idsImobiliarias = Collections.singletonList(imovel.getImobiliaria().getId());
+        } else {
+            idsImobiliarias = Collections.emptyList();
+        }
 
         Map<String, List<Long>> resultado = new HashMap<>();
         resultado.put("corretores", idsCorretores);
@@ -94,6 +98,5 @@ public class PropostaService {
 
         return resultado;
     }
-
 
 }

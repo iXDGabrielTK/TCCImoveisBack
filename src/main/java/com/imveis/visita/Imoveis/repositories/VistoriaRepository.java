@@ -14,20 +14,30 @@ import java.util.Optional;
 public interface VistoriaRepository extends JpaRepository<Vistoria, Long> {
 
 
-    @Query("SELECT DISTINCT v FROM Vistoria v " +
-            "JOIN FETCH v.imovel i " +
-            "LEFT JOIN FETCH i.fotosImovel " +
-            "LEFT JOIN FETCH v.ambientes a " +
-            "LEFT JOIN FETCH a.fotos " +
-            "WHERE v.apagado = false")
+    @Query("""
+            SELECT DISTINCT v FROM Vistoria v
+            JOIN FETCH v.imovel i
+            LEFT JOIN FETCH i.fotosImovel
+            LEFT JOIN FETCH i.enderecoImovel
+            LEFT JOIN FETCH i.imobiliaria
+            LEFT JOIN FETCH i.corretores
+            LEFT JOIN FETCH v.ambientes a
+            LEFT JOIN FETCH a.fotos
+            WHERE v.apagado = false
+            """)
     List<Vistoria> findAllActiveWithAllDetails();
 
-    @Query("SELECT DISTINCT v FROM Vistoria v " +
-            "JOIN FETCH v.imovel i " +
-            "LEFT JOIN FETCH i.fotosImovel " +
-            "LEFT JOIN FETCH v.ambientes a " +
-            "LEFT JOIN FETCH a.fotos " +
-            "WHERE v.idVistoria = :id AND v.apagado = false")
+    @Query("""
+            SELECT DISTINCT v FROM Vistoria v
+            JOIN FETCH v.imovel i
+            LEFT JOIN FETCH i.fotosImovel
+            LEFT JOIN FETCH i.enderecoImovel
+            LEFT JOIN FETCH i.imobiliaria
+            LEFT JOIN FETCH i.corretores
+            LEFT JOIN FETCH v.ambientes a
+            LEFT JOIN FETCH a.fotos
+            WHERE v.idVistoria = :id AND v.apagado = false
+            """)
     Optional<Vistoria> findByIdActiveWithAllDetails(@Param("id") Long id);
 
     @Query("SELECT new com.imveis.visita.Imoveis.dtos.RelatorioVistoriaDTO(" +

@@ -19,33 +19,44 @@ public interface ImovelRepository extends JpaRepository<Imovel, Long> {
 
     Optional<Imovel> findByEnderecoImovel_RuaAndEnderecoImovel_NumeroAndEnderecoImovel_Bairro(String rua, String numero, String bairro);
 
-    // Etapa 1: Buscar apenas os IDs com paginação real
     @Query("SELECT i.idImovel FROM Imovel i WHERE i.apagado = false")
     Page<Long> findAllIdsPaginado(Pageable pageable);
 
     @Query("SELECT i.idImovel FROM Imovel i WHERE i.apagado = false AND i.precoImovel <= :valorMax")
     Page<Long> findDisponiveisIdsPorValorMax(@Param("valorMax") BigDecimal valorMax, Pageable pageable);
 
-    // Etapa 2: Buscar imóveis completos com fotos e endereço
     @Query("""
             SELECT DISTINCT i FROM Imovel i
             LEFT JOIN FETCH i.fotosImovel
             LEFT JOIN FETCH i.enderecoImovel
+            LEFT JOIN FETCH i.imobiliaria
             WHERE i.idImovel IN :ids
             """)
     List<Imovel> findAllByIdInWithFotosAndEndereco(@Param("ids") List<Long> ids);
 
-    @EntityGraph(attributePaths = {"corretores", "imobiliarias", "imobiliaria"})
+    @EntityGraph(attributePaths = {"corretores", "imobiliaria"})
     Optional<Imovel> findByIdImovel(Long idImovel);
 
     @EntityGraph(attributePaths = {"fotosImovel"})
     @Query("SELECT i FROM Imovel i WHERE i.idImovel = :id AND i.apagado = false")
     Optional<Imovel> findByIdActive(@Param("id") Long id);
 
-    @Query("SELECT i FROM Imovel i LEFT JOIN FETCH i.enderecoImovel LEFT JOIN FETCH i.fotosImovel WHERE i.idImovel = :id AND i.apagado = false")
+    @Query("""
+            SELECT i FROM Imovel i
+            LEFT JOIN FETCH i.enderecoImovel
+            LEFT JOIN FETCH i.fotosImovel
+            LEFT JOIN FETCH i.imobiliaria
+            WHERE i.idImovel = :id AND i.apagado = false
+            """)
     Optional<Imovel> findByIdWithEnderecoAndFotos(@Param("id") Long id);
 
-    @Query("SELECT i FROM Imovel i JOIN i.imobiliarias imob WHERE imob.id = :imobiliariaId AND i.apagado = false")
+    @Query("""
+            SELECT DISTINCT i FROM Imovel i
+            LEFT JOIN FETCH i.fotosImovel
+            LEFT JOIN FETCH i.imobiliaria
+            WHERE i.imobiliaria.id = :imobiliariaId AND i.apagado = false
+            """)
     Page<Imovel> findByImobiliariaId(@Param("imobiliariaId") Long imobiliariaId, Pageable pageable);
+
 
 }

@@ -1,7 +1,5 @@
-// ImovelDTO.java (ATUALIZADO)
 package com.imveis.visita.Imoveis.dtos;
 
-import com.imveis.visita.Imoveis.entities.Imobiliaria;
 import com.imveis.visita.Imoveis.entities.Imovel;
 import com.imveis.visita.Imoveis.entities.Usuario;
 import lombok.Data;
@@ -18,13 +16,12 @@ public class ImovelDTO {
     private String tipoImovel;
     private String descricaoImovel;
     private Boolean statusImovel;
-    private Float tamanhoImovel; // Considere Double
-    private Float precoImovel;   // Considere Double
-    private List<FotoImovelDTO> fotosImovel; // <--- AGORA É LISTA DE FOTOIMOVELDTO
+    private Float tamanhoImovel;
+    private Float precoImovel;
+    private List<FotoImovelDTO> fotosImovel;
     private EnderecoDTO enderecoImovel;
     private String historicoManutencao;
     private List<String> nomesCorretores;
-    private List<String> nomesImobiliarias;
     private Long imobiliariaId;
     private String nomeImobiliaria;
 
@@ -41,8 +38,7 @@ public class ImovelDTO {
                 : null;
         this.fotosImovel = imovel.getFotosImovel() != null
                 ? imovel.getFotosImovel().stream()
-                // Mapeia para FotoImovelDTO, garantindo que o 'id' seja o idFotosImovel da entidade
-                .map(foto -> new FotoImovelDTO(foto.getIdFotosImovel(), foto.getUrlFotoImovel())) // <--- CHAVE!
+                .map(foto -> new FotoImovelDTO(foto.getIdFotosImovel(), foto.getUrlFotoImovel()))
                 .collect(Collectors.toList())
                 : List.of();
         this.nomesCorretores = imovel.getCorretores() != null && Hibernate.isInitialized(imovel.getCorretores())
@@ -51,8 +47,7 @@ public class ImovelDTO {
                 .toList()
                 : List.of();
 
-        this.nomesImobiliarias = imovel.getImobiliarias() != null && Hibernate.isInitialized(imovel.getImobiliarias())
-                ? imovel.getImobiliarias().stream().map(Imobiliaria::getNome).toList()
-                : List.of();
+        this.imobiliariaId = imovel.getImobiliaria() != null ? imovel.getImobiliaria().getId() : null;
+        this.nomeImobiliaria = imovel.getImobiliaria() != null ? imovel.getImobiliaria().getNome() : null;
     }
 }

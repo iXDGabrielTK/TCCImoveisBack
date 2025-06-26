@@ -51,6 +51,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         notif.setLida(false);
         notif.setDataCriacao(LocalDateTime.now());
         notif.setRemetente(visitante);
+        notif.setRespondida(false);
         notificacaoRepository.save(notif);
     }
 
@@ -67,6 +68,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
         n.setDataCriacao(LocalDateTime.now());
         n.setRemetente(corretor);
         n.setLida(false);
+        n.setRespondida(false);
         notificacaoRepository.save(n);
     }
 
@@ -182,7 +184,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
             dto.setCreciSolicitado(nc.getCreciSolicitado());
             dto.setNomeUsuario(nc.getRemetente() != null ? nc.getRemetente().getNome() : null);
             dto.setEmailUsuario(nc.getRemetente() != null ? nc.getRemetente().getEmail() : null);
-            dto.setRespondida(nc.getRespondida());
+            dto.setRespondida(Boolean.TRUE.equals(nc.getRespondida()));
             dto.setArquivada(nc.isArquivada());
             return dto;
         }
@@ -225,6 +227,7 @@ public class NotificacaoServiceImpl implements NotificacaoService {
             dto.setTipo("RespostaSolicitacao");
             dto.setDataCriacao(nr.getDataCriacao());
             dto.setArquivada(nr.isArquivada());
+            dto.setRespondida(nr.isAprovada());
             return dto;
         }
 
