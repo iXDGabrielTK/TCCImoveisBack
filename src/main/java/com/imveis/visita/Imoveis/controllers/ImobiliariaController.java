@@ -62,7 +62,7 @@ public class ImobiliariaController {
     }
 
     @GetMapping("/imobiliarias-aprovadas")
-    @PreAuthorize("hasRole('CORRETOR')")
+    @PreAuthorize("hasAnyRole('CORRETOR', 'FUNCIONARIO')")
     public ResponseEntity<List<ImobiliariaResponse>> buscarImobiliariasDoCorretorAprovadas(
             @AuthenticationPrincipal UserDetailsImpl usuario
     ) {

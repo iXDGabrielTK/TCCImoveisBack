@@ -1,8 +1,10 @@
 package com.imveis.visita.Imoveis.service;
 
 import com.imveis.visita.Imoveis.dtos.ImovelDTO;
+import com.imveis.visita.Imoveis.entities.Corretor;
 import com.imveis.visita.Imoveis.entities.Endereco;
 import com.imveis.visita.Imoveis.entities.Imovel;
+import com.imveis.visita.Imoveis.repositories.CorretorRepository;
 import com.imveis.visita.Imoveis.repositories.EnderecoRepository;
 import com.imveis.visita.Imoveis.repositories.ImovelRepository;
 import org.springframework.data.domain.Page;
@@ -23,9 +25,12 @@ public class ImovelService {
 
     private final EnderecoRepository enderecoRepository;
 
-    public ImovelService(ImovelRepository imovelRepository, EnderecoRepository enderecoRepository) {
+    private final CorretorRepository corretorRepository;
+
+    public ImovelService(ImovelRepository imovelRepository, EnderecoRepository enderecoRepository, CorretorRepository corretorRepository) {
         this.imovelRepository = imovelRepository;
         this.enderecoRepository = enderecoRepository;
+        this.corretorRepository = corretorRepository;
     }
 
     public Page<ImovelDTO> findAllPaginado(int page, int size) {
@@ -101,5 +106,18 @@ public class ImovelService {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("idImovel").descending());
         Page<Imovel> imoveisPage = imovelRepository.findByImobiliariaId(imobiliariaId, pageable);
         return imoveisPage.map(ImovelDTO::new);
+    }
+
+    public List<ImovelDTO> findImoveisByCorretorAfiliado(Long corretorId) {
+        Corretor corretor = corretorRepository.findWithImobiliariasById(corretorId)
+                .orElseThrow(() -> new IllegalArgumentException("Corretor não encontrado."));
+        List<Long> imobiliariaIds = corretor.getImobiliarias().stream()
+                .map(imob -> imob.getId())
+                .collect(Collectors.toList());
+        if (imobiliariaIds.isEmpty()) {
+            return List.of();
+        }
+        return imovelRepository.findByImobiliariaIds(imobiliariaIds)
+                .stream().map(ImovelDTO::new).collect(Collectors.toList());
     }
 }

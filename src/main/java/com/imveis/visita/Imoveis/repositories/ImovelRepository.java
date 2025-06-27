@@ -58,5 +58,14 @@ public interface ImovelRepository extends JpaRepository<Imovel, Long> {
             """)
     Page<Imovel> findByImobiliariaId(@Param("imobiliariaId") Long imobiliariaId, Pageable pageable);
 
+    @Query("""
+            SELECT DISTINCT i FROM Imovel i
+            LEFT JOIN FETCH i.fotosImovel
+            LEFT JOIN FETCH i.enderecoImovel
+            LEFT JOIN FETCH i.imobiliaria
+            WHERE i.imobiliaria.id IN :imobiliariaIds AND i.apagado = false
+            """)
+    List<Imovel> findByImobiliariaIds(@Param("imobiliariaIds") List<Long> imobiliariaIds);
+
 
 }

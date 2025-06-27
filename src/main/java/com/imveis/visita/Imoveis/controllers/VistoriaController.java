@@ -5,6 +5,7 @@ import com.imveis.visita.Imoveis.dtos.VistoriaDTO;
 import com.imveis.visita.Imoveis.dtos.VistoriaRequest;
 import com.imveis.visita.Imoveis.entities.*;
 import com.imveis.visita.Imoveis.infra.s3.S3Service;
+import com.imveis.visita.Imoveis.security.UserDetailsImpl;
 import com.imveis.visita.Imoveis.service.FuncionarioService;
 import com.imveis.visita.Imoveis.service.ImovelService;
 import com.imveis.visita.Imoveis.service.VistoriaService;
@@ -12,14 +13,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set; // Importado para usar Set
-import java.util.HashSet; // Importado para usar HashSet
-import java.util.stream.Collectors; // Necessário para .collect(Collectors.toSet())
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/vistorias")
@@ -45,7 +47,23 @@ public class VistoriaController {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/por-corretor")
+    public ResponseEntity<List<VistoriaDTO>> getVistoriasPorCorretorAfiliado(
+            @AuthenticationPrincipal UserDetailsImpl usuario
+    ) {
+        try {
+            List<Vistoria> vistorias = vistoriaService.findAllByCorretorAfiliado(usuario.getId());
+            List<VistoriaDTO> dtos = vistorias.stream().map(VistoriaDTO::new).toList();
+            return ResponseEntity.ok(dtos);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/{id:[0-9]+}")
     public ResponseEntity<?> getVistoriaById(@PathVariable Long id) {
         try {
             Optional<Vistoria> vistoria = vistoriaService.findById(id);

@@ -47,4 +47,17 @@ public interface VistoriaRepository extends JpaRepository<Vistoria, Long> {
             "WHERE v.apagado = false " +
             "ORDER BY v.dataVistoria DESC")
     List<RelatorioVistoriaDTO> findAllActiveVistoriasForSelection();
+
+    @Query("""
+            SELECT DISTINCT v FROM Vistoria v
+            JOIN FETCH v.imovel i
+            LEFT JOIN FETCH i.fotosImovel
+            LEFT JOIN FETCH i.enderecoImovel
+            LEFT JOIN FETCH i.imobiliaria imob
+            LEFT JOIN FETCH i.corretores
+            LEFT JOIN FETCH v.ambientes a
+            LEFT JOIN FETCH a.fotos
+            WHERE v.apagado = false AND imob.id IN :imobiliariaIds
+            """)
+    List<Vistoria> findAllByImobiliariaIds(@Param("imobiliariaIds") List<Long> imobiliariaIds);
 }

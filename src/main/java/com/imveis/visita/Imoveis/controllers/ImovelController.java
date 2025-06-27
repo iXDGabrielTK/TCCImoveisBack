@@ -3,18 +3,18 @@ package com.imveis.visita.Imoveis.controllers;
 import com.imveis.visita.Imoveis.dtos.FotoImovelDTO;
 import com.imveis.visita.Imoveis.dtos.ImovelDTO;
 import com.imveis.visita.Imoveis.dtos.ImovelRequest;
-import com.imveis.visita.Imoveis.entities.Endereco;
-import com.imveis.visita.Imoveis.entities.FotoImovel;
-import com.imveis.visita.Imoveis.entities.Imobiliaria;
-import com.imveis.visita.Imoveis.entities.Imovel;
+import com.imveis.visita.Imoveis.entities.*;
 import com.imveis.visita.Imoveis.infra.s3.S3StorageService;
 import com.imveis.visita.Imoveis.repositories.ImobiliariaRepository;
+import com.imveis.visita.Imoveis.security.UserDetailsImpl;
 import com.imveis.visita.Imoveis.service.EnderecoService;
 import com.imveis.visita.Imoveis.service.ImovelService;
+import com.imveis.visita.Imoveis.service.UsuarioService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,15 +35,17 @@ public class ImovelController {
     private final EnderecoService enderecoService;
     private final ImobiliariaRepository imobiliariaRepository;
     private final S3StorageService s3StorageService;
+    private final UsuarioService usuarioService;
 
     public ImovelController(ImovelService imovelService,
                             EnderecoService enderecoService,
                             ImobiliariaRepository imobiliariaRepository,
-                            S3StorageService s3StorageService) {
+                            S3StorageService s3StorageService, UsuarioService usuarioService) {
         this.imovelService = imovelService;
         this.enderecoService = enderecoService;
         this.imobiliariaRepository = imobiliariaRepository;
         this.s3StorageService = s3StorageService; // Atribuir
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping("/{id}")
@@ -64,11 +66,49 @@ public class ImovelController {
         }
     }
 
+    @GetMapping("/por-corretor")
+    public ResponseEntity<List<ImovelDTO>> getImoveisPorCorretorAfiliado(
+            @AuthenticationPrincipal UserDetailsImpl usuario
+    ) {
+        try {
+            List<ImovelDTO> imoveis = imovelService.findImoveisByCorretorAfiliado(usuario.getId());
+            return ResponseEntity.ok(imoveis);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/por-imobiliaria/{idImobiliaria}")
+    public ResponseEntity<Page<ImovelDTO>> getImoveisByImobiliaria(
+            @PathVariable Long idImobiliaria,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "8") int size) {
+        try {
+            Page<ImovelDTO> imoveis = imovelService.findByImobiliariaPaginado(idImobiliaria, page, size);
+            return ResponseEntity.ok(imoveis);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("/disponiveis")
+    public ResponseEntity<?> getImoveisPorPoderDeCompra(@RequestParam double valorMax,
+                                                        @RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "8") int size) {
+        return ResponseEntity.ok(imovelService.findDisponiveisPorValorPaginado(valorMax, page, size));
+    }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Transactional
     public ResponseEntity<ImovelDTO> criarImovel(
             @RequestPart("dados") ImovelRequest imovelRequest,
-            @RequestPart(value = "fotos", required = false) List<MultipartFile> fotos) {
+            @RequestPart(value = "fotos", required = false) List<MultipartFile> fotos,
+            @AuthenticationPrincipal UserDetailsImpl usuario
+    ) {
 
         try {
             Imovel imovel = new Imovel();
@@ -80,11 +120,19 @@ public class ImovelController {
             imovel.setHistoricoManutencao(imovelRequest.getHistoricoManutencao());
             imovel.setEnderecoImovel(imovelRequest.getEnderecoImovel());
 
-            Imobiliaria selectedImobiliaria = null;
-            if (imovelRequest.getImobiliariaId() != null) {
-                selectedImobiliaria = imobiliariaRepository.findById(imovelRequest.getImobiliariaId())
+            Usuario entidadeUsuario = usuarioService.buscarPorId(usuario.getId());
+
+            if (entidadeUsuario instanceof Funcionario) {
+                Imobiliaria padrao = imobiliariaRepository.findByNome("Bemco")
+                        .orElseThrow(() -> new IllegalStateException("Imobiliária padrão não encontrada."));
+                imovel.setImobiliaria(padrao);
+            } else if (entidadeUsuario instanceof Corretor) {
+                if (imovelRequest.getImobiliariaId() == null) {
+                    return ResponseEntity.status(HttpStatus.CREATED).body(new ImovelDTO(imovel));
+                }
+                Imobiliaria associada = imobiliariaRepository.findById(imovelRequest.getImobiliariaId())
                         .orElseThrow(() -> new IllegalArgumentException("Imobiliária não encontrada com o ID fornecido."));
-                imovel.setImobiliaria(selectedImobiliaria);
+                imovel.setImobiliaria(associada);
             }
 
             imovel = imovelService.save(imovel);
@@ -99,13 +147,6 @@ public class ImovelController {
             e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    @GetMapping("/disponiveis")
-    public ResponseEntity<?> getImoveisPorPoderDeCompra(@RequestParam double valorMax,
-                                                        @RequestParam(defaultValue = "0") int page,
-                                                        @RequestParam(defaultValue = "8") int size) {
-        return ResponseEntity.ok(imovelService.findDisponiveisPorValorPaginado(valorMax, page, size));
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -211,17 +252,4 @@ public class ImovelController {
         }
     }
 
-    @GetMapping("/por-imobiliaria/{idImobiliaria}")
-    public ResponseEntity<Page<ImovelDTO>> getImoveisByImobiliaria(
-            @PathVariable Long idImobiliaria,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "8") int size) {
-        try {
-            Page<ImovelDTO> imoveis = imovelService.findByImobiliariaPaginado(idImobiliaria, page, size);
-            return ResponseEntity.ok(imoveis);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
 }
