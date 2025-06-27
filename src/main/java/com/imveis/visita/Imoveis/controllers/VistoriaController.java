@@ -178,9 +178,6 @@ public class VistoriaController {
         }
     }
 
-
-
-
     @PutMapping(value = "/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateVistoriaComFotos(
             @PathVariable Long id,

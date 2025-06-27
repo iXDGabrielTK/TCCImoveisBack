@@ -91,14 +91,14 @@ public class SecureSecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/usuarios/login", "/usuarios").permitAll()
                         .requestMatchers("/usuarios/refresh-token/**", "/usuarios/logout/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
-                        .requestMatchers("/home/**").hasAnyRole("ADMIN", "FUNCIONARIO", "VISITANTE")
+                        .requestMatchers("/home/**").hasAnyRole("FUNCIONARIO", "VISITANTE", "CORRETOR")
                         .requestMatchers("/imoveis/**").permitAll()
                         .requestMatchers("/agendamentos/**").authenticated()
-                        .requestMatchers("/relatorios/**").hasAnyRole("ADMIN", "FUNCIONARIO")
+                        .requestMatchers("/relatorios/**").hasRole("FUNCIONARIO")
                         .requestMatchers("/api/funcionario/**").hasAuthority("FUNCIONARIO")
                         .requestMatchers("/corretores/**").hasRole("VISITANTE")
-                        .requestMatchers("/propostas").hasAnyRole("VISITANTE", "FUNCIONARIO")
-                        .requestMatchers("/simulacoes").hasAnyRole("VISITANTE", "FUNCIONARIO")
+                        .requestMatchers("/propostas").hasAnyRole("VISITANTE", "FUNCIONARIO", "CORRETOR")
+                        .requestMatchers("/simulacoes").hasAnyRole("VISITANTE", "FUNCIONARIO", "CORRETOR")
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
