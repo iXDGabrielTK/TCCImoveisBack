@@ -39,6 +39,7 @@ public class ImovelDTO {
         this.fotosImovel = imovel.getFotosImovel() != null
                 ? imovel.getFotosImovel().stream()
                 .map(foto -> new FotoImovelDTO(foto.getIdFotosImovel(), foto.getUrlFotoImovel()))
+                .distinct()
                 .collect(Collectors.toList())
                 : List.of();
         this.nomesCorretores = imovel.getCorretores() != null && Hibernate.isInitialized(imovel.getCorretores())
@@ -47,7 +48,13 @@ public class ImovelDTO {
                 .toList()
                 : List.of();
 
-        this.imobiliariaId = imovel.getImobiliaria() != null ? imovel.getImobiliaria().getId() : null;
-        this.nomeImobiliaria = imovel.getImobiliaria() != null ? imovel.getImobiliaria().getNome() : null;
+        // Adição da verificação Hibernate.isInitialized para imobiliaria
+        if (imovel.getImobiliaria() != null && Hibernate.isInitialized(imovel.getImobiliaria())) {
+            this.imobiliariaId = imovel.getImobiliaria().getId();
+            this.nomeImobiliaria = imovel.getImobiliaria().getNome();
+        } else {
+            this.imobiliariaId = null;
+            this.nomeImobiliaria = null;
+        }
     }
 }

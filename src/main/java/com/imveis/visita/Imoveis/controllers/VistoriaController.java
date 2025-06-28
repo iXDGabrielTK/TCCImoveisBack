@@ -8,12 +8,14 @@ import com.imveis.visita.Imoveis.infra.s3.S3Service;
 import com.imveis.visita.Imoveis.security.UserDetailsImpl;
 import com.imveis.visita.Imoveis.service.FuncionarioService;
 import com.imveis.visita.Imoveis.service.ImovelService;
+import com.imveis.visita.Imoveis.service.UsuarioService;
 import com.imveis.visita.Imoveis.service.VistoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,13 +33,15 @@ public class VistoriaController {
     private final ImovelService imovelService;
     private final FuncionarioService funcionarioService;
     private final S3Service s3Service;
+    private final UsuarioService usuarioService;
 
     @Autowired
-    public VistoriaController(VistoriaService vistoriaService, ImovelService imovelService, FuncionarioService funcionarioService, S3Service s3Service){
+    public VistoriaController(VistoriaService vistoriaService, ImovelService imovelService, FuncionarioService funcionarioService, S3Service s3Service, UsuarioService usuarioService){
         this.vistoriaService = vistoriaService;
         this.imovelService = imovelService;
         this.funcionarioService = funcionarioService;
         this.s3Service = s3Service;
+        this.usuarioService = usuarioService;
     }
 
     @GetMapping
@@ -75,33 +79,50 @@ public class VistoriaController {
         }
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE) // <-- ADICIONADO anteriormente
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createVistoria(@RequestBody VistoriaRequest vistoriaRequest) {
         try {
             Imovel imovel = imovelService.findById(vistoriaRequest.getImovelId())
                     .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado com o ID fornecido"));
 
-            Funcionario funcionario = funcionarioService.findById(vistoriaRequest.getUsuarioId())
-                    .orElseThrow(() -> new IllegalArgumentException("Funcionário não encontrado para o ID fornecido"));
+            Usuario creatingUser = usuarioService.findById(vistoriaRequest.getUsuarioId())
+                    .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado para o ID fornecido"));
+
+            Funcionario assignedFuncionario = null;
+
+            if (creatingUser instanceof Funcionario) {
+                assignedFuncionario = (Funcionario) creatingUser;
+            } else if (creatingUser instanceof Corretor) {
+                List<Funcionario> allFuncionarios = funcionarioService.findAll();
+                if (!allFuncionarios.isEmpty()) {
+                    assignedFuncionario = allFuncionarios.get(0);
+                } else {
+                    throw new IllegalArgumentException("Nenhum funcionário disponível para associar à vistoria.");
+                }
+            } else {
+                throw new IllegalArgumentException("Apenas funcionários ou corretores podem criar vistorias.");
+            }
+
+            if (assignedFuncionario == null) {
+                throw new IllegalStateException("Falha ao atribuir funcionário à vistoria.");
+            }
 
             Vistoria vistoria = new Vistoria();
             vistoria.setTipoVistoria(vistoriaRequest.getTipoVistoria());
             vistoria.setLaudoVistoria(vistoriaRequest.getLaudoVistoria());
             vistoria.setDataVistoria(vistoriaRequest.getDataVistoria());
-            vistoria.setFuncionario(funcionario);
+            vistoria.setFuncionario(assignedFuncionario);
             vistoria.setImovel(imovel);
 
             if (vistoriaRequest.getAmbientes() != null && !vistoriaRequest.getAmbientes().isEmpty()) {
-                // MUDANÇA: Altera List para Set e .toList() para .collect(Collectors.toSet())
                 Set<AmbienteVistoria> ambientes = vistoriaRequest.getAmbientes().stream().map(ar ->
                         AmbienteVistoria.builder()
                                 .nome(ar.getNome())
                                 .descricao(ar.getDescricao())
                                 .vistoria(vistoria)
                                 .build()
-                ).collect(Collectors.toSet()); // CORREÇÃO AQUI
-
-                vistoria.setAmbientes(ambientes); // Agora espera um Set
+                ).collect(Collectors.toSet());
+                vistoria.setAmbientes(ambientes);
             }
 
             Vistoria novaVistoria = vistoriaService.save(vistoria);
@@ -114,9 +135,8 @@ public class VistoriaController {
         }
     }
 
-    // VistoriaController.java (trecho atualizado para upload)
 
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // <-- ALTERADO anteriormente
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createVistoriaComFotos(
             @RequestPart("dados") VistoriaRequest vistoriaRequest,
             @RequestPart(value = "fotos", required = false) MultipartFile[] arquivos) {
@@ -124,17 +144,35 @@ public class VistoriaController {
             Imovel imovel = imovelService.findById(vistoriaRequest.getImovelId())
                     .orElseThrow(() -> new IllegalArgumentException("Imóvel não encontrado"));
 
-            Funcionario funcionario = funcionarioService.findById(vistoriaRequest.getUsuarioId())
-                    .orElseThrow(() -> new IllegalArgumentException("Funcionário não encontrado"));
+            Usuario creatingUser = usuarioService.findById(vistoriaRequest.getUsuarioId())
+                    .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado para o ID fornecido"));
+
+            Funcionario assignedFuncionario = null;
+
+            if (creatingUser instanceof Funcionario) {
+                assignedFuncionario = (Funcionario) creatingUser;
+            } else if (creatingUser instanceof Corretor) {
+                List<Funcionario> allFuncionarios = funcionarioService.findAll();
+                if (!allFuncionarios.isEmpty()) {
+                    assignedFuncionario = allFuncionarios.get(0);
+                } else {
+                    throw new IllegalArgumentException("Nenhum funcionário disponível para associar à vistoria.");
+                }
+            } else {
+                throw new IllegalArgumentException("Apenas funcionários ou corretores podem criar vistorias.");
+            }
+
+            if (assignedFuncionario == null) {
+                throw new IllegalStateException("Falha ao atribuir funcionário à vistoria.");
+            }
 
             Vistoria vistoria = new Vistoria();
             vistoria.setTipoVistoria(vistoriaRequest.getTipoVistoria());
             vistoria.setLaudoVistoria(vistoriaRequest.getLaudoVistoria());
             vistoria.setDataVistoria(vistoriaRequest.getDataVistoria());
-            vistoria.setFuncionario(funcionario);
+            vistoria.setFuncionario(assignedFuncionario);
             vistoria.setImovel(imovel);
 
-            // MUDANÇA: Altera ArrayList para HashSet para ambientesSalvos
             Set<AmbienteVistoria> ambientesSalvos = new java.util.HashSet<>();
 
             if (vistoriaRequest.getAmbientes() != null) {
@@ -145,10 +183,8 @@ public class VistoriaController {
                     ambiente.setDescricao(ambienteRequest.getDescricao());
                     ambiente.setVistoria(vistoria);
 
-                    // Fotos desse ambiente - MUDANÇA: Altera ArrayList para HashSet
                     Set<FotoVistoria> fotos = new java.util.HashSet<>();
                     if (arquivos != null) {
-                        int fotoIndex = 0;
                         for (MultipartFile file : arquivos) {
                             String expectedPrefix = String.format("amb_%d_", ambienteIndex);
                             if (file.getOriginalFilename() != null && file.getOriginalFilename().startsWith(expectedPrefix)) {
@@ -158,16 +194,15 @@ public class VistoriaController {
                                 foto.setAmbiente(ambiente);
                                 fotos.add(foto);
                             }
-                            fotoIndex++;
                         }
                     }
-                    ambiente.setFotos(fotos); // Agora espera um Set
+                    ambiente.setFotos(fotos);
                     ambientesSalvos.add(ambiente);
                     ambienteIndex++;
                 }
             }
 
-            vistoria.setAmbientes(ambientesSalvos); // Agora espera um Set
+            vistoria.setAmbientes(ambientesSalvos);
             Vistoria nova = vistoriaService.save(vistoria);
 
             return ResponseEntity.ok(new VistoriaDTO(nova));
@@ -179,6 +214,7 @@ public class VistoriaController {
     }
 
     @PutMapping(value = "/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Transactional
     public ResponseEntity<?> updateVistoriaComFotos(
             @PathVariable Long id,
             @RequestPart("dados") VistoriaRequest vistoriaRequest,
@@ -191,43 +227,54 @@ public class VistoriaController {
             vistoria.setLaudoVistoria(vistoriaRequest.getLaudoVistoria());
             vistoria.setDataVistoria(vistoriaRequest.getDataVistoria());
 
-            Set<AmbienteVistoria> ambientesAtualizados = new HashSet<>();
+            Set<AmbienteVistoria> ambientesProcessados = new HashSet<>();
+
             if (vistoriaRequest.getAmbientes() != null) {
                 int ambienteIndex = 0;
                 for (AmbienteVistoriaRequest ambienteRequest : vistoriaRequest.getAmbientes()) {
                     AmbienteVistoria ambiente;
+                    Set<FotoVistoria> fotosDoAmbienteManaged;
+
                     if (ambienteRequest.getId() != null) {
-                        // Ambiente existente - busque-o ou crie um novo para evitar problemas de anexo
                         ambiente = vistoria.getAmbientes().stream()
                                 .filter(a -> a.getId().equals(ambienteRequest.getId()))
                                 .findFirst()
-                                .orElseGet(() -> new AmbienteVistoria()); // Ou throw exception se não encontrar
-                        ambiente.setNome(ambienteRequest.getNome());
-                        ambiente.setDescricao(ambienteRequest.getDescricao());
-                        ambiente.setVistoria(vistoria); // Garante a relação
+                                .orElseThrow(() -> new IllegalArgumentException("Ambiente existente não encontrado com o ID: " + ambienteRequest.getId()));
+
+                        fotosDoAmbienteManaged = ambiente.getFotos();
+                        if (fotosDoAmbienteManaged == null) {
+                            fotosDoAmbienteManaged = new HashSet<>();
+                            ambiente.setFotos(fotosDoAmbienteManaged);
+                        }
+                        fotosDoAmbienteManaged.clear();
+
                     } else {
-                        // Novo ambiente
+                        // É um novo ambiente
                         ambiente = AmbienteVistoria.builder()
                                 .nome(ambienteRequest.getNome())
                                 .descricao(ambienteRequest.getDescricao())
                                 .vistoria(vistoria)
                                 .build();
+                        fotosDoAmbienteManaged = new HashSet<>();
+                        ambiente.setFotos(fotosDoAmbienteManaged);
                     }
 
-                    Set<FotoVistoria> fotosDoAmbiente = new HashSet<>();
+                    ambiente.setNome(ambienteRequest.getNome());
+                    ambiente.setDescricao(ambienteRequest.getDescricao());
+                    ambiente.setVistoria(vistoria); // Garante a associação
 
+                    // Adiciona fotos existentes que o frontend indicou para manter
                     if (ambienteRequest.getFotosExistentes() != null) {
                         for (com.imveis.visita.Imoveis.dtos.FotoVistoriaDTO fotoExistenteDTO : ambienteRequest.getFotosExistentes()) {
-                            // Crie uma entidade FotoVistoria a partir do DTO da foto existente
-                            // e associe ao ambiente
                             FotoVistoria fotoExistente = new FotoVistoria();
-                            fotoExistente.setId(fotoExistenteDTO.getId()); // Mantenha o ID existente
+                            fotoExistente.setId(fotoExistenteDTO.getId());
                             fotoExistente.setUrlFotoVistoria(fotoExistenteDTO.getUrlFotoVistoria());
                             fotoExistente.setAmbiente(ambiente);
-                            fotosDoAmbiente.add(fotoExistente);
+                            fotosDoAmbienteManaged.add(fotoExistente);
                         }
                     }
 
+                    // Adiciona novas fotos carregadas (MultipartFile)
                     if (arquivos != null) {
                         for (MultipartFile file : arquivos) {
                             String expectedPrefix = String.format("amb_%d_", ambienteIndex);
@@ -236,25 +283,30 @@ public class VistoriaController {
                                 FotoVistoria novaFoto = new FotoVistoria();
                                 novaFoto.setUrlFotoVistoria(url);
                                 novaFoto.setAmbiente(ambiente);
-                                fotosDoAmbiente.add(novaFoto);
+                                fotosDoAmbienteManaged.add(novaFoto);
                             }
                         }
                     }
-                    ambiente.setFotos(fotosDoAmbiente);
-                    ambientesAtualizados.add(ambiente);
+
+                    ambientesProcessados.add(ambiente);
                     ambienteIndex++;
                 }
             }
 
-            vistoria.setAmbientes(ambientesAtualizados); // Sobrescreve a coleção de ambientes
+            vistoria.getAmbientes().clear();
+            vistoria.getAmbientes().addAll(ambientesProcessados);
 
-            Vistoria updatedVistoria = vistoriaService.save(vistoria); // Salva a vistoria com as mudanças
+            Vistoria savedVistoria = vistoriaService.save(vistoria);
 
-            return ResponseEntity.ok(new VistoriaDTO(updatedVistoria)); // Retorna o DTO atualizado
+            Vistoria updatedAndInitializedVistoria = vistoriaService.findById(savedVistoria.getIdVistoria())
+                    .orElseThrow(() -> new IllegalStateException("Vistoria atualizada não encontrada após a gravação."));
+
+            return ResponseEntity.ok(new VistoriaDTO(updatedAndInitializedVistoria));
+
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace(); // Para depuração
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao atualizar vistoria: " + e.getMessage());
         }
     }
