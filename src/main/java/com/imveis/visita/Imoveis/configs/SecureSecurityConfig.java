@@ -58,7 +58,7 @@ public class SecureSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSourceSecurity() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("https://686094cf97cef849433a8e77--tccfrontimoveis.netlify.app/"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
