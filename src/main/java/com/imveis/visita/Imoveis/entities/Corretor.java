@@ -20,7 +20,7 @@ import java.util.List;
 public class Corretor extends Usuario {
 
     @Column(name = "creci", length = 15, nullable = false, unique = true)
-    @Pattern(regexp = "CRECI-[A-Z]{2} \\d{1,6}(-[A-Z])?")
+    @Pattern(regexp = "[A-Z]{2} \\d{1,6}(-[A-Z])?")
     private String creci;
 
     @OneToMany(mappedBy = "corretor")
